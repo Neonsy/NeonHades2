@@ -1,0 +1,21 @@
+{
+  "name": "@neodes2/data",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "tsc --noEmit",
+    "contract:check": "tsc -p tsconfig.build.json && node dist/validate-contract.js",
+    "snapshot": "tsc -p tsconfig.build.json && node dist/snapshot-cli.js",
+    "test": "tsc -p tsconfig.test.json && node --test .local/test-dist/test/*.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@11.18.0"
+}
