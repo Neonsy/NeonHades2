@@ -1,0 +1,14 @@
+{
+  "namespace": "NeonHades2",
+  "name": "BoonExporter",
+  "FullName": "NeonHades2-BoonExporter",
+  "description": "Exports the versioned Hades II boon evidence used by NeonHades2.",
+  "version_number": "0.2.2",
+  "dependencies": [
+    "Hell2Modding-Hell2Modding-1.0.110",
+    "SGG_Modding-ENVY-1.2.0",
+    "SGG_Modding-ModUtil-4.0.1",
+    "SGG_Modding-SJSON-1.0.1"
+  ],
+  "website_url": ""
+}
