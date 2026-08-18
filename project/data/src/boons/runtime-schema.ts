@@ -13,12 +13,14 @@ export type RuntimeStaticBaseType =
   | "EffectLuaData"
   | "Projectile"
   | "ProjectileBase"
-  | "Weapon";
+  | "TraitData"
+  | "Weapon"
+  | "WeaponData";
 
 export interface RuntimeStaticBaseValue {
   readonly baseType: RuntimeStaticBaseType;
   readonly baseName: string;
-  readonly baseProperty: string;
+  readonly baseProperty: string | readonly string[];
   readonly runtimePath: string;
   readonly value: JsonValue;
 }
@@ -202,6 +204,16 @@ function asStringArray(value: unknown, label: string): readonly string[] {
   return values;
 }
 
+function asStringPath(value: unknown, label: string): readonly string[] {
+  const path = asArray(value, label).map((entry, index) =>
+    asString(entry, `${label}[${index}]`),
+  );
+  if (path.length === 0) {
+    throw new Error(`${label} must not be empty.`);
+  }
+  return path;
+}
+
 function asJsonValue(value: unknown, label: string): JsonValue {
   if (value === null || typeof value === "boolean" || typeof value === "string") {
     return value;
@@ -232,7 +244,9 @@ const staticBaseTypes = [
   "EffectLuaData",
   "Projectile",
   "ProjectileBase",
+  "TraitData",
   "Weapon",
+  "WeaponData",
 ] as const;
 
 function validateStaticBaseValue(
@@ -240,10 +254,14 @@ function validateStaticBaseValue(
   label: string,
 ): RuntimeStaticBaseValue {
   const base = asRecord(value, label);
+  const baseProperty =
+    typeof base.baseProperty === "string"
+      ? asString(base.baseProperty, `${label}.baseProperty`)
+      : asStringPath(base.baseProperty, `${label}.baseProperty`);
   return {
     baseType: asLiteral(base.baseType, `${label}.baseType`, staticBaseTypes),
     baseName: asString(base.baseName, `${label}.baseName`),
-    baseProperty: asString(base.baseProperty, `${label}.baseProperty`),
+    baseProperty,
     runtimePath: asString(base.runtimePath, `${label}.runtimePath`),
     value: asJsonValue(base.value, `${label}.value`),
   };
@@ -371,7 +389,10 @@ function validateSampleValue(value: unknown, label: string): RuntimeSampleValue 
   };
 }
 
-function validateSample(value: unknown, label: string): RuntimeBoonSample {
+export function validateRuntimeTraitSample(
+  value: unknown,
+  label: string,
+): RuntimeBoonSample {
   const sample = asRecord(value, label);
   const context = asRecord(sample.context, `${label}.context`);
   const elementCounts = asArray(
@@ -453,7 +474,7 @@ function validateBoon(value: unknown, label: string): RuntimeBoon {
   const boon = asRecord(value, label);
   const evidence = asRecord(boon.evidence, `${label}.evidence`);
   const samples = asArray(boon.samples, `${label}.samples`).map((sample, index) =>
-    validateSample(sample, `${label}.samples[${index}]`),
+    validateRuntimeTraitSample(sample, `${label}.samples[${index}]`),
   );
   const sampleKeys = samples.map(
     (sample) => `${sample.rarity}\u0000${sample.endpoint}\u0000${sample.level}`,

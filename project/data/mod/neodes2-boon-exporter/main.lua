@@ -1,7 +1,7 @@
 ---@meta _
 ---@diagnostic disable
 
-local EXPORTER_VERSION = "0.2.2"
+local EXPORTER_VERSION = "0.3.2"
 local MAX_COPY_DEPTH = 32
 local MAX_COPY_NODES = 250000
 
@@ -12,6 +12,7 @@ local modutil = rom.mods["SGG_Modding-ModUtil"]
 local sjson = rom.mods["SGG_Modding-SJSON"]
 local game = rom.game
 local config = import "config.lua"
+local create_weapon_exporter = import "weapons.lua"
 
 local bits = bit32
 if not bits and type(require) == "function" then
@@ -33,6 +34,7 @@ local rshift = bits.rshift
 local unpack_values = table.unpack or unpack
 
 local ARRAY_META = { __neodes2_json_array = true }
+local JSON_NULL = setmetatable({}, { __neodes2_json_null = true })
 
 local LOCALIZATION_FILES = {
 	"Text/en/TraitText.en.sjson",
@@ -127,25 +129,31 @@ local function table_shape(value, path)
 	local string_count = 0
 	local maximum = 0
 	for key in pairs(value) do
-		if type(key) == "number" and key > 0 and key % 1 == 0 then
+		if type(key) == "number" and key == key and key ~= math.huge and key ~= -math.huge then
 			numeric_count = numeric_count + 1
-			maximum = math.max(maximum, key)
+			if key > 0 and key % 1 == 0 then
+				maximum = math.max(maximum, key)
+			end
 		elseif type(key) == "string" then
 			string_count = string_count + 1
 		else
 			error(path .. " contains an unsupported table key of type " .. type(key))
 		end
 	end
-	if numeric_count > 0 and string_count > 0 then
-		error(path .. " mixes numeric and string table keys")
-	end
-	if numeric_count > 0 then
-		if maximum ~= numeric_count then
-			error(path .. " contains a sparse numeric table")
-		end
+	if numeric_count > 0 and string_count == 0 and maximum == numeric_count then
 		return "array"
 	end
 	return "object"
+end
+
+local function json_object_key(key, path)
+	if type(key) == "string" then
+		return key
+	end
+	if type(key) == "number" and key == key and key ~= math.huge and key ~= -math.huge then
+		return tostring(key)
+	end
+	error(path .. " contains an unsupported JSON object key of type " .. type(key))
 end
 
 local function copy_value(value, path, state, depth)
@@ -184,7 +192,11 @@ local function copy_value(value, path, state, depth)
 	else
 		result = {}
 		for _, key in ipairs(sorted_keys(value)) do
-			result[key] = copy_value(value[key], path .. "." .. key, state, depth + 1)
+			local object_key = json_object_key(key, path)
+			if result[object_key] ~= nil then
+				error(path .. " has colliding JSON object key " .. object_key)
+			end
+			result[object_key] = copy_value(value[key], path .. "." .. object_key, state, depth + 1)
 		end
 	end
 	state.ancestors[value] = nil
@@ -234,11 +246,14 @@ local function encode_json(value, path, ancestors)
 	if value_type ~= "table" then
 		error(path .. " cannot be encoded as JSON")
 	end
+	local meta = getmetatable(value)
+	if meta and meta.__neodes2_json_null then
+		return "null"
+	end
 	if ancestors[value] then
 		error(path .. " contains a cycle during JSON encoding")
 	end
 	ancestors[value] = true
-	local meta = getmetatable(value)
 	local shape = meta and meta.__neodes2_json_array and "array" or table_shape(value, path)
 	local parts = {}
 	if shape == "array" then
@@ -248,8 +263,14 @@ local function encode_json(value, path, ancestors)
 		ancestors[value] = nil
 		return "[" .. table.concat(parts, ",") .. "]"
 	end
+	local object_keys = {}
 	for _, key in ipairs(sorted_keys(value)) do
-		table.insert(parts, json_escape(key) .. ":" .. encode_json(value[key], path .. "." .. key, ancestors))
+		local object_key = json_object_key(key, path)
+		if object_keys[object_key] then
+			error(path .. " has colliding JSON object key " .. object_key)
+		end
+		object_keys[object_key] = true
+		table.insert(parts, json_escape(object_key) .. ":" .. encode_json(value[key], path .. "." .. object_key, ancestors))
 	end
 	ancestors[value] = nil
 	return "{" .. table.concat(parts, ",") .. "}"
@@ -715,9 +736,10 @@ local function collect_reported_values(value, output, ancestors, depth, path)
 	ancestors[value] = nil
 end
 
-local function resolve_static_base_value(base_type, base_name, base_property)
-	if type(base_type) ~= "string" or type(base_name) ~= "string" or type(base_property) ~= "string" then
-		error("Static base-data references require string type, name, and property fields")
+local function resolve_static_base_value(base_type, base_name, base_property, instruction)
+	if type(base_type) ~= "string" or type(base_name) ~= "string"
+		or (type(base_property) ~= "string" and type(base_property) ~= "table") then
+		error("Static base-data references require a string type and name plus a property or property path")
 	end
 	local value
 	local runtime_path
@@ -727,6 +749,47 @@ local function resolve_static_base_value(base_type, base_name, base_property)
 	elseif base_type == "Weapon" then
 		value = game.GetBaseDataValue({ Type = "Weapon", Name = base_name, Property = base_property })
 		runtime_path = "GetBaseDataValue.Weapon." .. base_name .. "." .. base_property
+	elseif base_type == "WeaponData" then
+		local weapon = game.WeaponData[base_name]
+		if type(weapon) ~= "table" then
+			error("WeaponData." .. base_name .. " was not found")
+		end
+		if base_property == "ManaPerSecond" and type(weapon.DrainManaEffect) == "table" then
+			value = weapon.DrainManaEffect.CostPerSecond
+			runtime_path = "WeaponData." .. base_name .. ".DrainManaEffect.CostPerSecond"
+		elseif base_property == "ChargeStageProperty" then
+			local stage = instruction and instruction.ChargeStage
+			local property = instruction and instruction.ChargeStageProperty
+			value = weapon.ChargeWeaponStages and weapon.ChargeWeaponStages[stage]
+				and weapon.ChargeWeaponStages[stage][property]
+			runtime_path = "WeaponData." .. base_name .. ".ChargeWeaponStages[" .. tostring(stage) .. "]." .. tostring(property)
+		elseif base_property == "FiredFunctionArgs" then
+			local property = instruction and instruction.FiredFunctionArg
+			value = weapon.OnFiredFunctionArgs and weapon.OnFiredFunctionArgs[property]
+			runtime_path = "WeaponData." .. base_name .. ".OnFiredFunctionArgs." .. tostring(property)
+		else
+			value = weapon[base_property]
+			runtime_path = "WeaponData." .. base_name .. "." .. tostring(base_property)
+		end
+	elseif base_type == "TraitData" then
+		local processed = game.GetProcessedTraitData({
+			Unit = { Traits = {} },
+			TraitName = base_name,
+			TraitData = game.DeepCopyTable(game.TraitData[base_name]),
+			StackNum = 1,
+			ForceMin = true,
+		})
+		if type(processed) ~= "table" then
+			error("TraitData." .. base_name .. " could not be processed")
+		end
+		local path = type(base_property) == "table" and base_property or { base_property }
+		local path_parts = {}
+		value = processed
+		for _, key in ipairs(path) do
+			value = type(value) == "table" and value[key] or nil
+			table.insert(path_parts, tostring(key))
+		end
+		runtime_path = "TraitData." .. base_name .. ".processed." .. table.concat(path_parts, ".")
 	elseif base_type == "EffectLuaData" then
 		local effect = game.EffectData[base_name]
 		value = effect and effect[base_property]
@@ -756,7 +819,7 @@ local function resolve_static_base_value(base_type, base_name, base_property)
 	return {
 		baseType = base_type,
 		baseName = base_name,
-		baseProperty = base_property,
+		baseProperty = safe_copy(base_property, "static-base-data.baseProperty"),
 		runtimePath = runtime_path,
 		value = safe_copy(value, runtime_path),
 	}
@@ -788,7 +851,7 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	end
 
 	local function add_static_input(id, base_type, base_name, base_property)
-		local input = resolve_static_base_value(base_type, base_name, base_property)
+		local input = resolve_static_base_value(base_type, base_name, base_property, instruction)
 		input.id = id
 		table.insert(static_inputs, input)
 		return require_numeric(input.value, "Static input " .. id)
@@ -828,6 +891,14 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 		local base_value = add_static_input("baseValue", instruction.BaseType, instruction.BaseName, instruction.BaseProperty)
 		expression = "(" .. expression .. " * baseValue)"
 		if not contextual then resolved_value = resolved_value * base_value end
+	elseif format == "AddToBase" then
+		local base_value = add_static_input("baseValue", instruction.BaseType, instruction.BaseName, instruction.BaseProperty)
+		expression = "(" .. expression .. " + baseValue)"
+		if not contextual then resolved_value = resolved_value + base_value end
+	elseif format == "AdjustedBaseManaSpendCost" then
+		local base_value = add_static_input("baseManaSpendCost", "WeaponData", instruction.WeaponName, "ManaSpendCost")
+		expression = "(" .. expression .. " + baseManaSpendCost)"
+		if not contextual then resolved_value = resolved_value + base_value end
 	elseif format == "MultiplyByBaseOverTime" then
 		local base_value = add_static_input("baseValue", instruction.BaseType, instruction.BaseName, instruction.BaseProperty)
 		local fuse = add_static_input("baseFuseValue", instruction.BaseType, instruction.BaseName, instruction.BaseFuseProperty)
@@ -893,9 +964,6 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 		add_context_input("LastStandsUsed")
 		expression = "(" .. expression .. " * LastStandsUsed)"
 	end
-	if instruction.Subtractor ~= nil or instruction.Multiplier ~= nil then
-		error("Cross-value sample arithmetic is not supported")
-	end
 	if instruction.AbsoluteValue ~= nil then
 		expression = "abs(" .. expression .. ")"
 		if not contextual then resolved_value = math.abs(require_numeric(resolved_value, "Sample value " .. extract_as)) end
@@ -914,11 +982,6 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	if not contextual then
 		resolved_value = game.round(require_numeric(resolved_value, "Sample value " .. extract_as), precision)
 	end
-	if instruction.Negative then
-		expression = "-(" .. expression .. ")"
-		if not contextual then resolved_value = -resolved_value end
-	end
-
 	table.sort(static_inputs, function(left, right)
 		return bytewise_less(left.id, right.id)
 	end)
@@ -1018,8 +1081,7 @@ local function extract_sample_values(processed, trait_id)
 		end
 	end
 
-	local values = {}
-	local seen_ids = {}
+	local instructions_by_id = {}
 	for index, instruction in ipairs(extract_values) do
 		if type(instruction) ~= "table" then
 			error("TraitData." .. trait_id .. ".ExtractValues[" .. index .. "] is not a table")
@@ -1028,16 +1090,53 @@ local function extract_sample_values(processed, trait_id)
 		if type(extract_as) ~= "string" or extract_as == "" then
 			error("ExtractValues instruction has no stable ExtractAs id")
 		end
-		if seen_ids[extract_as] then
+		if instructions_by_id[extract_as] then
 			error("ExtractValues repeats " .. extract_as)
 		end
-		seen_ids[extract_as] = true
+		instructions_by_id[extract_as] = instruction
+	end
+
+	local entries_by_id = {}
+	local resolving = {}
+	local function combine_resolution(resolution, operand, operator, extract_as, operand_id)
+		if resolution.kind == "resolved" and operand.kind == "resolved" then
+			local left = require_numeric(resolution.value, "Sample value " .. extract_as)
+			local right = require_numeric(operand.value, "Sample value " .. operand_id)
+			return {
+				kind = "resolved",
+				value = operator == "-" and (left - right) or (left * right),
+			}
+		end
+		local inputs = {}
+		for _, input_id in ipairs(resolution.inputIds or {}) do inputs[input_id] = true end
+		for _, input_id in ipairs(operand.inputIds or {}) do inputs[input_id] = true end
+		local left_expression = resolution.kind == "resolved" and tostring(resolution.value) or resolution.expression
+		local right_expression = operand.kind == "resolved" and tostring(operand.value) or operand.expression
+		return {
+			kind = "contextual",
+			expression = "(" .. left_expression .. " " .. operator .. " " .. right_expression .. ")",
+			inputIds = sorted_set_values(inputs),
+		}
+	end
+
+	local resolve_entry
+	resolve_entry = function(extract_as)
+		if entries_by_id[extract_as] then return entries_by_id[extract_as] end
+		if resolving[extract_as] then error("ExtractValues contains a cross-value cycle at " .. extract_as) end
+		local instruction = instructions_by_id[extract_as]
+		if type(instruction) ~= "table" then error("ExtractValues references missing " .. tostring(extract_as)) end
+		resolving[extract_as] = true
 
 		local source
 		local raw_value
 		local source_context_inputs = {}
 		if instruction.External == true then
-			local static = resolve_static_base_value(instruction.BaseType, instruction.BaseName, instruction.BaseProperty)
+			local static = resolve_static_base_value(
+				instruction.BaseType,
+				instruction.BaseName,
+				instruction.BaseProperty,
+				instruction
+			)
 			raw_value = static.value
 			source = {
 				kind = "static-base-data",
@@ -1060,16 +1159,46 @@ local function extract_sample_values(processed, trait_id)
 			extract_as,
 			source_context_inputs
 		)
-		table.insert(values, {
+		if instruction.Subtractor then
+			resolution = combine_resolution(
+				resolution,
+				resolve_entry(instruction.Subtractor).resolution,
+				"-",
+				extract_as,
+				instruction.Subtractor
+			)
+		end
+		if instruction.Multiplier then
+			resolution = combine_resolution(
+				resolution,
+				resolve_entry(instruction.Multiplier).resolution,
+				"*",
+				extract_as,
+				instruction.Multiplier
+			)
+		end
+		if instruction.Negative then
+			if resolution.kind == "resolved" then
+				resolution.value = -require_numeric(resolution.value, "Sample value " .. extract_as)
+			else
+				resolution.expression = "-(" .. resolution.expression .. ")"
+			end
+		end
+		local entry = {
 			id = extract_as,
 			source = source,
 			staticInputs = static_inputs,
 			resolution = resolution,
-		})
+		}
+		entries_by_id[extract_as] = entry
+		resolving[extract_as] = nil
+		return entry
 	end
-	table.sort(values, function(left, right)
-		return bytewise_less(left.id, right.id)
-	end)
+
+	local values = {}
+	for _, extract_as in ipairs(sorted_keys(instructions_by_id)) do
+		table.insert(values, resolve_entry(extract_as))
+	end
 	return json_array(values)
 end
 
@@ -1114,15 +1243,18 @@ local function sample_trait(trait_id, trait, rarity, endpoint, multiplier, level
 	}
 end
 
-local function collect_samples(trait_id, trait)
+local function collect_samples(trait_id, trait, options)
+	options = options or {}
 	local samples = {}
 	local rarity_levels = trait.RarityLevels or { Common = { Multiplier = 1 } }
 	for _, rarity in ipairs(sorted_keys(rarity_levels)) do
+		if options.rarities == nil or options.rarities[rarity] then
 		for _, endpoint in ipairs(rarity_endpoints(rarity_levels[rarity])) do
-			local maximum_level = trait.BlockStacking == true and 1 or 5
+			local maximum_level = options.maximum_level or (trait.BlockStacking == true and 1 or 5)
 			for level = 1, maximum_level do
 				table.insert(samples, sample_trait(trait_id, trait, rarity, endpoint.endpoint, endpoint.multiplier, level))
 			end
+		end
 		end
 	end
 	return json_array(samples)
@@ -1177,8 +1309,21 @@ local function collect_boons(ownership, localization, trait_text_references)
 	return json_array(boons)
 end
 
-local function create_report(package_version)
-	local localization = load_localization()
+local weapon_exporter = create_weapon_exporter({
+	game = game,
+	config = config,
+	exporter_version = EXPORTER_VERSION,
+	json_array = json_array,
+	json_null = JSON_NULL,
+	safe_copy = safe_copy,
+	sorted_keys = sorted_keys,
+	sorted_set_values = sorted_set_values,
+	bytewise_less = bytewise_less,
+	collect_samples = collect_samples,
+})
+
+local function create_report(package_version, localization)
+	localization = localization or load_localization()
 	local loot_sources, ownership = collect_loot_sources(localization)
 	local trait_text_references = collect_trait_text_references(localization, ownership)
 	return {
@@ -1207,7 +1352,37 @@ local function create_report(package_version)
 	}
 end
 
-local function export_boons()
+local function write_finalized_report(directory, report, manifest_schema, completion_schema)
+	local report_content = to_json(report)
+	local report_hash = sha256(report_content)
+	local report_temporary = rom.path.combine(directory, "runtime-report.json.tmp")
+	local report_path = rom.path.combine(directory, "runtime-report.json")
+	write_new_file(report_temporary, report_content)
+	finalize_file(report_temporary, report_path)
+
+	local manifest_content = to_json({
+		schema = manifest_schema,
+		exporterVersion = EXPORTER_VERSION,
+		reportFile = "runtime-report.json",
+		reportSha256 = report_hash,
+	})
+	local manifest_temporary = rom.path.combine(directory, "manifest.json.tmp")
+	local manifest_path = rom.path.combine(directory, "manifest.json")
+	write_new_file(manifest_temporary, manifest_content)
+	finalize_file(manifest_temporary, manifest_path)
+
+	local completion_content = to_json({
+		schema = completion_schema,
+		reportSha256 = report_hash,
+	})
+	local completion_temporary = rom.path.combine(directory, "complete.json.tmp")
+	local completion_path = rom.path.combine(directory, "complete.json")
+	write_new_file(completion_temporary, completion_content)
+	finalize_file(completion_temporary, completion_path)
+	return report_path
+end
+
+local function export_data()
 	validate_config()
 	local package_version = read_file(rom.path.combine(rom.paths.Content(), "packagever")):match("^%s*(.-)%s*$")
 	if package_version ~= config.package_version then
@@ -1217,33 +1392,24 @@ local function export_boons()
 	local run_id = os.date("!%Y%m%dT%H%M%SZ") .. "-" .. tostring(os.time())
 	local run_directory = rom.path.combine(_PLUGIN.plugins_data_mod_folder_path, "runs", run_id)
 	rom.path.create_directory(run_directory)
-	local report_content = to_json(create_report(package_version))
-	local report_hash = sha256(report_content)
-	local report_temporary = rom.path.combine(run_directory, "runtime-report.json.tmp")
-	local report_path = rom.path.combine(run_directory, "runtime-report.json")
-	write_new_file(report_temporary, report_content)
-	finalize_file(report_temporary, report_path)
-
-	local manifest_content = to_json({
-		schema = "neodes2-boon-runtime-manifest-1",
-		exporterVersion = EXPORTER_VERSION,
-		reportFile = "runtime-report.json",
-		reportSha256 = report_hash,
-	})
-	local manifest_temporary = rom.path.combine(run_directory, "manifest.json.tmp")
-	local manifest_path = rom.path.combine(run_directory, "manifest.json")
-	write_new_file(manifest_temporary, manifest_content)
-	finalize_file(manifest_temporary, manifest_path)
-
-	local completion_content = to_json({
-		schema = "neodes2-boon-runtime-completion-1",
-		reportSha256 = report_hash,
-	})
-	local completion_temporary = rom.path.combine(run_directory, "complete.json.tmp")
-	local completion_path = rom.path.combine(run_directory, "complete.json")
-	write_new_file(completion_temporary, completion_content)
-	finalize_file(completion_temporary, completion_path)
-	rom.log.info("NeonHades2 boon export complete: " .. report_path)
+	local weapon_directory = rom.path.combine(run_directory, "weapons")
+	rom.path.create_directory(weapon_directory)
+	local localization = load_localization()
+	local boon_report = create_report(package_version, localization)
+	local weapon_report = weapon_exporter.create_report(package_version, localization)
+	local weapon_report_path = write_finalized_report(
+		weapon_directory,
+		weapon_report,
+		"neodes2-weapon-runtime-manifest-1",
+		"neodes2-weapon-runtime-completion-1"
+	)
+	local boon_report_path = write_finalized_report(
+		run_directory,
+		boon_report,
+		"neodes2-boon-runtime-manifest-1",
+		"neodes2-boon-runtime-completion-1"
+	)
+	rom.log.info("NeonHades2 data export complete: boons=" .. boon_report_path .. " weapons=" .. weapon_report_path)
 end
 
 local has_run = false
@@ -1252,14 +1418,21 @@ modutil.once_loaded.save(function()
 		return
 	end
 	has_run = true
-	local ok, message = pcall(export_boons)
+	local ok, message = pcall(export_data)
 	if not ok then
-		local failure_path = rom.path.combine(_PLUGIN.plugins_data_mod_folder_path, "failure-" .. tostring(os.time()) .. ".json")
-		pcall(write_new_file, failure_path, to_json({
-			schema = "neodes2-boon-runtime-failure-1",
-			exporterVersion = EXPORTER_VERSION,
-			message = tostring(message),
-		}))
-		rom.log.error("NeonHades2 boon export failed: " .. tostring(message))
+		pcall(function()
+			local failure_path = rom.path.combine(
+				_PLUGIN.plugins_data_mod_folder_path,
+				"failure-" .. tostring(os.time()) .. ".json"
+			)
+			write_new_file(failure_path, to_json({
+				schema = "neodes2-boon-runtime-failure-1",
+				exporterVersion = EXPORTER_VERSION,
+				message = tostring(message),
+			}))
+		end)
+		pcall(function()
+			rom.log.warning("NeonHades2 data export failed without interrupting the game: " .. tostring(message))
+		end)
 	end
 end)

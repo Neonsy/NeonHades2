@@ -8,15 +8,19 @@ The acquisition contract maps every requirement in the product plan to an owning
 The source snapshotter discovers the installed Hades II Steam build, verifies its versions, copies allowlisted Lua and SJSON files, hashes the evidence, and writes an immutable acquisition under `.local/acquisitions/`.
 It does not launch or control the game.
 
-The boon pipeline adds a project-owned runtime exporter under `/project/data/mod/neodes2-boon-exporter/`.
-It reads only processed boon tables and the English localization files after a save loads.
+The runtime pipeline adds a project-owned exporter under `/project/data/mod/neodes2-boon-exporter/`.
+It reads processed game tables and English localization files after a save loads.
 It writes a hashed, finalized runtime report to the mod profile's own data directory.
+
+The boon importer writes deterministic normalized boons and coverage reports under `.local/boons/`.
 Runtime sample version 2 separates processed trait values from static base-data values.
 Weapon-dependent processed values are recorded as source variants selected by weapon name.
 It records exact formulas and named inputs when player state affects a displayed value.
 Element-scaled values use an explicit one-element context instead of the loaded save.
 Official description references are checked against exported tooltip values and `TraitData` fields.
-The importer validates that finalized report against a completed source snapshot, then writes deterministic normalized boons and machine-readable and human-readable coverage reports under `.local/boons/`.
+
+The weapon importer writes deterministic normalized weapons, aspects, ranks, Daedalus Hammers, and coverage reports under `.local/weapons/`.
+It checks the runtime identifiers against a static source audit and preserves linked engine weapon identifiers that have no standalone `WeaponData` record.
 
 ## Requirements
 
@@ -57,15 +61,34 @@ The command writes only inside `.local/acquisitions/` by default.
 Each successful run has a deterministic `manifest.json` and a `complete.json` marker.
 Failed and earlier runs are retained rather than overwritten or deleted.
 
-## Prepare the boon exporter
+## Audit and prepare the runtime exporter
+
+Create a completed source snapshot first.
+Use its absolute directory in the weapon source audit and exporter preflight.
+
+```powershell
+pnpm weapons:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+pnpm weapons:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+```
+
+Both commands must report `Complete: true` before runtime collection.
+Their outputs remain under ignored `.local` directories.
 
 Copy the exporter folder into the active ReturnOfModding profile and rename `config.example.lua` to `config.lua` in that installed copy.
 Fill the config with the acquisition ID, source manifest hash, Steam build ID, executable version, and package version from one completed source snapshot.
 Do not commit the installed config or any exporter output.
 
-The exporter runs once after the user loads a save in a modded game session.
+Launch Hades II with the same ReturnOfModding profile and load any save.
+Keep the game window focused until the exporter reports completion in `LogOutput.log`.
+
+The exporter runs once after a save loads.
 It does not alter saves or add gameplay content.
-The game must be launched and controlled by the user.
+Its output does not depend on save unlock progress.
+
+Each attempt creates a new run directory under `ReturnOfModding/plugins_data/NeonHades2-BoonExporter/runs/`.
+The finalized boon report is `runtime-report.json` in that run directory.
+The finalized weapon report is `weapons/runtime-report.json`.
+Import only reports whose directory also contains matching `manifest.json` and `complete.json` files.
 
 ## Import a runtime boon report
 
@@ -78,3 +101,14 @@ pnpm runtime:import -- --report "C:\absolute\profile\path\runtime-report.json" -
 The importer requires matching runtime manifest and completion markers.
 It rejects mismatched hashes, build metadata, relationships, malformed values, and incomplete source snapshots.
 It preserves failed runtime samples as coverage issues instead of treating them as verified facts.
+
+## Import a runtime weapon report
+
+Pass the finalized weapon report and the same completed source snapshot to the weapon importer.
+
+```powershell
+pnpm weapons:import -- --report "C:\absolute\profile\path\runs\run-id\weapons\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+```
+
+The command must report complete coverage.
+The generated acquisition remains under `.local/weapons/` and must not be committed.

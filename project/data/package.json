@@ -9,7 +9,10 @@
     "contract:check": "tsc -p tsconfig.build.json && node dist/validate-contract.js",
     "runtime:import": "tsc -p tsconfig.build.json && node dist/runtime-import-cli.js",
     "snapshot": "tsc -p tsconfig.build.json && node dist/snapshot-cli.js",
-    "test": "tsc -p tsconfig.test.json && node --test .local/test-dist/test/*.test.js"
+    "test": "tsc -p tsconfig.test.json && node --test .local/test-dist/test/*.test.js",
+    "weapons:audit": "tsc -p tsconfig.build.json && node dist/weapon-source-audit-cli.js",
+    "weapons:import": "tsc -p tsconfig.build.json && node dist/weapon-runtime-import-cli.js",
+    "weapons:preflight": "tsc -p tsconfig.build.json && node dist/weapon-preflight-cli.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

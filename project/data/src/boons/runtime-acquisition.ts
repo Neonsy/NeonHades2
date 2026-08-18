@@ -8,7 +8,7 @@ import {
   stat,
   writeFile,
 } from "node:fs/promises";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 import { assertLocalOutputPath } from "../snapshot/index.js";
 import { normalizeRuntimeBoons, renderBoonCoverageReport } from "./normalize.js";
@@ -29,7 +29,7 @@ export interface RuntimeAcquisitionResult {
   readonly coverageComplete: boolean;
 }
 
-interface VerifiedSourceManifest {
+export interface VerifiedSourceManifest {
   readonly acquisitionId: string;
   readonly manifestSha256: string;
   readonly steamBuildId: string;
@@ -37,16 +37,16 @@ interface VerifiedSourceManifest {
   readonly packageVersion: string;
 }
 
-interface StableFile {
+export interface StableFile {
   readonly content: Buffer;
   readonly sha256: string;
 }
 
-function sha256(content: string | Buffer): string {
+export function sha256(content: string | Buffer): string {
   return createHash("sha256").update(content).digest("hex");
 }
 
-function jsonBytes(value: unknown): Buffer {
+export function jsonBytes(value: unknown): Buffer {
   return Buffer.from(`${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
@@ -69,7 +69,7 @@ function requiredString(
   return value;
 }
 
-async function readStableRegularFile(path: string): Promise<StableFile> {
+export async function readStableRegularFile(path: string): Promise<StableFile> {
   const entry = await lstat(path);
   if (!entry.isFile() || entry.isSymbolicLink()) {
     throw new Error(`Runtime acquisition input is not a regular file: ${path}`);
@@ -83,7 +83,9 @@ async function readStableRegularFile(path: string): Promise<StableFile> {
   return { content, sha256: sha256(content) };
 }
 
-async function verifySourceAcquisition(directory: string): Promise<VerifiedSourceManifest> {
+export async function verifySourceAcquisition(
+  directory: string,
+): Promise<VerifiedSourceManifest> {
   const manifestFile = await readStableRegularFile(join(directory, "manifest.json"));
   const completionFile = await readStableRegularFile(join(directory, "complete.json"));
   const manifest = asRecord(JSON.parse(manifestFile.content.toString("utf8")), "source manifest");
@@ -107,6 +109,35 @@ async function verifySourceAcquisition(directory: string): Promise<VerifiedSourc
     manifestFile.sha256
   ) {
     throw new Error("Source manifest hash does not match its completion marker.");
+  }
+
+  if (!Array.isArray(manifest.sources)) {
+    throw new Error("Source manifest.sources must be an array.");
+  }
+  const sourcesRoot = resolve(directory, "sources");
+  for (const [index, entry] of manifest.sources.entries()) {
+    const source = asRecord(entry, `source manifest.sources[${index}]`);
+    const relativePath = requiredString(
+      source,
+      "relativePath",
+      `source manifest.sources[${index}]`,
+    );
+    if (isAbsolute(relativePath) || relativePath.split(/[\\/]/u).includes("..")) {
+      throw new Error(`Source manifest contains an unsafe relative path: ${relativePath}`);
+    }
+    const sourcePath = resolve(sourcesRoot, ...relativePath.split("/"));
+    const pathFromRoot = relative(sourcesRoot, sourcePath);
+    if (pathFromRoot === ".." || pathFromRoot.startsWith(`..${sep}`) || isAbsolute(pathFromRoot)) {
+      throw new Error(`Source manifest path escapes its acquisition: ${relativePath}`);
+    }
+    const sourceFile = await readStableRegularFile(sourcePath);
+    const expectedSize = source.size;
+    if (typeof expectedSize !== "number" || !Number.isSafeInteger(expectedSize) || expectedSize < 0) {
+      throw new Error(`Source manifest size is invalid for ${relativePath}.`);
+    }
+    if (sourceFile.content.length !== expectedSize || sourceFile.sha256 !== source.sha256) {
+      throw new Error(`Source file no longer matches its manifest: ${relativePath}`);
+    }
   }
 
   const game = asRecord(manifest.game, "source manifest.game");
@@ -158,16 +189,16 @@ async function verifyRuntimeCompletion(
   }
 }
 
-function assertRuntimeMatchesSource(
-  runtime: ReturnType<typeof validateRuntimeBoonReport>,
+export function assertRuntimeGameMatchesSource(
+  runtime: ReturnType<typeof validateRuntimeBoonReport>["game"],
   source: VerifiedSourceManifest,
 ): void {
   const comparisons = [
-    ["acquisition ID", runtime.game.acquisitionId, source.acquisitionId],
-    ["source manifest hash", runtime.game.sourceManifestSha256, source.manifestSha256],
-    ["Steam build", runtime.game.steamBuildId, source.steamBuildId],
-    ["executable version", runtime.game.executableVersion, source.executableVersion],
-    ["package version", runtime.game.packageVersion, source.packageVersion],
+    ["acquisition ID", runtime.acquisitionId, source.acquisitionId],
+    ["source manifest hash", runtime.sourceManifestSha256, source.manifestSha256],
+    ["Steam build", runtime.steamBuildId, source.steamBuildId],
+    ["executable version", runtime.executableVersion, source.executableVersion],
+    ["package version", runtime.packageVersion, source.packageVersion],
   ] as const;
   for (const [label, runtimeValue, sourceValue] of comparisons) {
     if (runtimeValue !== sourceValue) {
@@ -178,11 +209,11 @@ function assertRuntimeMatchesSource(
   }
 }
 
-function formatTimestamp(date: Date): string {
+export function formatTimestamp(date: Date): string {
   return date.toISOString().replace(/[-:.]/gu, "");
 }
 
-async function writeFailure(directory: string, error: unknown): Promise<void> {
+export async function writeFailure(directory: string, error: unknown): Promise<void> {
   const failure = {
     schema: "neodes2-runtime-acquisition-failure-1",
     message: error instanceof Error ? error.message : "Unknown runtime acquisition failure.",
@@ -204,7 +235,7 @@ export async function createRuntimeBoonAcquisition(
   const runtime = validateRuntimeBoonReport(report);
   await verifyRuntimeCompletion(reportPath, reportFile.sha256, runtime.exporterVersion);
   const source = await verifySourceAcquisition(resolve(options.sourceAcquisitionDirectory));
-  assertRuntimeMatchesSource(runtime, source);
+  assertRuntimeGameMatchesSource(runtime.game, source);
   const normalized = normalizeRuntimeBoons(runtime);
   const datasetContent = jsonBytes(normalized.dataset);
   const coverageContent = jsonBytes(normalized.coverage);

@@ -155,8 +155,9 @@ function runtimeReport(overrides: {
                     kind: "static-base-data",
                     baseType: "EffectData",
                     baseName: "SyntheticEffect",
-                    baseProperty: "Count",
-                    runtimePath: "EffectData.SyntheticEffect.EffectData.Count",
+                    baseProperty: ["OnWeaponFiredFunctions", "FunctionArgs"],
+                    runtimePath:
+                      "EffectData.SyntheticEffect.OnWeaponFiredFunctions.FunctionArgs",
                     value: 2,
                   },
                   staticInputs: [],
@@ -235,6 +236,7 @@ async function writeSourceAcquisition(directory: string): Promise<void> {
       executableVersion: "139671",
       packageVersion: "138174",
     },
+    sources: [],
   });
   await writeFile(join(directory, "manifest.json"), manifestContent);
   await writeFile(
