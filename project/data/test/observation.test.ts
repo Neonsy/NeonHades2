@@ -181,6 +181,7 @@ describe("observer deployment inputs", () => {
     assert.doesNotMatch(main, /\bgame\.(?:AddTraitToHero|RemoveTrait|EquipWeapon|UnequipWeapon|Damage|Heal|LoadMap|Save|ApplyEffectFromWeapon|SpawnObstacle)\s*\(/u);
     assert.doesNotMatch(main, /math\.random/u);
     assert.match(main, /io\.open\(path, "ab"\)/u);
+    assert.match(main, /trait\.IsWeaponEnchantment/u);
     assert.deepEqual(validateLuaStructure(main), []);
     assert.deepEqual(validateLuaStructure(json), []);
   });

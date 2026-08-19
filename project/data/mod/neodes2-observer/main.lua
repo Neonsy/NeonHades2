@@ -131,8 +131,19 @@ local function current_context()
 		end
 	end
 	local active_aspect_id = nil
+	if equipped_weapon_id and type(hero) == "table" and type(hero.Traits) == "table" then
+		for _, trait in ipairs(hero.Traits) do
+			if type(trait) == "table" and trait.IsWeaponEnchantment and
+				(trait.RequiredWeapon == nil or trait.RequiredWeapon == equipped_weapon_id) then
+				active_aspect_id = string_value(trait.Name)
+				if active_aspect_id ~= nil then
+					break
+				end
+			end
+		end
+	end
 	if equipped_weapon_id and type(game.GameState) == "table" and type(game.GameState.LastWeaponUpgradeName) == "table" then
-		active_aspect_id = string_value(game.GameState.LastWeaponUpgradeName[equipped_weapon_id])
+		active_aspect_id = active_aspect_id or string_value(game.GameState.LastWeaponUpgradeName[equipped_weapon_id])
 	end
 	if active_aspect_id == nil and equipped_weapon_id and type(game.ScreenData) == "table" then
 		local screen = game.ScreenData.WeaponUpgradeScreen

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "aspect-session:prepare": "tsc -p tsconfig.build.json && node dist/aspect-session-prepare-cli.js",
     "arcana:audit": "tsc -p tsconfig.build.json && node dist/arcana-source-audit-cli.js",
     "arcana:import": "tsc -p tsconfig.build.json && node dist/arcana-runtime-import-cli.js",
     "arcana:preflight": "tsc -p tsconfig.build.json && node dist/arcana-preflight-cli.js",

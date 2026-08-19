@@ -1,0 +1,13 @@
+{
+  "namespace": "NeonHades2",
+  "name": "TrainingHarness",
+  "FullName": "NeonHades2-TrainingHarness",
+  "description": "Applies armed, dataset-bound test loadouts to a dedicated Hades II test save.",
+  "version_number": "0.1.0",
+  "dependencies": [
+    "Hell2Modding-Hell2Modding-1.0.110",
+    "SGG_Modding-ENVY-1.2.0",
+    "SGG_Modding-ModUtil-4.0.1"
+  ],
+  "website_url": ""
+}

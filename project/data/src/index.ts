@@ -8,3 +8,4 @@ export * from "./snapshot/index.js";
 export * from "./weapons/index.js";
 export * from "./verification/index.js";
 export * from "./observation/index.js";
+export * from "./training/index.js";

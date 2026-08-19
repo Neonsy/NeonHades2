@@ -227,6 +227,44 @@ The importer rejects partial lines, noncontiguous sequences, unsupported fields,
 It writes the raw trace, a normalized candidate report, a manifest, and a completion marker under `.local/observations/`.
 Candidate coverage points reviewers to relevant events but does not mark a manual check complete.
 Review the observed behavior against the normalized records before adding a passing ledger entry.
+If a game restart splits one observation task across several traces, import each trace separately.
+Reference every report needed to cover the task in its ledger entry.
+
+## Prepare controlled aspect observations
+
+The project-owned training harness under `/project/data/mod/neodes2-training-harness/` applies one dataset-bound weapon and aspect command to a dedicated test save.
+It does not call save, progression, quest, achievement, or map-transition functions.
+It must never be used with a primary save.
+
+Prepare the complete aspect command set from one combined dataset.
+
+```powershell
+pnpm aspect-session:prepare -- --dataset "C:\absolute\project\data\.local\datasets\completed-run"
+```
+
+The command writes a plan, a harness config, 24 aspect commands, a restore command, and hash manifests under `.local/training/`.
+Copy `/project/data/mod/neodes2-training-harness/` into the active ReturnOfModding profile.
+Copy the generated `config.lua` into that installed mod folder.
+Copy one generated aspect command to `ReturnOfModding/plugins_data/NeonHades2-TrainingHarness/command.txt`.
+
+Back up the dedicated test save before launching Hades II.
+Each loaded save writes a new `ready.txt` with a runtime nonce while the harness remains disarmed.
+Confirm from the new game log that the dedicated test profile is active.
+Then create `arm.txt` beside `ready.txt` with the same nonce and dataset acquisition identifier.
+
+```text
+schema=neodes2-training-arm-1
+session_nonce=value-from-ready.txt
+dataset_acquisition_id=value-from-ready.txt
+end=neodes2-training-arm-1
+```
+
+The harness ignores stale arm files from earlier loads.
+After it reports that a command was applied, perform the action sequence in the generated plan while the passive observer records the trace.
+Replace `command.txt` with the next generated command only after the previous result reports `status=ok`.
+If a command reports `status=error`, stop the session and restore the test-save backup before retrying it.
+Apply `commands/restore-original.txt` before closing the final session.
+Close Hades II before importing traces and remove both deployed project mods afterward.
 
 Manual evidence belongs beside its source files under an ignored `.local` directory.
 Each ledger entry names one task and check, lists the covered target identifiers from `observation-plan.json`, records a pass or fail result, and references at least one nonempty evidence file by relative path and lowercase SHA-256 hash.
