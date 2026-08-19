@@ -27,6 +27,7 @@ export type {
   WeaponSourceAuditRecord,
 } from "./source-audit.js";
 export { preflightWeaponExporter } from "./mod-preflight.js";
+export { validateLuaStructure } from "./mod-preflight.js";
 export type {
   WeaponExporterPreflight,
   WeaponExporterPreflightIssue,

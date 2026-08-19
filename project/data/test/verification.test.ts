@@ -191,7 +191,11 @@ describe("calculation verification", () => {
   });
 
   it("does not claim Phase 5 completion while required manual evidence is absent", () => {
-    const report = verifyDataset(calculatedDataset("round(((value - 1) * 100), 0)"), calculationRules);
+    const report = verifyDataset(
+      calculatedDataset("round(((value - 1) * 100), 0)"),
+      calculationRules,
+      "sha256:combined-dataset",
+    );
     assert.equal(report.automatedComplete, true);
     assert.equal(report.manualComplete, false);
     assert.equal(report.phaseComplete, false);
@@ -199,11 +203,13 @@ describe("calculation verification", () => {
     assert.ok(report.manualTasks.some((task) => task.claimKind === "editorial"));
     assert.equal(report.observationPlan.sessions.length, 6);
     assert.equal(report.manualEvidence.pendingCheckCount, report.observationPlan.assignments.length);
+    assert.equal(report.sourceDatasetAcquisitionId, "sha256:combined-dataset");
+    assert.equal(report.observationPlan.sourceDatasetAcquisitionId, "sha256:combined-dataset");
   });
 
   it("requires passing evidence for every planned target before completing Phase 5", async () => {
     const dataset = calculatedDataset("round(((value - 1) * 100), 0)");
-    const pending = verifyDataset(dataset, calculationRules);
+    const pending = verifyDataset(dataset, calculationRules, "sha256:combined-dataset");
     const targetSets = new Map(pending.observationPlan.targetSets.map((targetSet) => [targetSet.id, targetSet]));
     const entries = pending.observationPlan.assignments.map((assignment) => ({
       id: `${assignment.taskId}/${assignment.check}`,
@@ -224,13 +230,13 @@ describe("calculation verification", () => {
       for (const entry of entries) entry.evidence[0]!.sha256 = evidenceHash;
       const ledger = {
         schema: "neodes2-manual-evidence-1",
-        sourceDatasetAcquisitionId: dataset.source.acquisitionId,
+        sourceDatasetAcquisitionId: "sha256:combined-dataset",
         entries,
       } as const;
       const ledgerPath = join(directory, "ledger.json");
       await writeFile(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
       const evidence = await readManualEvidenceLedger(ledgerPath);
-      const complete = verifyDataset(dataset, calculationRules, evidence);
+      const complete = verifyDataset(dataset, calculationRules, "sha256:combined-dataset", evidence);
       assert.equal(complete.manualComplete, true);
       assert.equal(complete.phaseComplete, true);
       assert.ok(complete.manualTasks.every((task) => task.status === "complete"));
@@ -240,7 +246,7 @@ describe("calculation verification", () => {
       await writeFile(ledgerPath, `${JSON.stringify(unknownTargetLedger, null, 2)}\n`, "utf8");
       const unknownTargetEvidence = await readManualEvidenceLedger(ledgerPath);
       assert.throws(
-        () => verifyDataset(dataset, calculationRules, unknownTargetEvidence),
+        () => verifyDataset(dataset, calculationRules, "sha256:combined-dataset", unknownTargetEvidence),
         /references unknown target/u,
       );
     } finally {

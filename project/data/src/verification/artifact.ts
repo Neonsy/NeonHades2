@@ -83,7 +83,7 @@ export async function createVerificationArtifact(options: VerificationBuildOptio
     throw new Error("Verification inputs do not share one source manifest.");
   }
   const rules = parseCalculationRules(uiData.content.toString("utf8"), traitData.content.toString("utf8"));
-  const report = verifyDataset(verifiedDataset.dataset, rules, manualEvidence);
+  const report = verifyDataset(verifiedDataset.dataset, rules, verifiedDataset.acquisitionId, manualEvidence);
   if (!report.automatedComplete) {
     const issues = report.requirementGraph.issues.length + report.calculations.issues.length;
     throw new Error(`Automated verification failed with ${issues} issue(s).`);

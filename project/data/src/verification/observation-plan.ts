@@ -241,6 +241,7 @@ function sessionFor(task: ManualVerificationTask, check: ManualVerificationKind)
 export function createObservationPlan(
   dataset: CombinedDataset,
   tasks: readonly ManualVerificationTask[],
+  sourceDatasetAcquisitionId: string,
 ): ObservationPlan {
   const targetSets = buildTargetSets(dataset);
   const targetSetIds = new Set(targetSets.map((entry) => entry.id));
@@ -261,7 +262,7 @@ export function createObservationPlan(
   }).sort((left, right) => compareStrings(`${left.taskId}\u0000${left.check}`, `${right.taskId}\u0000${right.check}`));
   return {
     schema: "neodes2-observation-plan-1",
-    sourceDatasetAcquisitionId: dataset.source.acquisitionId,
+    sourceDatasetAcquisitionId,
     sessions,
     targetSets,
     assignments,

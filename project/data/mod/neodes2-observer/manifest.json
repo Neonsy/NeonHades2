@@ -1,0 +1,13 @@
+{
+  "namespace": "NeonHades2",
+  "name": "Observer",
+  "FullName": "NeonHades2-Observer",
+  "description": "Records passive Hades II behavior evidence used by NeonHades2.",
+  "version_number": "0.1.0",
+  "dependencies": [
+    "Hell2Modding-Hell2Modding-1.0.110",
+    "SGG_Modding-ENVY-1.2.0",
+    "SGG_Modding-ModUtil-4.0.1"
+  ],
+  "website_url": ""
+}

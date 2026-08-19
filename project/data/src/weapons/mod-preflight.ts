@@ -101,7 +101,7 @@ function maskAndTokenizeLua(source: string): MaskedLua {
   };
 }
 
-function validateLuaStructure(source: string): readonly string[] {
+export function validateLuaStructure(source: string): readonly string[] {
   const { tokens } = maskAndTokenizeLua(source);
   const brackets: string[] = [];
   const blocks: ("end" | "until")[] = [];

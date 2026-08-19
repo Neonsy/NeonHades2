@@ -62,17 +62,18 @@ function collectManualTasks(): readonly ManualVerificationTask[] {
 export function verifyDataset(
   dataset: CombinedDataset,
   calculationRules: CalculationRules,
+  sourceDatasetAcquisitionId: string,
   manualEvidence?: VerifiedManualEvidence,
 ): AutomatedVerificationReport {
   const requirementGraph = compileRequirementGraph(dataset);
   const calculations = verifyCalculations(dataset, calculationRules);
   const pendingTasks = collectManualTasks();
-  const observationPlan = createObservationPlan(dataset, pendingTasks);
+  const observationPlan = createObservationPlan(dataset, pendingTasks, sourceDatasetAcquisitionId);
   const manual = verifyManualEvidence(pendingTasks, observationPlan, manualEvidence);
   const automatedComplete = requirementGraph.complete && calculations.complete;
   return {
     schema: "neodes2-automated-verification-2",
-    sourceDatasetAcquisitionId: dataset.source.acquisitionId,
+    sourceDatasetAcquisitionId,
     requirementGraph,
     calculations,
     observationPlan,

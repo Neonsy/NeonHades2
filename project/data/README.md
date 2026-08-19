@@ -193,7 +193,40 @@ pnpm verification:build -- --dataset "C:\absolute\project\data\.local\datasets\c
 The verifier independently recalculates exported numeric values and resolves the named-requirement graph.
 It rejects calculation or graph issues and writes a content-addressed artifact under `.local/verification/`.
 The artifact includes `observation-plan.json`, which assigns every manual check to a focused session and an exact target set from the combined dataset.
+Its `sourceDatasetAcquisitionId` is the exact combined dataset acquisition, not only the underlying source snapshot.
 Sessions marked `profile2-mutation-permission-required` must not begin until the owner grants separate permission to change the dedicated test copy.
+
+## Record passive game observations
+
+The project-owned observer under `/project/data/mod/neodes2-observer/` records append-only combat event traces after a save loads.
+It reads current room, equipment, trait, health, Magick, weapon, projectile, hit, effect, and control identifiers.
+It does not select equipment, add or remove traits, spawn objects, change progression, or write save state.
+
+Generate a config bound to one completed combined dataset.
+
+```powershell
+pnpm observer:config -- --dataset "C:\absolute\project\data\.local\datasets\completed-run"
+```
+
+The command writes `.local/observer/config.lua` and refuses to overwrite an existing config.
+Copy `/project/data/mod/neodes2-observer/` into the active ReturnOfModding profile, then copy the generated `config.lua` into that installed mod folder.
+Do not commit the installed config or observer output.
+
+Launch Hades II with the same profile and load the dedicated test save.
+Perform only the actions assigned by `observation-plan.json` and permitted by the save policy.
+Each load creates `trace.ndjson` under `ReturnOfModding/plugins_data/NeonHades2-Observer/runs/`.
+Each event is flushed and closed before play continues, so an interrupted game leaves the last complete line readable.
+
+Close Hades II before importing a trace.
+
+```powershell
+pnpm observation:import -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --trace "C:\absolute\profile\path\plugins_data\NeonHades2-Observer\runs\run-id\trace.ndjson"
+```
+
+The importer rejects partial lines, noncontiguous sequences, unsupported fields, oversized input, non-finite values, and trace or dataset identity mismatches.
+It writes the raw trace, a normalized candidate report, a manifest, and a completion marker under `.local/observations/`.
+Candidate coverage points reviewers to relevant events but does not mark a manual check complete.
+Review the observed behavior against the normalized records before adding a passing ledger entry.
 
 Manual evidence belongs beside its source files under an ignored `.local` directory.
 Each ledger entry names one task and check, lists the covered target identifiers from `observation-plan.json`, records a pass or fail result, and references at least one nonempty evidence file by relative path and lowercase SHA-256 hash.
