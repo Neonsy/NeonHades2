@@ -44,6 +44,7 @@ function compareStrings(left: string, right: string): number {
 
 function collectManualTasks(): readonly ManualVerificationTask[] {
   return acquisitionContract.domains.flatMap((domain) => domain.records.flatMap((record) => record.fields.flatMap((field) => {
+    if (field.claimKind === "editorial") return [];
     const requiredChecks = field.validations.flatMap((validation) => {
       const kind = manualRules[validation as keyof typeof manualRules];
       return kind === undefined ? [] : [kind];

@@ -59,8 +59,6 @@ Optional:
 try {
   const result = await createVerificationArtifact(parseArguments(process.argv.slice(2)));
   const pending = result.report.manualTasks.filter((task) => task.status === "pending");
-  const factTasks = pending.filter((task) => task.claimKind !== "editorial").length;
-  const editorialTasks = pending.length - factTasks;
   process.stdout.write(`Automated verification complete.
 Acquisition: ${result.acquisitionId}
 Calculated values: ${result.report.calculations.valueCount}
@@ -68,8 +66,7 @@ Calculation issues: ${result.report.calculations.issues.length}
 Named requirements: ${result.report.requirementGraph.nodes.length}
 Requirement issues: ${result.report.requirementGraph.issues.length}
 Manual checks complete: ${result.report.manualEvidence.completedCheckCount}/${result.report.manualEvidence.requiredCheckCount}
-Pending factual manual tasks: ${factTasks}
-Pending editorial manual tasks: ${editorialTasks}
+Pending manual tasks: ${pending.length}
 Phase 5 complete: ${result.report.phaseComplete}
 Directory: ${result.directory}
 `);

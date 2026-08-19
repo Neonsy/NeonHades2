@@ -199,9 +199,26 @@ describe("calculation verification", () => {
     assert.equal(report.automatedComplete, true);
     assert.equal(report.manualComplete, false);
     assert.equal(report.phaseComplete, false);
-    assert.ok(report.manualTasks.some((task) => task.id === "mechanics/combat-mechanic/behavior"));
-    assert.ok(report.manualTasks.some((task) => task.claimKind === "editorial"));
-    assert.equal(report.observationPlan.sessions.length, 6);
+    assert.deepEqual(report.manualTasks.map((task) => task.id), [
+      "foundation/record-metadata/spoiler-level",
+      "mechanics/combat-mechanic/behavior",
+      "mechanics/weapon-aspect/attack-pattern",
+      "world-progression/achievement/name-description",
+      "world-progression/achievement/trigger",
+      "world-progression/narrative-milestone/completion-evidence",
+      "world-progression/narrative-milestone/kind",
+      "world-progression/narrative-milestone/requirements",
+      "world-progression/prophecy/name",
+      "world-progression/prophecy/objectives",
+      "world-progression/prophecy/rewards",
+      "world-progression/prophecy/unlock-requirements",
+      "world-progression/relationship/character",
+      "world-progression/relationship/gift-track",
+      "world-progression/relationship/rewards",
+    ]);
+    assert.ok(report.manualTasks.every((task) => task.claimKind !== "editorial"));
+    assert.deepEqual(report.observationPlan.sessions.map((session) => session.id), ["training-combat", "spoiler-review"]);
+    assert.equal(report.manualEvidence.requiredCheckCount, 15);
     assert.equal(report.manualEvidence.pendingCheckCount, report.observationPlan.assignments.length);
     assert.equal(report.sourceDatasetAcquisitionId, "sha256:combined-dataset");
     assert.equal(report.observationPlan.sourceDatasetAcquisitionId, "sha256:combined-dataset");

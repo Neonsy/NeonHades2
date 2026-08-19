@@ -194,6 +194,11 @@ The verifier independently recalculates exported numeric values and resolves the
 It rejects calculation or graph issues and writes a content-addressed artifact under `.local/verification/`.
 The artifact includes `observation-plan.json`, which assigns every manual check to a focused session and an exact target set from the combined dataset.
 Its `sourceDatasetAcquisitionId` is the exact combined dataset acquisition, not only the underlying source snapshot.
+
+Phase 5 includes manual checks only for factual or derived fields that require direct observation or spoiler review.
+It excludes editorial fields because Phase 7 validates authored guide records.
+The processed runtime state supplies resolved bulk facts, and the source snapshot binds them to one game build.
+Manual observation remains required for player controls and weapon behavior that the exported data cannot prove.
 Sessions marked `profile2-mutation-permission-required` must not begin until the owner grants separate permission to change the dedicated test copy.
 
 ## Record passive game observations

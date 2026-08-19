@@ -39,30 +39,9 @@ export interface ObservationPlan {
 
 const sessions = [
   {
-    id: "hub-system-effects",
-    title: "Hub systems and effects",
-    objective: "Verify incantation world changes and Oath rank effects against the normalized records.",
-    gameRequired: true,
-    savePolicy: "profile2-mutation-permission-required",
-  },
-  {
     id: "training-combat",
     title: "Training-ground combat",
-    objective: "Verify core actions, every weapon aspect, every Hex, and every status effect in controlled combat.",
-    gameRequired: true,
-    savePolicy: "profile2-mutation-permission-required",
-  },
-  {
-    id: "route-combat",
-    title: "Route combat",
-    objective: "Verify enemy attacks, phases, summons, hazards, and route-specific behavior.",
-    gameRequired: true,
-    savePolicy: "profile2-mutation-permission-required",
-  },
-  {
-    id: "progression-transitions",
-    title: "Progression transitions",
-    objective: "Verify relationship, prophecy, narrative, and achievement state transitions.",
+    objective: "Verify core actions and every weapon aspect in controlled combat.",
     gameRequired: true,
     savePolicy: "profile2-mutation-permission-required",
   },
@@ -73,45 +52,17 @@ const sessions = [
     gameRequired: false,
     savePolicy: "offline",
   },
-  {
-    id: "editorial-evaluation",
-    title: "Editorial evaluation",
-    objective: "Record the project-owned evaluations required before guide records can be authored.",
-    gameRequired: false,
-    savePolicy: "offline",
-  },
 ] as const satisfies readonly ObservationSession[];
 
 const taskTargetSets = {
-  "editorial/aspect-guide/boon-priorities": "contract-field",
-  "editorial/aspect-guide/boss-route-considerations": "contract-field",
-  "editorial/aspect-guide/context-ratings": "contract-field",
-  "editorial/aspect-guide/fallbacks-conflicts": "contract-field",
-  "editorial/aspect-guide/hammer-rankings": "contract-field",
-  "editorial/aspect-guide/playstyle-combat-sequence": "contract-field",
-  "editorial/aspect-guide/rank-evaluations": "contract-field",
-  "editorial/aspect-guide/strengths-weaknesses": "contract-field",
-  "editorial/boon-rating/rating": "contract-field",
-  "editorial/boon-rating/reason-prerequisites-limitation": "contract-field",
-  "editorial/progression-stage/boon-encounter-priorities": "contract-field",
-  "editorial/progression-stage/completion-checklist": "contract-field",
-  "editorial/progression-stage/loadout": "contract-field",
-  "editorial/progression-stage/milestone": "contract-field",
-  "editorial/progression-stage/parallel-objectives": "contract-field",
-  "editorial/progression-stage/route-late-game": "contract-field",
   "foundation/record-metadata/spoiler-level": "contract-record-types",
   "mechanics/combat-mechanic/behavior": "core-combat-mechanics",
-  "mechanics/hex/base-effect": "hexes",
-  "mechanics/incantation/effects": "incantations",
-  "mechanics/status-element/behavior": "status-elements",
   "mechanics/weapon-aspect/attack-pattern": "weapon-aspects",
   "world-progression/achievement/name-description": "achievements",
   "world-progression/achievement/trigger": "achievements",
-  "world-progression/enemy/attacks-behavior": "enemies",
-  "world-progression/narrative-milestone/completion-evidence": "narrative-milestones",
-  "world-progression/narrative-milestone/kind": "narrative-milestones",
-  "world-progression/narrative-milestone/requirements": "narrative-milestones",
-  "world-progression/oath-condition/rank-effects": "oath-conditions",
+  "world-progression/narrative-milestone/completion-evidence": "narrative-records",
+  "world-progression/narrative-milestone/kind": "narrative-records",
+  "world-progression/narrative-milestone/requirements": "narrative-records",
   "world-progression/prophecy/name": "prophecies",
   "world-progression/prophecy/objectives": "prophecies",
   "world-progression/prophecy/rewards": "prophecies",
@@ -123,17 +74,7 @@ const taskTargetSets = {
 
 const observationSessions = {
   "mechanics/combat-mechanic/behavior": "training-combat",
-  "mechanics/hex/base-effect": "training-combat",
-  "mechanics/incantation/effects": "hub-system-effects",
-  "mechanics/status-element/behavior": "training-combat",
   "mechanics/weapon-aspect/attack-pattern": "training-combat",
-  "world-progression/achievement/trigger": "progression-transitions",
-  "world-progression/enemy/attacks-behavior": "route-combat",
-  "world-progression/narrative-milestone/completion-evidence": "progression-transitions",
-  "world-progression/narrative-milestone/requirements": "progression-transitions",
-  "world-progression/oath-condition/rank-effects": "hub-system-effects",
-  "world-progression/prophecy/objectives": "progression-transitions",
-  "world-progression/relationship/gift-track": "progression-transitions",
 } as const satisfies Readonly<Record<string, string>>;
 
 function compareStrings(left: string, right: string): number {
@@ -168,10 +109,6 @@ function buildTargetSets(dataset: CombinedDataset): readonly ObservationTargetSe
       targets: recordTargets(guide.achievements),
     },
     {
-      id: "contract-field",
-      targets: [target("contract-field", "The complete field contract")],
-    },
-    {
       id: "contract-record-types",
       targets: acquisitionContract.domains.flatMap((domain) => domain.records.map((record) =>
         target(`${domain.id}/${record.id}`, record.description))).sort((left, right) => compareStrings(left.id, right.id)),
@@ -182,28 +119,12 @@ function buildTargetSets(dataset: CombinedDataset): readonly ObservationTargetSe
         target(id, null)),
     },
     {
-      id: "enemies",
-      targets: recordTargets(guide.enemies),
-    },
-    {
-      id: "hexes",
-      targets: recordTargets(dataset.domains.loadouts.hexes),
-    },
-    {
-      id: "incantations",
-      targets: recordTargets(dataset.domains.loadouts.incantations),
-    },
-    {
-      id: "narrative-milestones",
+      id: "narrative-records",
       targets: [
         ...prefixedRecordTargets("narrative", guide.narrative),
         ...prefixedRecordTargets("outro", guide.outros),
         ...prefixedRecordTargets("run-clear", guide.runClearMessages),
       ].sort((left, right) => compareStrings(left.id, right.id)),
-    },
-    {
-      id: "oath-conditions",
-      targets: recordTargets(guide.oathConditions),
     },
     {
       id: "prophecies",
@@ -212,10 +133,6 @@ function buildTargetSets(dataset: CombinedDataset): readonly ObservationTargetSe
     {
       id: "relationships",
       targets: recordTargets(guide.relationships),
-    },
-    {
-      id: "status-elements",
-      targets: recordTargets(guide.statusElements),
     },
     {
       id: "weapon-aspects",
@@ -232,7 +149,6 @@ function buildTargetSets(dataset: CombinedDataset): readonly ObservationTargetSe
 
 function sessionFor(task: ManualVerificationTask, check: ManualVerificationKind): string {
   if (check === "spoiler-review") return "spoiler-review";
-  if (task.claimKind === "editorial") return "editorial-evaluation";
   const session = observationSessions[task.id as keyof typeof observationSessions];
   if (session === undefined) throw new Error(`Manual observation task ${task.id} has no assigned session.`);
   return session;
