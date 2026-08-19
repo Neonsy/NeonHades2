@@ -284,3 +284,19 @@ pnpm verification:build -- --dataset "C:\absolute\project\data\.local\datasets\c
 The verifier rejects unknown tasks, checks, or targets, repeated target coverage, paths outside the ledger directory, symbolic-link evidence, empty evidence, changed hashes, and evidence from another dataset.
 One task is complete only when passing entries cover every planned target for every required check.
 Automated verification does not mark Phase 5 complete while any manual task remains pending.
+
+## Pass the data-ready gate
+
+Rebuild the combined dataset from the same five finalized domain acquisitions before running Phase 6.
+The reproduced acquisition identifier, dataset hash, and manifest hash must match the original combined dataset.
+
+Run the gate with the original dataset, the reproduced dataset, and the completed Phase 5 artifact.
+
+```powershell
+pnpm data-ready:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --reproduced-dataset "C:\absolute\project\data\.local\data-ready-reproduction\completed-run" --verification "C:\absolute\project\data\.local\verification\completed-run"
+```
+
+The gate re-reads every hash-bound artifact, validates all product requirements and normalized records, requires every Phase 5 task to pass, and writes a content-addressed completion report under `.local/data-ready/`.
+It also writes `publication-allowlist.json` for Phase 8.
+The allowlist permits only public contract fields and the structural `recordType` and `id` keys.
+It excludes internal evidence, raw source text, raw runtime structures, private save state, and binary assets.
