@@ -10,6 +10,7 @@
     "build": "tsc -p tsconfig.build.json",
     "check": "tsc --noEmit",
     "contract:check": "tsc -p tsconfig.build.json && node dist/validate-contract.js",
+    "dataset:build": "tsc -p tsconfig.build.json && node dist/dataset-build-cli.js",
     "guide:audit": "tsc -p tsconfig.build.json && node dist/guide-source-audit-cli.js",
     "guide:import": "tsc -p tsconfig.build.json && node dist/guide-runtime-import-cli.js",
     "guide:preflight": "tsc -p tsconfig.build.json && node dist/guide-preflight-cli.js",

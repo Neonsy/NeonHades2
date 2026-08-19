@@ -165,3 +165,19 @@ pnpm guide:import -- --report "C:\absolute\profile\path\runs\run-id\guide\runtim
 The Steam achievement schema is normally stored under the Steam client directory at `appcache/stats/UserGameStatsSchema_1145350.bin` after Steam has cached Hades II metadata.
 The command must report complete coverage.
 The generated acquisition remains under `.local/guide/` and must not be committed.
+
+## Build the combined dataset
+
+Pass one completed acquisition directory for each domain to the dataset builder.
+
+```powershell
+pnpm dataset:build -- --boons "C:\absolute\project\data\.local\boons\completed-run" --weapons "C:\absolute\project\data\.local\weapons\completed-run" --arcana "C:\absolute\project\data\.local\arcana\completed-run" --loadouts "C:\absolute\project\data\.local\loadouts\completed-run" --guide "C:\absolute\project\data\.local\guide\completed-run"
+```
+
+The builder verifies every domain manifest, completion marker, declared file hash, coverage report, source acquisition identifier, exporter version, and game build field.
+It rejects mixed provenance, incomplete coverage, record-count drift, duplicate identifiers, missing required names, dangling resolvable references, invalid costs or ranges, unknown enums, and excluded dialogue presentation data.
+
+Successful builds write `dataset.json`, `validation.json`, `manifest.json`, and `complete.json` under `.local/datasets/`.
+The dataset and acquisition identities depend only on verified content and provenance.
+Repeated builds from the same inputs produce the same identities.
+The timestamp and random directory suffix are not part of either identity.
