@@ -192,5 +192,19 @@ pnpm verification:build -- --dataset "C:\absolute\project\data\.local\datasets\c
 
 The verifier independently recalculates exported numeric values and resolves the named-requirement graph.
 It rejects calculation or graph issues and writes a content-addressed artifact under `.local/verification/`.
-The report also lists pending observation, spoiler-review, and editorial tasks.
+The artifact includes `observation-plan.json`, which assigns every manual check to a focused session and an exact target set from the combined dataset.
+Sessions marked `profile2-mutation-permission-required` must not begin until the owner grants separate permission to change the dedicated test copy.
+
+Manual evidence belongs beside its source files under an ignored `.local` directory.
+Each ledger entry names one task and check, lists the covered target identifiers from `observation-plan.json`, records a pass or fail result, and references at least one nonempty evidence file by relative path and lowercase SHA-256 hash.
+The ledger schema is `neodes2-manual-evidence-1` and its `sourceDatasetAcquisitionId` must match the observation plan.
+
+Pass the completed ledger back to the verifier.
+
+```powershell
+pnpm verification:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --manual-evidence "C:\absolute\project\data\.local\manual-verification\ledger.json"
+```
+
+The verifier rejects unknown tasks, checks, or targets, repeated target coverage, paths outside the ledger directory, symbolic-link evidence, empty evidence, changed hashes, and evidence from another dataset.
+One task is complete only when passing entries cover every planned target for every required check.
 Automated verification does not mark Phase 5 complete while any manual task remains pending.

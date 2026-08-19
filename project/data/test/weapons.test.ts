@@ -338,7 +338,7 @@ describe("weapon runtime report", () => {
     assert.equal(first.coverage.rankCount, 5);
     assert.equal(first.coverage.hammerCount, 1);
     assert.equal(first.coverage.resolvedValueCount, 6);
-    assert.deepEqual(first.coverage.attackPatternsPendingObservation, ["SyntheticWeapon"]);
+    assert.deepEqual(first.coverage.attackPatternsPendingObservation, ["SyntheticAspect"]);
   });
 
   it("rejects broken ranks and invalid compatibility", () => {

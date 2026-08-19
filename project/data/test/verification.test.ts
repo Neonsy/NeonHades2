@@ -1,10 +1,16 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { describe, it } from "node:test";
+import { tmpdir } from "node:os";
 
 import {
   compileRequirementGraph,
   evaluateFormula,
   parseCalculationRules,
+  readManualEvidenceLedger,
+  validateManualEvidenceLedger,
   verifyDataset,
   verifyCalculations,
   type CalculationRules,
@@ -126,10 +132,29 @@ function calculatedDataset(variantExpression: string): CombinedDataset {
           levelScaling: [sample],
         }],
       },
-      weapons: { aspects: [], hammers: [] },
+      weapons: {
+        weapons: [{ id: "WeaponA", name: "Weapon A" }],
+        aspects: [{ id: "AspectA", weaponId: "WeaponA", name: "Aspect A", mechanics: {}, rankEffects: [] }],
+        hammers: [{ id: "HammerA", weaponId: "WeaponA", name: "Hammer A", mechanics: {}, effects: [] }],
+      },
       arcana: { cards: [] },
-      loadouts: { keepsakes: [], familiars: [], hexes: [] },
-      guide: { namedRequirements: [] },
+      loadouts: {
+        keepsakes: [], familiars: [],
+        hexes: [{ id: "HexA", displayName: "Hex A", mechanics: {}, baseEffects: [], talents: [] }],
+        incantations: [{ id: "IncantationA", displayName: "Incantation A" }],
+      },
+      guide: {
+        namedRequirements: [],
+        achievements: [{ id: "AchievementA", displayName: "Achievement A" }],
+        enemies: [{ id: "EnemyA", displayName: "Enemy A" }],
+        narrative: [{ id: "NarrativeA", displayName: "Narrative A" }],
+        outros: [{ id: "OutroA", displayName: "Outro A" }],
+        runClearMessages: [{ id: "RunClearA", displayName: "Run Clear A" }],
+        oathConditions: [{ id: "OathA", displayName: "Oath A" }],
+        prophecies: [{ id: "ProphecyA", displayName: "Prophecy A" }],
+        relationships: [{ id: "RelationshipA", displayName: "Relationship A" }],
+        statusElements: [{ id: "StatusA", displayName: "Status A" }],
+      },
     } as unknown as CombinedDataset["domains"],
   };
 }
@@ -172,5 +197,94 @@ describe("calculation verification", () => {
     assert.equal(report.phaseComplete, false);
     assert.ok(report.manualTasks.some((task) => task.id === "mechanics/combat-mechanic/behavior"));
     assert.ok(report.manualTasks.some((task) => task.claimKind === "editorial"));
+    assert.equal(report.observationPlan.sessions.length, 6);
+    assert.equal(report.manualEvidence.pendingCheckCount, report.observationPlan.assignments.length);
+  });
+
+  it("requires passing evidence for every planned target before completing Phase 5", async () => {
+    const dataset = calculatedDataset("round(((value - 1) * 100), 0)");
+    const pending = verifyDataset(dataset, calculationRules);
+    const targetSets = new Map(pending.observationPlan.targetSets.map((targetSet) => [targetSet.id, targetSet]));
+    const entries = pending.observationPlan.assignments.map((assignment) => ({
+      id: `${assignment.taskId}/${assignment.check}`,
+      taskId: assignment.taskId,
+      check: assignment.check,
+      outcome: "pass" as const,
+      targetIds: targetSets.get(assignment.targetSetId)!.targets.map((target) => target.id),
+      evidence: [{ path: "evidence.txt", sha256: "0".repeat(64) }],
+      note: "Verified against the planned targets.",
+    })).sort((left, right) => left.id < right.id ? -1 : left.id > right.id ? 1 : 0);
+    const root = await mkdtemp(join(tmpdir(), "neodes2-complete-evidence-"));
+    const directory = join(root, ".local", "evidence");
+    await mkdir(directory, { recursive: true });
+    try {
+      const evidenceContent = "Complete synthetic manual evidence\n";
+      const evidenceHash = createHash("sha256").update(evidenceContent).digest("hex");
+      await writeFile(join(directory, "evidence.txt"), evidenceContent, "utf8");
+      for (const entry of entries) entry.evidence[0]!.sha256 = evidenceHash;
+      const ledger = {
+        schema: "neodes2-manual-evidence-1",
+        sourceDatasetAcquisitionId: dataset.source.acquisitionId,
+        entries,
+      } as const;
+      const ledgerPath = join(directory, "ledger.json");
+      await writeFile(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
+      const evidence = await readManualEvidenceLedger(ledgerPath);
+      const complete = verifyDataset(dataset, calculationRules, evidence);
+      assert.equal(complete.manualComplete, true);
+      assert.equal(complete.phaseComplete, true);
+      assert.ok(complete.manualTasks.every((task) => task.status === "complete"));
+
+      const unknownTargetLedger = structuredClone(ledger);
+      unknownTargetLedger.entries[0]!.targetIds = ["unknown-target"];
+      await writeFile(ledgerPath, `${JSON.stringify(unknownTargetLedger, null, 2)}\n`, "utf8");
+      const unknownTargetEvidence = await readManualEvidenceLedger(ledgerPath);
+      assert.throws(
+        () => verifyDataset(dataset, calculationRules, unknownTargetEvidence),
+        /references unknown target/u,
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("manual evidence ledger", () => {
+  it("reads hash-checked local evidence and rejects traversal or changed content", async () => {
+    const root = await mkdtemp(join(tmpdir(), "neodes2-manual-evidence-"));
+    const directory = join(root, ".local", "evidence");
+    await mkdir(directory, { recursive: true });
+    try {
+      const evidenceContent = "Observed result\n";
+      const evidenceHash = createHash("sha256").update(evidenceContent).digest("hex");
+      await writeFile(join(directory, "observation.txt"), evidenceContent, "utf8");
+      const ledger = {
+        schema: "neodes2-manual-evidence-1",
+        sourceDatasetAcquisitionId: "sha256:source",
+        entries: [{
+          id: "combat-observation",
+          taskId: "mechanics/combat-mechanic/behavior",
+          check: "observation",
+          outcome: "pass",
+          targetIds: ["attack"],
+          evidence: [{ path: "observation.txt", sha256: evidenceHash }],
+          note: "Attack behavior matched the normalized record.",
+        }],
+      };
+      const ledgerPath = join(directory, "ledger.json");
+      await writeFile(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
+      const verified = await readManualEvidenceLedger(ledgerPath);
+      assert.equal(verified.evidenceFileCount, 1);
+      assert.equal(verified.ledger.entries[0]?.id, "combat-observation");
+
+      await writeFile(join(directory, "observation.txt"), "Changed\n", "utf8");
+      await assert.rejects(() => readManualEvidenceLedger(ledgerPath), /hash changed/u);
+
+      const traversal = structuredClone(ledger);
+      traversal.entries[0]!.evidence[0]!.path = "../outside.txt";
+      assert.throws(() => validateManualEvidenceLedger(traversal), /normalized relative path/u);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

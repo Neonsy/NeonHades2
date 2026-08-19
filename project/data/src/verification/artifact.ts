@@ -5,6 +5,7 @@ import { jsonBytes, readStableRegularFile, sha256 } from "../boons/runtime-acqui
 import { acquisitionContract } from "../contract/index.js";
 import { readCombinedDataset } from "../dataset/index.js";
 import { assertLocalOutputPath, readSourceSnapshotFile } from "../snapshot/index.js";
+import { readManualEvidenceLedger } from "./manual-evidence.js";
 import { verifyDataset, type AutomatedVerificationReport } from "./report.js";
 import { parseCalculationRules } from "./source-rules.js";
 
@@ -14,6 +15,7 @@ export interface VerificationBuildOptions {
   readonly datasetDirectory: string;
   readonly sourceDirectory: string;
   readonly outputRoot: string;
+  readonly manualEvidencePath?: string;
   readonly now?: () => Date;
 }
 
@@ -24,7 +26,7 @@ export interface VerificationBuildResult {
 }
 
 interface VerificationSummaryReport {
-  readonly schema: "neodes2-verification-report-1";
+  readonly schema: "neodes2-verification-report-2";
   readonly sourceDatasetAcquisitionId: string;
   readonly requirementGraph: {
     readonly schema: string;
@@ -44,10 +46,11 @@ interface VerificationSummaryReport {
     readonly issueCount: number;
     readonly complete: boolean;
   };
+  readonly manualEvidence: AutomatedVerificationReport["manualEvidence"];
   readonly manualTasks: AutomatedVerificationReport["manualTasks"];
   readonly automatedComplete: boolean;
-  readonly manualComplete: false;
-  readonly phaseComplete: false;
+  readonly manualComplete: boolean;
+  readonly phaseComplete: boolean;
 }
 
 async function writeFinalFile(directory: string, name: string, content: Buffer): Promise<void> {
@@ -59,11 +62,15 @@ async function writeFinalFile(directory: string, name: string, content: Buffer):
 export async function createVerificationArtifact(options: VerificationBuildOptions): Promise<VerificationBuildResult> {
   if (!isAbsolute(options.datasetDirectory)) throw new Error("Combined dataset path must be absolute.");
   if (!isAbsolute(options.sourceDirectory)) throw new Error("Source acquisition path must be absolute.");
+  if (options.manualEvidencePath !== undefined && !isAbsolute(options.manualEvidencePath)) {
+    throw new Error("Manual evidence ledger path must be absolute.");
+  }
   assertLocalOutputPath(options.outputRoot);
-  const [verifiedDataset, uiData, traitData] = await Promise.all([
+  const [verifiedDataset, uiData, traitData, manualEvidence] = await Promise.all([
     readCombinedDataset(options.datasetDirectory),
     readSourceSnapshotFile(options.sourceDirectory, ruleSources[0]),
     readSourceSnapshotFile(options.sourceDirectory, ruleSources[1]),
+    options.manualEvidencePath === undefined ? undefined : readManualEvidenceLedger(options.manualEvidencePath),
   ]);
   const sourceIdentity = uiData.acquisitionId;
   if (traitData.acquisitionId !== sourceIdentity || verifiedDataset.dataset.source.acquisitionId !== sourceIdentity) {
@@ -76,15 +83,16 @@ export async function createVerificationArtifact(options: VerificationBuildOptio
     throw new Error("Verification inputs do not share one source manifest.");
   }
   const rules = parseCalculationRules(uiData.content.toString("utf8"), traitData.content.toString("utf8"));
-  const report = verifyDataset(verifiedDataset.dataset, rules);
+  const report = verifyDataset(verifiedDataset.dataset, rules, manualEvidence);
   if (!report.automatedComplete) {
     const issues = report.requirementGraph.issues.length + report.calculations.issues.length;
     throw new Error(`Automated verification failed with ${issues} issue(s).`);
   }
   const requirementGraphContent = jsonBytes(report.requirementGraph);
   const calculationsContent = jsonBytes(report.calculations);
+  const observationPlanContent = jsonBytes(report.observationPlan);
   const summary: VerificationSummaryReport = {
-    schema: "neodes2-verification-report-1",
+    schema: "neodes2-verification-report-2",
     sourceDatasetAcquisitionId: report.sourceDatasetAcquisitionId,
     requirementGraph: {
       schema: report.requirementGraph.schema,
@@ -104,6 +112,7 @@ export async function createVerificationArtifact(options: VerificationBuildOptio
       issueCount: report.calculations.issues.length,
       complete: report.calculations.complete,
     },
+    manualEvidence: report.manualEvidence,
     manualTasks: report.manualTasks,
     automatedComplete: report.automatedComplete,
     manualComplete: report.manualComplete,
@@ -111,7 +120,7 @@ export async function createVerificationArtifact(options: VerificationBuildOptio
   };
   const reportContent = jsonBytes(summary);
   const identity = {
-    schema: "neodes2-verification-manifest-1" as const,
+    schema: "neodes2-verification-manifest-2" as const,
     sourceAcquisitionId: sourceIdentity,
     sourceManifestSha256: uiData.manifestSha256,
     sourceDatasetAcquisitionId: verifiedDataset.acquisitionId,
@@ -125,9 +134,12 @@ export async function createVerificationArtifact(options: VerificationBuildOptio
     reportSha256: sha256(reportContent),
     requirementGraphSha256: sha256(requirementGraphContent),
     calculationsSha256: sha256(calculationsContent),
+    observationPlanSha256: sha256(observationPlanContent),
+    manualEvidenceLedgerSha256: report.manualEvidence.ledgerSha256,
     automatedComplete: true,
     manualTaskCount: report.manualTasks.length,
-    phaseComplete: false,
+    manualComplete: report.manualComplete,
+    phaseComplete: report.phaseComplete,
   };
   const acquisitionId = `sha256:${sha256(JSON.stringify(identity))}`;
   const outputRoot = resolve(options.outputRoot);
@@ -139,16 +151,18 @@ export async function createVerificationArtifact(options: VerificationBuildOptio
     await writeFinalFile(currentDirectory, "report.json", reportContent);
     await writeFinalFile(currentDirectory, "requirement-graph.json", requirementGraphContent);
     await writeFinalFile(currentDirectory, "calculations.json", calculationsContent);
+    await writeFinalFile(currentDirectory, "observation-plan.json", observationPlanContent);
     const manifestContent = jsonBytes({ ...identity, acquisitionId });
     await writeFinalFile(currentDirectory, "manifest.json", manifestContent);
     const suffix = basename(currentDirectory).slice(basename(incompletePrefix).length);
     const finalDirectory = join(outputRoot, `${timestamp}-${acquisitionId.slice(7, 19)}-${suffix}`);
     await rename(currentDirectory, finalDirectory);
     currentDirectory = finalDirectory;
-    const [writtenReport, writtenGraph, writtenCalculations, writtenManifest] = await Promise.all([
+    const [writtenReport, writtenGraph, writtenCalculations, writtenObservationPlan, writtenManifest] = await Promise.all([
       readStableRegularFile(join(finalDirectory, "report.json")),
       readStableRegularFile(join(finalDirectory, "requirement-graph.json")),
       readStableRegularFile(join(finalDirectory, "calculations.json")),
+      readStableRegularFile(join(finalDirectory, "observation-plan.json")),
       readStableRegularFile(join(finalDirectory, "manifest.json")),
     ]);
     if (writtenReport.sha256 !== identity.reportSha256) throw new Error("Written verification report hash changed.");
@@ -156,16 +170,21 @@ export async function createVerificationArtifact(options: VerificationBuildOptio
     if (writtenCalculations.sha256 !== identity.calculationsSha256) {
       throw new Error("Written calculation verification hash changed.");
     }
+    if (writtenObservationPlan.sha256 !== identity.observationPlanSha256) {
+      throw new Error("Written observation plan hash changed.");
+    }
     if (writtenManifest.sha256 !== sha256(manifestContent)) throw new Error("Written verification manifest hash changed.");
     await writeFinalFile(finalDirectory, "complete.json", jsonBytes({
-      schema: "neodes2-verification-completion-1",
+      schema: "neodes2-verification-completion-2",
       acquisitionId,
       manifestSha256: writtenManifest.sha256,
       reportSha256: identity.reportSha256,
       requirementGraphSha256: identity.requirementGraphSha256,
       calculationsSha256: identity.calculationsSha256,
+      observationPlanSha256: identity.observationPlanSha256,
       automatedComplete: true,
-      phaseComplete: false,
+      manualComplete: report.manualComplete,
+      phaseComplete: report.phaseComplete,
     }));
     return { acquisitionId, directory: finalDirectory, report };
   } catch (error) {

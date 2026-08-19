@@ -2,6 +2,12 @@ import { acquisitionContract, type ClaimKind, type SpoilerLevel, type Validation
 import type { CombinedDataset } from "../dataset/index.js";
 import type { CalculationRules } from "./source-rules.js";
 import { verifyCalculations, type CalculationVerificationReport } from "./calculations.js";
+import {
+  verifyManualEvidence,
+  type ManualEvidenceVerificationReport,
+  type VerifiedManualEvidence,
+} from "./manual-evidence.js";
+import { createObservationPlan, type ObservationPlan } from "./observation-plan.js";
 import { compileRequirementGraph, type RequirementGraph } from "./requirements.js";
 
 export type ManualVerificationKind = "observation" | "spoiler-review";
@@ -11,18 +17,20 @@ export interface ManualVerificationTask {
   readonly claimKind: ClaimKind;
   readonly spoilerLevel: SpoilerLevel;
   readonly requiredChecks: readonly ManualVerificationKind[];
-  readonly status: "pending";
+  readonly status: "complete" | "pending";
 }
 
 export interface AutomatedVerificationReport {
-  readonly schema: "neodes2-automated-verification-1";
+  readonly schema: "neodes2-automated-verification-2";
   readonly sourceDatasetAcquisitionId: string;
   readonly requirementGraph: RequirementGraph;
   readonly calculations: CalculationVerificationReport;
+  readonly observationPlan: ObservationPlan;
+  readonly manualEvidence: ManualEvidenceVerificationReport;
   readonly manualTasks: readonly ManualVerificationTask[];
   readonly automatedComplete: boolean;
-  readonly manualComplete: false;
-  readonly phaseComplete: false;
+  readonly manualComplete: boolean;
+  readonly phaseComplete: boolean;
 }
 
 const manualRules = {
@@ -54,17 +62,24 @@ function collectManualTasks(): readonly ManualVerificationTask[] {
 export function verifyDataset(
   dataset: CombinedDataset,
   calculationRules: CalculationRules,
+  manualEvidence?: VerifiedManualEvidence,
 ): AutomatedVerificationReport {
   const requirementGraph = compileRequirementGraph(dataset);
   const calculations = verifyCalculations(dataset, calculationRules);
+  const pendingTasks = collectManualTasks();
+  const observationPlan = createObservationPlan(dataset, pendingTasks);
+  const manual = verifyManualEvidence(pendingTasks, observationPlan, manualEvidence);
+  const automatedComplete = requirementGraph.complete && calculations.complete;
   return {
-    schema: "neodes2-automated-verification-1",
+    schema: "neodes2-automated-verification-2",
     sourceDatasetAcquisitionId: dataset.source.acquisitionId,
     requirementGraph,
     calculations,
-    manualTasks: collectManualTasks(),
-    automatedComplete: requirementGraph.complete && calculations.complete,
-    manualComplete: false,
-    phaseComplete: false,
+    observationPlan,
+    manualEvidence: manual.report,
+    manualTasks: manual.tasks,
+    automatedComplete,
+    manualComplete: manual.report.complete,
+    phaseComplete: automatedComplete && manual.report.complete,
   };
 }

@@ -380,7 +380,7 @@ export function normalizeRuntimeWeapons(report: RuntimeWeaponReport): {
     failedSampleCount,
     resolvedValueCount,
     contextualValueCount,
-    attackPatternsPendingObservation: weapons.map((weapon) => weapon.id),
+    attackPatternsPendingObservation: aspects.map((aspect) => aspect.id),
     issues,
     complete: issues.length === 0,
   };
@@ -421,7 +421,7 @@ export function renderWeaponCoverageReport(coverage: WeaponCoverageReport): stri
     `- Context-dependent values: ${coverage.contextualValueCount}`,
     `- Phase 3 exporter coverage complete: ${coverage.complete ? "yes" : "no"}`,
     "",
-    "Attack-pattern observation remains a Phase 5 task for every weapon.",
+    "Attack-pattern observation remains a Phase 5 task for every weapon aspect.",
     "",
   ];
   if (coverage.issues.length === 0) {

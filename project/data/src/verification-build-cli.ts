@@ -6,6 +6,7 @@ interface Options {
   readonly datasetDirectory: string;
   readonly sourceDirectory: string;
   readonly outputRoot: string;
+  readonly manualEvidencePath?: string;
 }
 
 function parseArguments(arguments_: readonly string[]): Options {
@@ -22,6 +23,7 @@ Required options:
 
 Optional:
   --output <directory>  Output root under .local (default: .local/verification)
+  --manual-evidence <absolute-file>  Completed manual evidence ledger
 `);
       process.exit(0);
     }
@@ -32,7 +34,9 @@ Optional:
     index += 1;
   }
   for (const key of values.keys()) {
-    if (!new Set(["dataset", "source-acquisition", "output"]).has(key)) throw new Error(`Unknown option: --${key}`);
+    if (!new Set(["dataset", "source-acquisition", "output", "manual-evidence"]).has(key)) {
+      throw new Error(`Unknown option: --${key}`);
+    }
   }
   const datasetDirectory = values.get("dataset");
   const sourceDirectory = values.get("source-acquisition");
@@ -40,23 +44,30 @@ Optional:
   if (sourceDirectory === undefined || !isAbsolute(sourceDirectory)) {
     throw new Error("--source-acquisition requires an absolute directory.");
   }
+  const manualEvidencePath = values.get("manual-evidence");
+  if (manualEvidencePath !== undefined && !isAbsolute(manualEvidencePath)) {
+    throw new Error("--manual-evidence requires an absolute file path.");
+  }
   return {
     datasetDirectory,
     sourceDirectory,
     outputRoot: resolve(values.get("output") ?? ".local/verification"),
+    ...(manualEvidencePath === undefined ? {} : { manualEvidencePath }),
   };
 }
 
 try {
   const result = await createVerificationArtifact(parseArguments(process.argv.slice(2)));
-  const factTasks = result.report.manualTasks.filter((task) => task.claimKind !== "editorial").length;
-  const editorialTasks = result.report.manualTasks.length - factTasks;
+  const pending = result.report.manualTasks.filter((task) => task.status === "pending");
+  const factTasks = pending.filter((task) => task.claimKind !== "editorial").length;
+  const editorialTasks = pending.length - factTasks;
   process.stdout.write(`Automated verification complete.
 Acquisition: ${result.acquisitionId}
 Calculated values: ${result.report.calculations.valueCount}
 Calculation issues: ${result.report.calculations.issues.length}
 Named requirements: ${result.report.requirementGraph.nodes.length}
 Requirement issues: ${result.report.requirementGraph.issues.length}
+Manual checks complete: ${result.report.manualEvidence.completedCheckCount}/${result.report.manualEvidence.requiredCheckCount}
 Pending factual manual tasks: ${factTasks}
 Pending editorial manual tasks: ${editorialTasks}
 Phase 5 complete: ${result.report.phaseComplete}
