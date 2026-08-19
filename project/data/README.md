@@ -337,3 +337,23 @@ The repository owns the editorial source and compiler.
 The normalized game dataset, combined editorial artifact, and later publication dataset remain local.
 The artifact contains no raw scripts, runtime structures, saves, dialogue, or binary assets.
 No game launch is required for this phase unless the verified facts contradict an editorial recommendation.
+
+## Build the Phase 8 publication dataset
+
+Phase 8 projects the certified normalized facts and completed editorial artifact into the records used by the website.
+The publication compiler applies the Phase 6 field allowlist to every output field.
+It strips source paths, evidence, presentation data, private state, and asset references.
+
+Run the publication build with the same normalized dataset, data-ready artifact, and editorial artifact.
+
+```powershell
+pnpm publication:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --data-ready "C:\absolute\project\data\.local\data-ready\completed-run" --editorial "C:\absolute\project\data\.local\editorial\completed-run"
+```
+
+The command writes public records, page membership, normalized search terms, forward relationships, reverse relationships, and unresolved game-state conditions under `/project/data/.local/publication/`.
+Each public field retains its allowlist identifier, publication class, and spoiler level.
+Raw game-state requirements remain explicit conditions when they do not resolve to a named public record.
+
+The build rejects mixed input identities, unresolved record references, duplicate public records, forbidden fields, forbidden payload keys, empty pages, incomplete reverse relationships, and records without search terms.
+It writes `publication.json`, `publication-report.json`, `manifest.json`, and `complete.json` only inside the ignored `.local` tree.
+A second build from the same inputs must produce the same acquisition identifier and publication hash.

@@ -11,3 +11,4 @@ export * from "./observation/index.js";
 export * from "./training/index.js";
 export * from "./data-ready/index.js";
 export * from "./editorial/index.js";
+export * from "./publication/index.js";

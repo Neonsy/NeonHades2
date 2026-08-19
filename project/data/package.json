@@ -22,6 +22,7 @@
     "loadouts:preflight": "tsc -p tsconfig.build.json && node dist/loadout-preflight-cli.js",
     "observation:import": "tsc -p tsconfig.build.json && node dist/observation-import-cli.js",
     "observer:config": "tsc -p tsconfig.build.json && node dist/observer-config-cli.js",
+    "publication:build": "tsc -p tsconfig.build.json && node dist/publication-build-cli.js",
     "runtime:import": "tsc -p tsconfig.build.json && node dist/runtime-import-cli.js",
     "snapshot": "tsc -p tsconfig.build.json && node dist/snapshot-cli.js",
     "test": "tsc -p tsconfig.test.json && node --test .local/test-dist/test/*.test.js",
