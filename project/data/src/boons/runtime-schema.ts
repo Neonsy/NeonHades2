@@ -11,6 +11,8 @@ export type BoonKind = "duo" | "infusion" | "legendary" | "normal";
 export type RuntimeStaticBaseType =
   | "EffectData"
   | "EffectLuaData"
+  | "HeroData"
+  | "MetaUpgradeRequirement"
   | "Projectile"
   | "ProjectileBase"
   | "TraitData"
@@ -47,7 +49,13 @@ export interface RuntimeSampleStaticSource extends RuntimeStaticBaseValue {
   readonly kind: "static-base-data";
 }
 
+export interface RuntimeSampleContextSource {
+  readonly kind: "context-value";
+  readonly inputId: string;
+}
+
 export type RuntimeSampleValueSource =
+  | RuntimeSampleContextSource
   | RuntimeSampleProcessedSource
   | RuntimeSampleProcessedVariantSource
   | RuntimeSampleStaticSource;
@@ -242,6 +250,8 @@ function asJsonObject(value: unknown, label: string): JsonObject {
 const staticBaseTypes = [
   "EffectData",
   "EffectLuaData",
+  "HeroData",
+  "MetaUpgradeRequirement",
   "Projectile",
   "ProjectileBase",
   "TraitData",
@@ -270,10 +280,17 @@ function validateStaticBaseValue(
 function validateSampleSource(value: unknown, label: string): RuntimeSampleValueSource {
   const source = asRecord(value, label);
   const kind = asLiteral(source.kind, `${label}.kind`, [
+    "context-value",
     "processed-trait",
     "processed-trait-variants",
     "static-base-data",
   ] as const);
+  if (kind === "context-value") {
+    return {
+      kind,
+      inputId: asString(source.inputId, `${label}.inputId`),
+    };
+  }
   if (kind === "processed-trait") {
     return {
       kind,

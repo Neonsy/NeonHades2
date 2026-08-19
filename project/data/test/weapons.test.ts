@@ -52,7 +52,7 @@ function runtimeReport(): RuntimeWeaponReport {
   const rarities = ["Common", "Rare", "Epic", "Heroic", "Legendary"];
   return {
     schema: "neodes2-weapon-runtime-1",
-    exporterVersion: "0.3.2",
+    exporterVersion: "0.4.0",
     generatedAtUnixSeconds: 1_787_000_000,
     language: "en",
     game: {
@@ -533,7 +533,7 @@ describe("weapon static source audit", () => {
         directory,
       );
       assert.equal(preflight.complete, true);
-      assert.equal(preflight.exporterVersion, "0.3.2");
+      assert.equal(preflight.exporterVersion, "0.6.5");
     });
   });
 });

@@ -22,10 +22,20 @@ Official description references are checked against exported tooltip values and 
 The weapon importer writes deterministic normalized weapons, aspects, ranks, Daedalus Hammers, and coverage reports under `.local/weapons/`.
 It checks the runtime identifiers against a static source audit and preserves linked engine weapon identifiers that have no standalone `WeaponData` record.
 
+The Arcana importer writes deterministic normalized Cards, ranks, automatic activation rules, the default layout, reveal adjacency, and Grasp progression under `.local/arcana/`.
+It checks runtime identifiers, layout, and Grasp progression against a static source audit.
+It does not read a player's unlocked Cards, active loadout, or save progress.
+
+The loadout importer writes deterministic keepsakes, Familiars, Familiar upgrades, Hexes, Path of Stars talents, and incantations under `.local/loadouts/`.
+It preserves player-dependent tooltip values as formulas with named inputs instead of reading the loaded save's build.
+
+The guide importer writes routes, regions, rooms, encounters, enemies, resources, status effects, elemental traits, Oath conditions, Testaments, relationships, prophecies, narrative records, ending and postgame outros, achievements, and named requirements under `.local/guide/`.
+It checks the exported achievement set against Steam's local Hades II achievement schema.
+
 ## Requirements
 
 - Node.js 24 or newer
-- pnpm 11
+- pnpm 11 installed globally
 
 ## Validate the contract
 
@@ -64,15 +74,21 @@ Failed and earlier runs are retained rather than overwritten or deleted.
 ## Audit and prepare the runtime exporter
 
 Create a completed source snapshot first.
-Use its absolute directory in the weapon source audit and exporter preflight.
+Use its absolute directory in the source audits and exporter preflights.
 
 ```powershell
 pnpm weapons:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
 pnpm weapons:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+pnpm arcana:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+pnpm arcana:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+pnpm loadouts:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+pnpm loadouts:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+pnpm guide:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --achievement-schema "C:\absolute\Steam\appcache\stats\UserGameStatsSchema_1145350.bin"
+pnpm guide:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --achievement-schema "C:\absolute\Steam\appcache\stats\UserGameStatsSchema_1145350.bin"
 ```
 
-Both commands must report `Complete: true` before runtime collection.
-Their outputs remain under ignored `.local` directories.
+Every audit and preflight must report `Complete: true` before runtime collection.
+Commands that write audit artifacts keep them under ignored `.local` directories.
 
 Copy the exporter folder into the active ReturnOfModding profile and rename `config.example.lua` to `config.lua` in that installed copy.
 Fill the config with the acquisition ID, source manifest hash, Steam build ID, executable version, and package version from one completed source snapshot.
@@ -88,6 +104,9 @@ Its output does not depend on save unlock progress.
 Each attempt creates a new run directory under `ReturnOfModding/plugins_data/NeonHades2-BoonExporter/runs/`.
 The finalized boon report is `runtime-report.json` in that run directory.
 The finalized weapon report is `weapons/runtime-report.json`.
+The finalized Arcana report is `arcana/runtime-report.json`.
+The finalized loadout report is `loadouts/runtime-report.json`.
+The finalized guide report is `guide/runtime-report.json`.
 Import only reports whose directory also contains matching `manifest.json` and `complete.json` files.
 
 ## Import a runtime boon report
@@ -112,3 +131,37 @@ pnpm weapons:import -- --report "C:\absolute\profile\path\runs\run-id\weapons\ru
 
 The command must report complete coverage.
 The generated acquisition remains under `.local/weapons/` and must not be committed.
+
+## Import a runtime Arcana report
+
+Pass the finalized Arcana report and the same completed source snapshot to the Arcana importer.
+
+```powershell
+pnpm arcana:import -- --report "C:\absolute\profile\path\runs\run-id\arcana\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+```
+
+The command must report complete coverage.
+The generated acquisition remains under `.local/arcana/` and must not be committed.
+
+## Import a runtime loadout report
+
+Pass the finalized loadout report and the same completed source snapshot to the loadout importer.
+
+```powershell
+pnpm loadouts:import -- --report "C:\absolute\profile\path\runs\run-id\loadouts\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+```
+
+The command must report complete coverage.
+The generated acquisition remains under `.local/loadouts/` and must not be committed.
+
+## Import a runtime guide report
+
+Pass the finalized guide report, the same completed source snapshot, and Steam's local Hades II achievement schema to the guide importer.
+
+```powershell
+pnpm guide:import -- --report "C:\absolute\profile\path\runs\run-id\guide\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --achievement-schema "C:\absolute\Steam\appcache\stats\UserGameStatsSchema_1145350.bin"
+```
+
+The Steam achievement schema is normally stored under the Steam client directory at `appcache/stats/UserGameStatsSchema_1145350.bin` after Steam has cached Hades II metadata.
+The command must report complete coverage.
+The generated acquisition remains under `.local/guide/` and must not be committed.

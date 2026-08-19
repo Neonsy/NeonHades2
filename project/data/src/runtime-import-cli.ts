@@ -99,6 +99,7 @@ Acquisition: ${result.acquisitionId}
 Boons: ${result.boonCount}
 Coverage complete: ${result.coverageComplete}
 Directory: ${result.directory}`);
+  if (!result.coverageComplete) process.exitCode = 1;
 }
 
 main().catch((error: unknown) => {

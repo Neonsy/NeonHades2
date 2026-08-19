@@ -102,16 +102,18 @@ function canonicalizeSample(sample: RuntimeBoonSample): RuntimeBoonSample {
       values: sample.result.values.map((entry) => ({
         ...entry,
         source:
-          entry.source.kind === "processed-trait-variants"
-            ? {
-                ...entry.source,
-                variants: entry.source.variants.map((variant) => ({
-                  ...variant,
-                  runtimePaths: [...variant.runtimePaths],
-                  value: canonicalize(variant.value),
-                })),
-              }
-            : { ...entry.source, value: canonicalize(entry.source.value) },
+          entry.source.kind === "context-value"
+            ? { ...entry.source }
+            : entry.source.kind === "processed-trait-variants"
+              ? {
+                  ...entry.source,
+                  variants: entry.source.variants.map((variant) => ({
+                    ...variant,
+                    runtimePaths: [...variant.runtimePaths],
+                    value: canonicalize(variant.value),
+                  })),
+                }
+              : { ...entry.source, value: canonicalize(entry.source.value) },
         staticInputs: entry.staticInputs.map((input) => ({
           ...input,
           value: canonicalize(input.value),

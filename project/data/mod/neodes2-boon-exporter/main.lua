@@ -1,7 +1,7 @@
 ---@meta _
 ---@diagnostic disable
 
-local EXPORTER_VERSION = "0.3.2"
+local EXPORTER_VERSION = "0.6.5"
 local MAX_COPY_DEPTH = 32
 local MAX_COPY_NODES = 250000
 
@@ -12,6 +12,9 @@ local modutil = rom.mods["SGG_Modding-ModUtil"]
 local sjson = rom.mods["SGG_Modding-SJSON"]
 local game = rom.game
 local config = import "config.lua"
+local create_arcana_exporter = import "arcana.lua"
+local create_guide_exporter = import "guide.lua"
+local create_loadout_exporter = import "loadouts.lua"
 local create_weapon_exporter = import "weapons.lua"
 
 local bits = bit32
@@ -38,6 +41,33 @@ local JSON_NULL = setmetatable({}, { __neodes2_json_null = true })
 
 local LOCALIZATION_FILES = {
 	"Text/en/TraitText.en.sjson",
+	"Text/en/HelpText.en.sjson",
+	"Text/en/_FamiliarData.en.sjson",
+	"Text/en/_KeepsakeData.en.sjson",
+	"Text/en/_TraitData_Keepsake.en.sjson",
+	"Text/en/_TraitData_Spell.en.sjson",
+	"Text/en/_WorldUpgradeData.en.sjson",
+	"Text/en/CodexText.en.sjson",
+	"Text/en/_BountyData.en.sjson",
+	"Text/en/_EncounterData.en.sjson",
+	"Text/en/_EncounterData_Boss.en.sjson",
+	"Text/en/_NPCData.en.sjson",
+	"Text/en/_QuestData.en.sjson",
+	"Text/en/_ResourceData.en.sjson",
+	"Text/en/_RewardData.en.sjson",
+	"Text/en/_RoomData.en.sjson",
+	"Text/en/_RoomDataC.en.sjson",
+	"Text/en/_RoomDataChaos.en.sjson",
+	"Text/en/_RoomDataDream.en.sjson",
+	"Text/en/_RoomDataF.en.sjson",
+	"Text/en/_RoomDataG.en.sjson",
+	"Text/en/_RoomDataH.en.sjson",
+	"Text/en/_RoomDataI.en.sjson",
+	"Text/en/_RoomDataN.en.sjson",
+	"Text/en/_RoomDataO.en.sjson",
+	"Text/en/_RoomDataP.en.sjson",
+	"Text/en/_RoomDataQ.en.sjson",
+	"Text/en/_ShrineData.en.sjson",
 	"Text/en/_LootData.en.sjson",
 	"Text/en/_LootData_Aphrodite.en.sjson",
 	"Text/en/_LootData_Apollo.en.sjson",
@@ -442,7 +472,7 @@ local function validate_config()
 end
 
 local function load_localization()
-	local index = {}
+	local raw = {}
 	for _, relative_path in ipairs(LOCALIZATION_FILES) do
 		local decoded = sjson.decode_file(sjson.get_game_data_path(relative_path))
 		if type(decoded) ~= "table" or type(decoded.Texts) ~= "table" then
@@ -450,14 +480,34 @@ local function load_localization()
 		end
 		for _, entry in ipairs(decoded.Texts) do
 			if type(entry) == "table" and type(entry.Id) == "string" then
-				index[entry.Id] = {
+				raw[entry.Id] = {
 					display_name = type(entry.DisplayName) == "string" and entry.DisplayName or nil,
 					description = type(entry.Description) == "string" and entry.Description or nil,
+					inherit_from = type(entry.InheritFrom) == "string" and entry.InheritFrom or nil,
 					path = "Content/Game/" .. relative_path,
 				}
 			end
 		end
 	end
+	local index = {}
+	local resolving = {}
+	local function resolve_entry(id)
+		if index[id] then return index[id] end
+		if resolving[id] then error("Localization inheritance cycle at " .. id) end
+		local entry = raw[id]
+		if entry == nil then return nil end
+		resolving[id] = true
+		local parent = entry.inherit_from and resolve_entry(entry.inherit_from) or nil
+		local resolved = {
+			display_name = entry.display_name or (parent and parent.display_name) or nil,
+			description = entry.description or (parent and parent.description) or nil,
+			path = entry.path,
+		}
+		index[id] = resolved
+		resolving[id] = nil
+		return resolved
+	end
+	for id in pairs(raw) do resolve_entry(id) end
 	return index
 end
 
@@ -749,6 +799,15 @@ local function resolve_static_base_value(base_type, base_name, base_property, in
 	elseif base_type == "Weapon" then
 		value = game.GetBaseDataValue({ Type = "Weapon", Name = base_name, Property = base_property })
 		runtime_path = "GetBaseDataValue.Weapon." .. base_name .. "." .. base_property
+	elseif base_type == "HeroData" then
+		local hero_data = game.HeroData[base_name]
+		value = hero_data and hero_data[base_property]
+		runtime_path = "HeroData." .. base_name .. "." .. tostring(base_property)
+	elseif base_type == "MetaUpgradeRequirement" then
+		local card = game.MetaUpgradeCardData[base_name]
+		local requirements = card and card.AutoEquipRequirements
+		value = requirements and requirements[base_property]
+		runtime_path = "MetaUpgradeCardData." .. base_name .. ".AutoEquipRequirements." .. tostring(base_property)
 	elseif base_type == "WeaponData" then
 		local weapon = game.WeaponData[base_name]
 		if type(weapon) ~= "table" then
@@ -838,12 +897,16 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	local context_inputs = {}
 	local contextual = false
 	local static_inputs = {}
+	local initial_context_count = 0
 	for input_id, enabled in pairs(initial_context_inputs or {}) do
 		if enabled then
 			context_inputs[input_id] = true
 			contextual = true
+			initial_context_count = initial_context_count + 1
+			expression = input_id
 		end
 	end
+	if initial_context_count > 1 then error("A sampled source cannot have more than one primary context value") end
 
 	local function add_context_input(input_id)
 		context_inputs[input_id] = true
@@ -878,7 +941,8 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	end
 
 	local format = instruction.Format
-	if format ~= nil then
+	local terminal_string = format == "SlottedBoon"
+	if format ~= nil and not terminal_string then
 		resolved_value = require_numeric(resolved_value, "Sample value " .. extract_as)
 	end
 	if format == nil or format == "TotalTargets" then
@@ -944,6 +1008,56 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	elseif format == "UniqueGodPercentDelta" then
 		add_context_input("UniqueGodCount")
 		expression = "((" .. expression .. " - 1) * UniqueGodCount * 100)"
+	elseif format == "ManaSpendCost" then
+		expression = "value"
+	elseif format == "DamageOverTime" or format == "DamageOverTotalDuration" then
+		local fuse
+		local fuse_expression
+		if type(instruction.BaseValue) == "number" then
+			fuse = instruction.BaseValue
+			fuse_expression = tostring(fuse)
+		else
+			fuse = add_static_input(
+				"baseFuseValue",
+				instruction.WeaponName and "Weapon" or "Projectile",
+				instruction.WeaponName or instruction.BaseName,
+				instruction.BaseProperty
+			)
+			fuse_expression = "baseFuseValue"
+		end
+		local duration = 1
+		local duration_expression = "1"
+		if format == "DamageOverTotalDuration" and instruction.DurationSource then
+			duration = add_static_input(
+				"totalDuration",
+				"WeaponData",
+				instruction.DurationSource,
+				instruction.DurationSourceKey
+			)
+			duration_expression = "totalDuration"
+		end
+		expression = "((" .. expression .. " / " .. fuse_expression .. ") * " .. duration_expression .. ")"
+		if not contextual then resolved_value = resolved_value / fuse * duration end
+	elseif format == "SlottedBoon" then
+		-- The game formats this from the current slot after extraction.
+	elseif format == "Rarity" then
+		resolved_value = "{$Keywords." .. game.GetRarityKey(resolved_value) .. "}"
+		expression = "rarityKeyword(value)"
+		terminal_string = true
+	elseif format == "CardRarity" then
+		resolved_value = "MetaRank" .. tostring(resolved_value)
+		expression = "cardRarity(value)"
+		terminal_string = true
+	elseif format == "MultipliedMoney" then
+		add_context_input("MoneyMultiplier")
+		expression = "(" .. expression .. " * MoneyMultiplier)"
+	elseif format == "RemainingBiomes" then
+		add_context_input("EnteredBiomes")
+		expression = "min((4 - EnteredBiomes), " .. expression .. ")"
+	elseif format == "TotalDamageTaken" then
+		expression = "TotalDamageTaken"
+	elseif format == "TotalHeroTraitValuePercent" then
+		expression = "(" .. expression .. " * 100)"
 	else
 		error("Unsupported sample format " .. tostring(format))
 	end
@@ -978,8 +1092,10 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	if type(precision) ~= "number" or precision < 0 or precision % 1 ~= 0 then
 		error("DecimalPlaces must be a nonnegative integer")
 	end
-	expression = "round(" .. expression .. ", " .. precision .. ")"
-	if not contextual then
+	if not terminal_string then
+		expression = "round(" .. expression .. ", " .. precision .. ")"
+	end
+	if not contextual and not terminal_string then
 		resolved_value = game.round(require_numeric(resolved_value, "Sample value " .. extract_as), precision)
 	end
 	table.sort(static_inputs, function(left, right)
@@ -1090,9 +1206,7 @@ local function extract_sample_values(processed, trait_id)
 		if type(extract_as) ~= "string" or extract_as == "" then
 			error("ExtractValues instruction has no stable ExtractAs id")
 		end
-		if instructions_by_id[extract_as] then
-			error("ExtractValues repeats " .. extract_as)
-		end
+		-- ExtractValue writes sequentially, so the final instruction owns a repeated key.
 		instructions_by_id[extract_as] = instruction
 	end
 
@@ -1130,7 +1244,40 @@ local function extract_sample_values(processed, trait_id)
 		local source
 		local raw_value
 		local source_context_inputs = {}
-		if instruction.External == true then
+		if instruction.Format == "SlottedBoon" then
+			if type(instruction.Slot) ~= "string" or instruction.Slot == "" then
+				error("SlottedBoon sample has no slot")
+			end
+			local input_id = "Slotted" .. instruction.Slot .. "Boon"
+			raw_value = "Blank"
+			source = { kind = "context-value", inputId = input_id }
+			source_context_inputs[input_id] = true
+		elseif instruction.Format == "ManaSpendCost" then
+			local static = resolve_static_base_value(
+				"WeaponData",
+				instruction.WeaponName,
+				"ManaSpendCost",
+				instruction
+			)
+			raw_value = static.value
+			source = {
+				kind = "static-base-data",
+				baseType = static.baseType,
+				baseName = static.baseName,
+				baseProperty = static.baseProperty,
+				runtimePath = static.runtimePath,
+				value = static.value,
+			}
+		elseif instruction.Format == "TotalDamageTaken" then
+			raw_value = 0
+			source = { kind = "context-value", inputId = "TotalDamageTaken" }
+			source_context_inputs.TotalDamageTaken = true
+		elseif instruction.Format == "TotalHeroTraitValuePercent" then
+			local input_id = "HeroTraitValue:" .. tostring(instruction.Key)
+			raw_value = 1
+			source = { kind = "context-value", inputId = input_id }
+			source_context_inputs[input_id] = true
+		elseif instruction.External == true then
 			local static = resolve_static_base_value(
 				instruction.BaseType,
 				instruction.BaseName,
@@ -1322,6 +1469,44 @@ local weapon_exporter = create_weapon_exporter({
 	collect_samples = collect_samples,
 })
 
+local arcana_exporter = create_arcana_exporter({
+	game = game,
+	config = config,
+	exporter_version = EXPORTER_VERSION,
+	json_array = json_array,
+	json_null = JSON_NULL,
+	safe_copy = safe_copy,
+	sorted_keys = sorted_keys,
+	sorted_set_values = sorted_set_values,
+	bytewise_less = bytewise_less,
+	collect_mechanics = collect_mechanics,
+	collect_samples = collect_samples,
+})
+
+local loadout_exporter = create_loadout_exporter({
+	game = game,
+	config = config,
+	exporter_version = EXPORTER_VERSION,
+	json_array = json_array,
+	json_null = JSON_NULL,
+	safe_copy = safe_copy,
+	sorted_keys = sorted_keys,
+	sorted_set_values = sorted_set_values,
+	bytewise_less = bytewise_less,
+	collect_samples = collect_samples,
+})
+
+local guide_exporter = create_guide_exporter({
+	game = game,
+	config = config,
+	exporter_version = EXPORTER_VERSION,
+	json_array = json_array,
+	json_null = JSON_NULL,
+	sorted_keys = sorted_keys,
+	sorted_set_values = sorted_set_values,
+	bytewise_less = bytewise_less,
+})
+
 local function create_report(package_version, localization)
 	localization = localization or load_localization()
 	local loot_sources, ownership = collect_loot_sources(localization)
@@ -1392,11 +1577,38 @@ local function export_data()
 	local run_id = os.date("!%Y%m%dT%H%M%SZ") .. "-" .. tostring(os.time())
 	local run_directory = rom.path.combine(_PLUGIN.plugins_data_mod_folder_path, "runs", run_id)
 	rom.path.create_directory(run_directory)
+	local arcana_directory = rom.path.combine(run_directory, "arcana")
+	rom.path.create_directory(arcana_directory)
+	local loadout_directory = rom.path.combine(run_directory, "loadouts")
+	rom.path.create_directory(loadout_directory)
+	local guide_directory = rom.path.combine(run_directory, "guide")
+	rom.path.create_directory(guide_directory)
 	local weapon_directory = rom.path.combine(run_directory, "weapons")
 	rom.path.create_directory(weapon_directory)
 	local localization = load_localization()
 	local boon_report = create_report(package_version, localization)
+	local arcana_report = arcana_exporter.create_report(package_version, localization)
+	local loadout_report = loadout_exporter.create_report(package_version, localization)
+	local guide_report = guide_exporter.create_report(package_version, localization)
 	local weapon_report = weapon_exporter.create_report(package_version, localization)
+	local arcana_report_path = write_finalized_report(
+		arcana_directory,
+		arcana_report,
+		"neodes2-arcana-runtime-manifest-1",
+		"neodes2-arcana-runtime-completion-1"
+	)
+	local loadout_report_path = write_finalized_report(
+		loadout_directory,
+		loadout_report,
+		"neodes2-loadout-runtime-manifest-1",
+		"neodes2-loadout-runtime-completion-1"
+	)
+	local guide_report_path = write_finalized_report(
+		guide_directory,
+		guide_report,
+		"neodes2-guide-runtime-manifest-1",
+		"neodes2-guide-runtime-completion-1"
+	)
 	local weapon_report_path = write_finalized_report(
 		weapon_directory,
 		weapon_report,
@@ -1409,7 +1621,13 @@ local function export_data()
 		"neodes2-boon-runtime-manifest-1",
 		"neodes2-boon-runtime-completion-1"
 	)
-	rom.log.info("NeonHades2 data export complete: boons=" .. boon_report_path .. " weapons=" .. weapon_report_path)
+	rom.log.info(
+		"NeonHades2 data export complete: boons=" .. boon_report_path
+			.. " weapons=" .. weapon_report_path
+			.. " arcana=" .. arcana_report_path
+			.. " loadouts=" .. loadout_report_path
+			.. " guide=" .. guide_report_path
+	)
 end
 
 local has_run = false
