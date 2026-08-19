@@ -1,7 +1,7 @@
 ---@meta _
 ---@diagnostic disable
 
-local EXPORTER_VERSION = "0.6.5"
+local EXPORTER_VERSION = "0.6.6"
 local MAX_COPY_DEPTH = 32
 local MAX_COPY_NODES = 250000
 
@@ -891,9 +891,9 @@ local function require_numeric(value, label)
 	return value
 end
 
-local function build_sample_resolution(raw_value, instruction, extract_as, initial_context_inputs)
+local function build_sample_resolution(raw_value, instruction, extract_as, initial_context_inputs, source_expression)
 	local resolved_value = raw_value
-	local expression = "value"
+	local expression = source_expression or "value"
 	local context_inputs = {}
 	local contextual = false
 	local static_inputs = {}
@@ -903,7 +903,6 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 			context_inputs[input_id] = true
 			contextual = true
 			initial_context_count = initial_context_count + 1
-			expression = input_id
 		end
 	end
 	if initial_context_count > 1 then error("A sampled source cannot have more than one primary context value") end
@@ -1136,7 +1135,7 @@ local function build_reported_source(reported, source_key)
 			key = source_key,
 			runtimePath = first.runtimePath,
 			value = first.value,
-		}, first.value, {}
+		}, first.value, {}, "value"
 	end
 
 	local variants_by_selector = {}
@@ -1177,7 +1176,7 @@ local function build_reported_source(reported, source_key)
 		key = source_key,
 		selectorInputId = "WeaponName",
 		variants = json_array(variants),
-	}, variants[1].value, { WeaponName = true }
+	}, variants[1].value, { WeaponName = true }, "value"
 end
 
 local function extract_sample_values(processed, trait_id)
@@ -1244,6 +1243,7 @@ local function extract_sample_values(processed, trait_id)
 		local source
 		local raw_value
 		local source_context_inputs = {}
+		local source_expression = "value"
 		if instruction.Format == "SlottedBoon" then
 			if type(instruction.Slot) ~= "string" or instruction.Slot == "" then
 				error("SlottedBoon sample has no slot")
@@ -1252,6 +1252,7 @@ local function extract_sample_values(processed, trait_id)
 			raw_value = "Blank"
 			source = { kind = "context-value", inputId = input_id }
 			source_context_inputs[input_id] = true
+			source_expression = input_id
 		elseif instruction.Format == "ManaSpendCost" then
 			local static = resolve_static_base_value(
 				"WeaponData",
@@ -1272,11 +1273,13 @@ local function extract_sample_values(processed, trait_id)
 			raw_value = 0
 			source = { kind = "context-value", inputId = "TotalDamageTaken" }
 			source_context_inputs.TotalDamageTaken = true
+			source_expression = "TotalDamageTaken"
 		elseif instruction.Format == "TotalHeroTraitValuePercent" then
 			local input_id = "HeroTraitValue:" .. tostring(instruction.Key)
 			raw_value = 1
 			source = { kind = "context-value", inputId = input_id }
 			source_context_inputs[input_id] = true
+			source_expression = input_id
 		elseif instruction.External == true then
 			local static = resolve_static_base_value(
 				instruction.BaseType,
@@ -1298,13 +1301,14 @@ local function extract_sample_values(processed, trait_id)
 			if type(source_key) ~= "string" then
 				error("Sample source key must be a string")
 			end
-			source, raw_value, source_context_inputs = build_reported_source(reported, source_key)
+			source, raw_value, source_context_inputs, source_expression = build_reported_source(reported, source_key)
 		end
 		local static_inputs, resolution = build_sample_resolution(
 			raw_value,
 			instruction,
 			extract_as,
-			source_context_inputs
+			source_context_inputs,
+			source_expression
 		)
 		if instruction.Subtractor then
 			resolution = combine_resolution(

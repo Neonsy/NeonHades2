@@ -21,6 +21,7 @@ export {
   createSourceSnapshot,
   readWindowsExecutableVersion,
 } from "./snapshot.js";
+export { readSourceSnapshotFile } from "./reader.js";
 export type {
   ExecutableEvidence,
   ExecutableVersion,
@@ -29,5 +30,6 @@ export type {
   SnapshotResult,
   SourceManifest,
 } from "./snapshot.js";
+export type { VerifiedSourceFile } from "./reader.js";
 export { parseValveKeyValues } from "./vdf.js";
 export type { VdfObject, VdfValue } from "./vdf.js";

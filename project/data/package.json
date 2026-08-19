@@ -20,6 +20,7 @@
     "runtime:import": "tsc -p tsconfig.build.json && node dist/runtime-import-cli.js",
     "snapshot": "tsc -p tsconfig.build.json && node dist/snapshot-cli.js",
     "test": "tsc -p tsconfig.test.json && node --test .local/test-dist/test/*.test.js",
+    "verification:build": "tsc -p tsconfig.build.json && node dist/verification-build-cli.js",
     "weapons:audit": "tsc -p tsconfig.build.json && node dist/weapon-source-audit-cli.js",
     "weapons:import": "tsc -p tsconfig.build.json && node dist/weapon-runtime-import-cli.js",
     "weapons:preflight": "tsc -p tsconfig.build.json && node dist/weapon-preflight-cli.js"

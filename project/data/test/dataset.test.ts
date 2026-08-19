@@ -6,6 +6,7 @@ import { describe, it } from "node:test";
 
 import {
   createCombinedDataset,
+  readCombinedDataset,
   validateNormalizedDomains,
   type DatasetDomainName,
   type DatasetValidationIssue,
@@ -251,6 +252,27 @@ describe("combined dataset", () => {
       assert.equal(first.validation.complete, true);
       const dataset = JSON.parse(await readFile(join(first.directory, "dataset.json"), "utf8")) as { schema: string };
       assert.equal(dataset.schema, "neodes2-dataset-1");
+      const verified = await readCombinedDataset(first.directory);
+      assert.equal(verified.acquisitionId, first.acquisitionId);
+      assert.equal(verified.datasetSha256, first.datasetSha256);
+      assert.deepEqual(verified.dataset.domains, setup.domains);
+    } finally {
+      await rm(setup.root, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects a combined dataset whose contents no longer match its manifest", async () => {
+    const setup = await fixture();
+    try {
+      const built = await createCombinedDataset({ acquisitions: setup.acquisitions, outputRoot: join(setup.root, ".local", "datasets") });
+      await writeFile(join(built.directory, "validation.json"), jsonBytes({
+        schema: "neodes2-dataset-validation-1",
+        sourceAcquisitionId: source.acquisitionId,
+        domainRecordCounts: {},
+        issues: [],
+        complete: true,
+      }));
+      await assert.rejects(readCombinedDataset(built.directory), /validationSha256 does not match/u);
     } finally {
       await rm(setup.root, { recursive: true, force: true });
     }

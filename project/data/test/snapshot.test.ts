@@ -12,6 +12,7 @@ import {
   parseSteamAppManifest,
   parseSteamLibraryFolders,
   parseValveKeyValues,
+  readSourceSnapshotFile,
   validateSourcePolicy,
 } from "../src/snapshot/index.js";
 
@@ -206,6 +207,9 @@ describe("source snapshot", () => {
       assert.equal(firstManifest, secondManifest);
       assert.doesNotMatch(firstManifest, /private-test-value|LastOwner/u);
       assert.doesNotMatch(firstManifest, /\.pkg/u);
+      const verifiedSource = await readSourceSnapshotFile(first.directory, "Content/Scripts/RequirementsData.lua");
+      assert.equal(verifiedSource.acquisitionId, first.acquisitionId);
+      assert.equal(verifiedSource.content.toString("utf8"), "return { Value = 1 }\n");
 
       await writeFixtureFile(
         fixture.gameRoot,

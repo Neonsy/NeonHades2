@@ -181,3 +181,16 @@ Successful builds write `dataset.json`, `validation.json`, `manifest.json`, and 
 The dataset and acquisition identities depend only on verified content and provenance.
 Repeated builds from the same inputs produce the same identities.
 The timestamp and random directory suffix are not part of either identity.
+
+## Build automated verification evidence
+
+Pass one completed combined dataset and its completed source acquisition to the verification builder.
+
+```powershell
+pnpm verification:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
+```
+
+The verifier independently recalculates exported numeric values and resolves the named-requirement graph.
+It rejects calculation or graph issues and writes a content-addressed artifact under `.local/verification/`.
+The report also lists pending observation, spoiler-review, and editorial tasks.
+Automated verification does not mark Phase 5 complete while any manual task remains pending.

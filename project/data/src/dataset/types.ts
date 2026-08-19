@@ -75,3 +75,11 @@ export interface DatasetBuildResult {
   readonly directory: string;
   readonly validation: DatasetValidationReport;
 }
+
+export interface VerifiedCombinedDataset {
+  readonly acquisitionId: string;
+  readonly datasetSha256: string;
+  readonly manifestSha256: string;
+  readonly dataset: CombinedDataset;
+  readonly validation: DatasetValidationReport;
+}

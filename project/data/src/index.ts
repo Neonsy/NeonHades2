@@ -6,3 +6,4 @@ export * from "./loadouts/index.js";
 export * from "./boons/index.js";
 export * from "./snapshot/index.js";
 export * from "./weapons/index.js";
+export * from "./verification/index.js";
