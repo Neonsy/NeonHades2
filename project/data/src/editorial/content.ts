@@ -1,4 +1,4 @@
-import type { AspectProfile, EditorialReference, ProgressionStageSource } from "./types.js";
+import type { AspectProfile, EditorialReference, PageDefinition, ProgressionStageSource, TierProfile } from "./types.js";
 
 const reference = (recordType: string, id: string): EditorialReference => ({ recordType, id });
 
@@ -16,6 +16,14 @@ export const progressionStages = [
     ],
     nextObjective: "Choose one route and reach its final encounter with a stable defensive loadout.",
     reason: "One complete route proves the core combat loop and unlocks more reliable progression choices without splitting early resources.",
+    actionSequence: [
+      "Spend Ashes on Grasp and equip Persistence, The Sorceress, and Death as soon as their capacity and reveal requirements allow.",
+      "Use the Witch's Staff with the Aspect of Melinoe while learning Cast control, normal Attack spacing, and safe Omega timing.",
+      "Unlock the Fated List and resource-finding incantations before optional cauldron purchases.",
+      "Equip Frinos and a survival keepsake until ordinary rooms stop consuming Death Defiance.",
+      "Commit to the route with the clearest access, fill one core damage slot, add Magick recovery when needed, and take maximum Life over unfinished synergy.",
+      "After every night, speak to available characters, buy only the next permanent priority, and recheck the cauldron and Fated List.",
+    ],
     purchaseUpgradePriorities: [
       "Increase Grasp before spreading upgrades across many Arcana Cards.",
       "Prioritize one survivable Arcana layout, then unlock the tools and systems that improve every later night.",
@@ -27,6 +35,7 @@ export const progressionStages = [
       "Treat cosmetics and exhaustive collection as optional during this stage.",
     ],
     loadoutReferences: [
+      reference("mechanics/weapon", "WeaponStaffSwing"),
       reference("mechanics/weapon-aspect", "BaseStaffAspect"),
       reference("mechanics/arcana-card", "BonusHealth"),
       reference("mechanics/arcana-card", "ChanneledCast"),
@@ -73,6 +82,14 @@ export const progressionStages = [
     ],
     nextObjective: "Clear both routes as required while completing the conversations and incantations revealed between nights.",
     reason: "Alternating only when the story or a resource target calls for it keeps both route chains moving without wasting strong attempts.",
+    actionSequence: [
+      "Unlock the weapon-aspect, Familiar, and Boon-pinning systems before convenience or cosmetic incantations.",
+      "Choose one reliable aspect, fund it to maximum rank, and finish its Arcana layout before upgrading side builds.",
+      "Use the Sister Blades with the Aspect of Pan when a safe ranged Special plan is more reliable than the current build.",
+      "Start with the keepsake for the aspect's first required god, then switch to boss damage or survival after the core boon is secured.",
+      "Follow the next explicit story, conversation, or route requirement instead of repeating clears without a named target.",
+      "Raise Fear only for a current requirement or when both routes already clear consistently.",
+    ],
     purchaseUpgradePriorities: [
       "Complete the chosen Arcana layout before funding experimental layouts.",
       "Unlock weapon aspects that provide a distinct reliable route plan, then improve one aspect to maximum rank before widening investment.",
@@ -84,6 +101,8 @@ export const progressionStages = [
       "Keep one planned purchase at a time so every reward choice has a clear purpose.",
     ],
     loadoutReferences: [
+      reference("mechanics/weapon", "WeaponDagger"),
+      reference("mechanics/weapon-aspect", "DaggerHomingThrowAspect"),
       reference("mechanics/arcana-card", "StatusVulnerability"),
       reference("mechanics/arcana-card", "ManaOverTime"),
       reference("mechanics/arcana-card", "ScreenReroll"),
@@ -130,6 +149,14 @@ export const progressionStages = [
     ],
     nextObjective: "Satisfy the remaining route, conversation, and incantation requirements until the true-ending milestone triggers.",
     reason: "Following explicit save-state requirements prevents unnecessary runs and keeps spoiler-sensitive guidance tied to observable progress.",
+    actionSequence: [
+      "Read the current objective and choose the route named by its unmet requirement.",
+      "Use the Black Coat with the Aspect of Melinoe for a mobile, defensive clear plan while story completion matters more than experimentation.",
+      "Keep the completed aspect and Arcana layout unchanged unless a requirement forces another weapon.",
+      "Buy each revealed progression incantation before optional upgrades and retain rare materials until its cost is known.",
+      "After every completed night, process all available conversations and cauldron unlocks before starting another run.",
+      "When nothing advances, inspect the named requirements rather than adding unneeded clears.",
+    ],
     purchaseUpgradePriorities: [
       "Finish the primary aspect and Arcana ranks used for reliable clears.",
       "Buy progression incantations immediately when their prerequisites are satisfied.",
@@ -141,6 +168,8 @@ export const progressionStages = [
       "Do not convert scarce resources merely to accelerate optional completion.",
     ],
     loadoutReferences: [
+      reference("mechanics/weapon", "WeaponSuit"),
+      reference("mechanics/weapon-aspect", "BaseSuitAspect"),
       reference("mechanics/arcana-card", "ChanneledBlock"),
       reference("mechanics/arcana-card", "LastStand"),
       reference("mechanics/arcana-card", "ScreenReroll"),
@@ -182,6 +211,14 @@ export const progressionStages = [
     ],
     nextObjective: "Unlock the major combat systems, complete representative Fear rewards, and finish the epilogue without pursuing exhaustive collection.",
     reason: "This endpoint captures all guide-relevant systems while avoiding long completion tasks that do not change normal play.",
+    actionSequence: [
+      "Build one reliable aspect for each weapon and use Testaments to choose the next weapon that earns Nightmare.",
+      "Use the Umbral Flames with the Aspect of Melinoe as the default ranged completion build when no weapon requirement applies.",
+      "Finish the Arcana, Familiar, and keepsake ranks used by those six builds before funding secondary aspects.",
+      "Increase Fear one controlled condition at a time and remove the condition that breaks the selected aspect's main loop.",
+      "Combine each route attempt with one prophecy, relationship, bounty, or resource target.",
+      "Stop at the practical endpoint after the epilogue and all major combat systems unless exhaustive completion is the chosen goal.",
+    ],
     purchaseUpgradePriorities: [
       "Build one strong aspect for each weapon before maximizing secondary aspects.",
       "Complete the Arcana layouts, familiar upgrades, and keepsakes used by those builds.",
@@ -193,6 +230,8 @@ export const progressionStages = [
       "Treat Kudos and purely cosmetic purchases as optional surplus spending.",
     ],
     loadoutReferences: [
+      reference("mechanics/weapon", "WeaponTorch"),
+      reference("mechanics/weapon-aspect", "TorchSpecialDurationAspect"),
       reference("mechanics/arcana-card", "ScreenReroll"),
       reference("mechanics/arcana-card", "DoorReroll"),
       reference("mechanics/arcana-card", "StatusVulnerability"),
@@ -240,6 +279,14 @@ export const progressionStages = [
     ],
     nextObjective: "Complete the remaining achievements, prophecies, relationships, ranks, and cosmetic requirements in the smallest overlapping batches.",
     reason: "Grouping requirements by route, weapon, and character reduces duplicate runs after all primary progression is complete.",
+    actionSequence: [
+      "List every unmet achievement and attach each one to its required route, weapon, character, resource, or random event.",
+      "Group targets that can progress during the same night and choose the lowest Fear that satisfies all grouped requirements.",
+      "Use the Moonstone Axe with the Aspect of Nergal when no tracked condition requires another weapon or aspect.",
+      "Equip reroll Arcana and the keepsake or Familiar that increases access to the rarest current target.",
+      "Finish system ranks and required purchases before spending on unrelated cosmetics.",
+      "Rebuild the checklist after each completed target and stop farming any resource whose remaining uses are already funded.",
+    ],
     purchaseUpgradePriorities: [
       "Finish missing aspect, Arcana, familiar, and keepsake ranks in the order required by tracked achievements.",
       "Buy remaining system unlocks before cosmetics that do not satisfy a tracked requirement.",
@@ -251,6 +298,8 @@ export const progressionStages = [
       "Stop farming a resource once every remaining use is optional or already funded.",
     ],
     loadoutReferences: [
+      reference("mechanics/weapon", "WeaponAxe"),
+      reference("mechanics/weapon-aspect", "AxeRallyAspect"),
       reference("mechanics/arcana-card", "DoorReroll"),
       reference("mechanics/arcana-card", "ScreenReroll"),
       reference("mechanics/keepsake", "BossMetaUpgradeKeepsake"),
@@ -667,3 +716,148 @@ export const aspectProfiles = [
     routeConsideration: "Open rooms improve routing but also increase the distance of a bad recall.",
   }),
 ] as const satisfies readonly AspectProfile[];
+
+export const familiarProfiles = [
+  {
+    id: "FrogFamiliar",
+    rating: "S",
+    recommendation: "Use Frinos while learning routes or whenever maximum Life is the main constraint.",
+    reason: "The Life bonus improves every encounter and asks for no build-specific setup.",
+    limitation: "Frinos adds less clear speed than Familiars with offensive passive bonuses.",
+    fallback: "Use Hecuba for an Omega build or Raki after survival is stable.",
+  },
+  {
+    id: "HoundFamiliar",
+    rating: "A",
+    recommendation: "Use Hecuba when an Omega-heavy build needs more maximum Magick and room control.",
+    reason: "The Magick bonus supports repeated Omega actions while the stun creates safer openings.",
+    limitation: "A build that rarely spends Magick gains less than it would from Life, critical chance, or mobility.",
+    fallback: "Use Frinos when survival is uncertain or Raki when the build already sustains its Magick.",
+  },
+  {
+    id: "RavenFamiliar",
+    rating: "A",
+    recommendation: "Use Raki when the build already survives reliably and benefits from universal critical chance.",
+    reason: "Critical chance can improve every damage source without changing the combat sequence.",
+    limitation: "The random damage increase does not repair low Life, poor Magick recovery, or unsafe positioning.",
+    fallback: "Use Frinos for survival or Hecuba for an Omega build with limited Magick.",
+  },
+  {
+    id: "PolecatFamiliar",
+    rating: "A",
+    recommendation: "Use Gale when movement speed and dodge chance solve the current route or Fear condition.",
+    reason: "The passive defensive mobility remains active without requiring a particular attack pattern.",
+    limitation: "Dodge is less predictable than a larger Life pool and adds no direct build resource.",
+    fallback: "Use Frinos for predictable survival or Raki for clear speed.",
+  },
+  {
+    id: "CatFamiliar",
+    rating: "B",
+    recommendation: "Use Toula when an extra recovery effect or Fishing Point access advances the current objective.",
+    reason: "The Heart Bond can protect a run while the Sense Bond supports a specific gathering target.",
+    limitation: "Its general combat value is less consistent than Life, Magick, critical chance, or mobility.",
+    fallback: "Use Frinos for a general defensive run.",
+  },
+] as const satisfies readonly TierProfile[];
+
+export const hexProfiles = [
+  {
+    id: "TimeSlow",
+    rating: "S",
+    recommendation: "Choose Phase Shift for a broadly safe Hex that preserves the current weapon sequence.",
+    reason: "Slowing the encounter creates room to attack, reposition, or recover without replacing the build's normal actions.",
+    limitation: "It adds less immediate burst than a direct-damage Hex.",
+    fallback: "Choose Moon Water when healing is the clearer route constraint.",
+  },
+  {
+    id: "Potion",
+    rating: "S",
+    recommendation: "Choose Moon Water when health loss is the main reason runs end.",
+    reason: "Direct healing repairs mistakes and its uses replenish at fountains.",
+    limitation: "It does not speed up rooms when the build already finishes with a large Life buffer.",
+    fallback: "Choose Phase Shift for prevention or a damage Hex for clear speed.",
+  },
+  {
+    id: "Transform",
+    rating: "A",
+    recommendation: "Choose Dark Side when invulnerability is more valuable than continuing the normal weapon loop.",
+    reason: "The transformation creates a protected damage window during dangerous encounters.",
+    limitation: "Its separate abilities interrupt aspect-specific boon and weapon sequences.",
+    fallback: "Choose Phase Shift when the build should keep using its normal actions.",
+  },
+  {
+    id: "Leap",
+    rating: "A",
+    recommendation: "Choose Wolf Howl for immediate area damage and repositioning.",
+    reason: "The effect resolves quickly and works without a slain enemy, long channel, or delayed target.",
+    limitation: "Its close target area can be unsafe when the landing window is poorly timed.",
+    fallback: "Choose Total Eclipse for delayed range or Phase Shift for safety.",
+  },
+  {
+    id: "MoonBeam",
+    rating: "A",
+    recommendation: "Choose Sky Fall when automatic pressure fits a mobile build.",
+    reason: "Repeated strikes add damage while Melinoe continues moving and using the weapon.",
+    limitation: "Random target selection can spread damage in crowded rooms.",
+    fallback: "Choose Wolf Howl when immediate aimed damage matters more.",
+  },
+  {
+    id: "Meteor",
+    rating: "B",
+    recommendation: "Choose Total Eclipse when a large delayed blast can be placed on a predictable target.",
+    reason: "The large area rewards bosses and groups that remain inside the marked zone.",
+    limitation: "Mobile targets can leave before the fuse ends.",
+    fallback: "Choose Wolf Howl for immediate damage.",
+  },
+  {
+    id: "Polymorph",
+    rating: "B",
+    recommendation: "Choose Twilight Curse for control in dense normal encounters.",
+    reason: "The seeking projectile can disable several susceptible foes and reduce incoming pressure.",
+    limitation: "Bosses and other resistant targets remove much of its value.",
+    fallback: "Choose Phase Shift when the route needs control that also works during bosses.",
+  },
+  {
+    id: "Summon",
+    rating: "B",
+    recommendation: "Choose Night Bloom when encounters reliably provide a strong susceptible enemy to raise.",
+    reason: "A raised enemy adds damage and draws attention without replacing Melinoe's actions.",
+    limitation: "The Hex needs an eligible slain enemy and is unreliable at the start of a room or in some boss fights.",
+    fallback: "Choose Sky Fall for automatic pressure without a kill requirement.",
+  },
+  {
+    id: "Laser",
+    rating: "B",
+    recommendation: "Choose Lunar Ray when the build can create a safe channeling window.",
+    reason: "The beam can concentrate damage on a stationary or controlled target.",
+    limitation: "Channeling restricts movement and competes with the weapon's normal damage sequence.",
+    fallback: "Choose Wolf Howl or Sky Fall when the encounter does not allow long stationary windows.",
+  },
+] as const satisfies readonly TierProfile[];
+
+export const pageDefinitions = [
+  { id: "guide/progression", pageKind: "progression", title: "A-to-Z progression guide", sourceRecordTypes: ["editorial/progression-stage"], aliases: ["a to z guide", "a-z guide", "beginner guide", "progression route"], spoilerLevel: "progression" },
+  { id: "tier/boons", pageKind: "tier-list", title: "Boon tier list", sourceRecordTypes: ["editorial/boon-rating"], aliases: ["boon rankings", "best boons"], spoilerLevel: "none" },
+  { id: "tier/weapons", pageKind: "tier-list", title: "Weapon tier list", sourceRecordTypes: ["editorial/weapon-guide"], aliases: ["weapon rankings", "best weapons"], spoilerLevel: "none" },
+  { id: "tier/aspects", pageKind: "tier-list", title: "Aspect tier list", sourceRecordTypes: ["editorial/aspect-guide"], aliases: ["aspect rankings", "best aspects"], spoilerLevel: "progression" },
+  { id: "tier/arcana", pageKind: "tier-list", title: "Arcana tier list", sourceRecordTypes: ["editorial/arcana-rating"], aliases: ["arcana rankings", "best tarot cards"], spoilerLevel: "progression" },
+  { id: "tier/keepsakes", pageKind: "tier-list", title: "Keepsake tier list", sourceRecordTypes: ["mechanics/keepsake"], aliases: ["keepsake rankings", "best keepsakes"], spoilerLevel: "progression" },
+  { id: "tier/familiars", pageKind: "tier-list", title: "Familiar tier list", sourceRecordTypes: ["editorial/familiar-rating"], aliases: ["familiar rankings", "best familiars"], spoilerLevel: "progression" },
+  { id: "tier/hexes", pageKind: "tier-list", title: "Hex tier list", sourceRecordTypes: ["editorial/hex-rating"], aliases: ["hex rankings", "best hexes"], spoilerLevel: "progression" },
+  { id: "reference/weapons", pageKind: "reference", title: "Weapons and aspects", sourceRecordTypes: ["mechanics/weapon", "mechanics/weapon-aspect"], aliases: ["arms", "nocturnal arms"], spoilerLevel: "progression" },
+  { id: "reference/boons", pageKind: "reference", title: "Gods and Boons", sourceRecordTypes: ["mechanics/god", "mechanics/boon"], aliases: ["olympians", "god powers"], spoilerLevel: "progression" },
+  { id: "reference/hammers", pageKind: "reference", title: "Daedalus Hammers", sourceRecordTypes: ["mechanics/hammer-upgrade"], aliases: ["hammer upgrades", "daedalus upgrades"], spoilerLevel: "progression" },
+  { id: "reference/arcana", pageKind: "reference", title: "Arcana Cards", sourceRecordTypes: ["mechanics/arcana-card"], aliases: ["tarot cards", "tarot", "cards"], spoilerLevel: "progression" },
+  { id: "reference/keepsakes", pageKind: "reference", title: "Keepsakes", sourceRecordTypes: ["mechanics/keepsake"], aliases: ["gifts", "keepsake effects"], spoilerLevel: "progression" },
+  { id: "reference/familiars", pageKind: "reference", title: "Animal Familiars", sourceRecordTypes: ["mechanics/familiar"], aliases: ["pets", "animal companions"], spoilerLevel: "progression" },
+  { id: "reference/hexes", pageKind: "reference", title: "Hexes and the Path of Stars", sourceRecordTypes: ["mechanics/hex"], aliases: ["selene spells", "path of stars"], spoilerLevel: "progression" },
+  { id: "reference/incantations", pageKind: "reference", title: "Incantations", sourceRecordTypes: ["mechanics/incantation"], aliases: ["cauldron upgrades", "crossroads upgrades"], spoilerLevel: "progression" },
+  { id: "reference/resources", pageKind: "reference", title: "Resources", sourceRecordTypes: ["mechanics/resource"], aliases: ["materials", "currencies"], spoilerLevel: "progression" },
+  { id: "reference/relationships", pageKind: "reference", title: "Relationships and gifts", sourceRecordTypes: ["world-progression/relationship"], aliases: ["romance", "gift guide"], spoilerLevel: "story" },
+  { id: "reference/prophecies", pageKind: "reference", title: "Fated List prophecies", sourceRecordTypes: ["world-progression/prophecy"], aliases: ["fated list", "prophecy list"], spoilerLevel: "progression" },
+  { id: "reference/regions", pageKind: "reference", title: "Regions and encounters", sourceRecordTypes: ["world-progression/region", "world-progression/encounter"], aliases: ["routes", "areas"], spoilerLevel: "story" },
+  { id: "reference/enemies", pageKind: "reference", title: "Enemies and Guardians", sourceRecordTypes: ["world-progression/enemy"], aliases: ["bosses", "minibosses"], spoilerLevel: "story" },
+  { id: "reference/oath", pageKind: "reference", title: "Oath, Fear, and Testaments", sourceRecordTypes: ["world-progression/oath-condition", "world-progression/testament-bounty"], aliases: ["fear guide", "testaments", "nightmare"], spoilerLevel: "progression" },
+  { id: "reference/story", pageKind: "reference", title: "Story and ending requirements", sourceRecordTypes: ["world-progression/narrative-milestone"], aliases: ["true ending", "epilogue requirements"], spoilerLevel: "ending" },
+  { id: "reference/achievements", pageKind: "reference", title: "Achievements and completion", sourceRecordTypes: ["world-progression/achievement"], aliases: ["completion checklist", "achievements"], spoilerLevel: "ending" },
+] as const satisfies readonly PageDefinition[];

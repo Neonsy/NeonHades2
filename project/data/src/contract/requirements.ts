@@ -26,6 +26,12 @@ export const productRequirements = [
     launchBlocking: true,
   },
   {
+    id: "publication.page-definitions",
+    section: "foundation",
+    description: "Committed page definitions identify every progression, reference, and tier-list page required by publication.",
+    launchBlocking: true,
+  },
+  {
     id: "progression.stage-structure",
     section: "guided-progression",
     description: "Each progression stage states knowledge, objective, priorities, fallback, parallel work, evidence, and checklist.",
@@ -353,6 +359,30 @@ export const productRequirements = [
     id: "ratings.aspect-boons",
     section: "ratings",
     description: "Each aspect has context-specific boon ratings.",
+    launchBlocking: true,
+  },
+  {
+    id: "ratings.weapons",
+    section: "ratings",
+    description: "Each weapon has context ratings and Boon rankings derived from all of its aspects.",
+    launchBlocking: true,
+  },
+  {
+    id: "ratings.arcana",
+    section: "ratings",
+    description: "Every Arcana Card has a new-player rating with its reason and limitation.",
+    launchBlocking: true,
+  },
+  {
+    id: "ratings.familiars",
+    section: "ratings",
+    description: "Every Familiar has a new-player rating and guidance for when to choose it.",
+    launchBlocking: true,
+  },
+  {
+    id: "ratings.hexes",
+    section: "ratings",
+    description: "Every Hex has a new-player rating and guidance for when to choose it.",
     launchBlocking: true,
   },
   {

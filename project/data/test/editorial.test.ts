@@ -4,6 +4,10 @@ import { describe, it } from "node:test";
 import {
   aspectProfiles,
   compileEditorialDataset,
+  createContentReport,
+  familiarProfiles,
+  hexProfiles,
+  pageDefinitions,
   progressionStages,
   type AspectProfile,
   type CombinedDataset,
@@ -145,9 +149,17 @@ const syntheticStage: ProgressionStageSource = {
   readerKnowledge: ["Know the loop."],
   nextObjective: "Complete the next objective.",
   reason: "It advances progression.",
+  actionSequence: ["Choose a goal.", "Equip a build.", "Enter the route.", "Complete the objective.", "Review the result."],
   purchaseUpgradePriorities: ["Buy the next upgrade."],
   resourcePolicy: ["Fund the next target."],
-  loadoutReferences: [{ recordType: "mechanics/weapon-aspect", id: "Aspect" }],
+  loadoutReferences: [
+    { recordType: "mechanics/weapon", id: "Weapon" },
+    { recordType: "mechanics/weapon-aspect", id: "Aspect" },
+    { recordType: "mechanics/arcana-card", id: "BonusHealth" },
+    { recordType: "mechanics/keepsake", id: "ReincarnationKeepsake" },
+    { recordType: "mechanics/familiar", id: "FrogFamiliar" },
+    { recordType: "mechanics/hex", id: "TimeSlow" },
+  ],
   boonEncounterPriorities: ["Fill the core slot."],
   parallelObjectiveReferences: [],
   routeLateGame: ["Use either route."],
@@ -167,6 +179,17 @@ describe("Phase 7 editorial content", () => {
     ]);
     assert.deepEqual(aspectProfiles.map((profile) => profile.aspectId).sort(), [...expectedAspectIds].sort());
     assert.equal(new Set(aspectProfiles.map((profile) => profile.aspectId)).size, 24);
+    assert.equal(familiarProfiles.length, 5);
+    assert.equal(hexProfiles.length, 9);
+    assert.equal(pageDefinitions.length, 24);
+    assert.ok(pageDefinitions.some((page) => page.id === "reference/arcana" && page.aliases.includes("tarot cards")));
+    for (const stage of progressionStages) {
+      assert.ok(stage.actionSequence.length >= 5);
+      assert.deepEqual(
+        new Set(stage.loadoutReferences.map((entry) => entry.recordType)),
+        new Set(["mechanics/weapon", "mechanics/weapon-aspect", "mechanics/arcana-card", "mechanics/keepsake", "mechanics/familiar", "mechanics/hex"]),
+      );
+    }
     assert.doesNotMatch(JSON.stringify({ progressionStages, aspectProfiles }), /\{[$#!]/u);
   });
 
@@ -185,13 +208,56 @@ describe("Phase 7 editorial content", () => {
     assert.deepEqual(result.report.invalidEditorialRecords, []);
     assert.deepEqual(result.report.counts, {
       progressionStages: 1,
+      pageDefinitions: 24,
+      weaponGuides: 1,
       aspectGuides: 1,
       boonRatings: 1,
+      arcanaRatings: 1,
+      familiarRatings: 1,
+      hexRatings: 1,
       keepsakePriorities: 3,
       resourceAdvice: 1,
       searchAliases: 5,
     });
     assert.equal(result.dataset.aspectGuides[0]?.boonPriorities[0]?.preferred[0]?.rating, "A");
     assert.equal(result.dataset.aspectGuides[0]?.keepsakeRoute[0]?.stage, "opening");
+    assert.equal(result.dataset.weaponGuides[0]?.boonRankings.length, 1);
+    assert.equal(result.dataset.weaponGuides[0]?.boonRankings[0]?.reason, "Preferred by 1 of 1 aspect guides for this weapon.");
+    assert.equal(result.dataset.arcanaRatings[0]?.evaluationDimension, "new-player-value");
+    assert.ok(result.dataset.pageDefinitions.some((page) => page.id === "reference/arcana" && page.aliases.includes("tarot cards")));
+  });
+
+  it("rejects a progression stage that omits a complete loadout or ordered actions", () => {
+    const incompleteStage: ProgressionStageSource = {
+      ...syntheticStage,
+      actionSequence: ["Only one action."],
+      loadoutReferences: syntheticStage.loadoutReferences.filter((entry) => entry.recordType !== "mechanics/weapon"),
+    };
+    const result = compileEditorialDataset(syntheticCombinedDataset(), {
+      datasetAcquisitionId: "sha256:dataset",
+      datasetSha256: "dataset-sha",
+      dataReadyAcquisitionId: "sha256:data-ready",
+      verificationAcquisitionId: "sha256:verification",
+    }, [syntheticProfile], [incompleteStage]);
+    assert.equal(result.report.complete, false);
+    assert.deepEqual(result.report.invalidEditorialRecords, ["editorial/progression-stage:stage"]);
+  });
+
+  it("rejects a weapon guide without one ranking for every Boon", () => {
+    const combined = syntheticCombinedDataset();
+    const compiled = compileEditorialDataset(combined, {
+      datasetAcquisitionId: "sha256:dataset",
+      datasetSha256: "dataset-sha",
+      dataReadyAcquisitionId: "sha256:data-ready",
+      verificationAcquisitionId: "sha256:verification",
+    }, [syntheticProfile], [syntheticStage]);
+    const weaponGuide = compiled.dataset.weaponGuides[0];
+    assert.ok(weaponGuide);
+    const report = createContentReport({
+      ...compiled.dataset,
+      weaponGuides: [{ ...weaponGuide, boonRankings: [] }],
+    }, combined, [syntheticStage]);
+    assert.equal(report.complete, false);
+    assert.deepEqual(report.invalidEditorialRecords, ["editorial/weapon-guide:Weapon"]);
   });
 });

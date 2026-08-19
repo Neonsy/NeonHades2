@@ -1,6 +1,6 @@
 import type { JsonValue } from "../boons/index.js";
 import type { CombinedDataset } from "../dataset/index.js";
-import { aspectProfiles, progressionStages } from "./content.js";
+import { aspectProfiles, familiarProfiles, hexProfiles, pageDefinitions, progressionStages } from "./content.js";
 import type {
   AspectGuideRecord,
   AspectProfile,
@@ -18,6 +18,9 @@ import type {
   RatedReference,
   ResourceAdviceRecord,
   SearchAliasRecord,
+  TierProfile,
+  TierRatingRecord,
+  WeaponGuideRecord,
 } from "./types.js";
 
 export interface EditorialSourceIdentity {
@@ -67,6 +70,7 @@ function catalog(dataset: CombinedDataset): readonly NamedRecord[] {
     ...arcana.cards.map((record) => ({ recordType: "mechanics/arcana-card", id: record.id, name: record.name })),
     ...boons.gods.map((record) => ({ recordType: "mechanics/god", id: record.id, name: record.name })),
     ...boons.boons.map((record) => ({ recordType: "mechanics/boon", id: record.id, name: record.name })),
+    ...weapons.weapons.map((record) => ({ recordType: "mechanics/weapon", id: record.id, name: record.name })),
     ...weapons.aspects.map((record) => ({ recordType: "mechanics/weapon-aspect", id: record.id, name: record.name })),
     ...weapons.hammers.map((record) => ({ recordType: "mechanics/hammer-upgrade", id: record.id, name: record.name })),
     ...loadouts.keepsakes.map((record) => ({ recordType: "mechanics/keepsake", id: record.id, name: record.displayName })),
@@ -101,6 +105,7 @@ function progressionRecords(
     spoilerLevel: stage.spoilerLevel,
     context: context(dataset, stage.id),
     readerKnowledge: stage.readerKnowledge,
+    actionSequence: stage.actionSequence,
     recommendation: stage.nextObjective,
     reason: stage.reason,
     limitation: "Random offers and story sequencing can change the number of nights needed, so milestone evidence takes priority over run counts.",
@@ -283,6 +288,152 @@ function aspectRecords(
         context: ratingContext as "consistency" | "speed" | "safety" | "high-fear",
         rating,
       })),
+    };
+  });
+}
+
+function scoreRating(score: number): EditorialRating {
+  if (score >= 4.5) return "S";
+  if (score >= 3.5) return "A";
+  if (score >= 2.5) return "B";
+  if (score >= 1.5) return "C";
+  return "D";
+}
+
+function weaponRecords(
+  dataset: CombinedDataset,
+  identity: EditorialSourceIdentity,
+  aspects: readonly AspectGuideRecord[],
+): readonly WeaponGuideRecord[] {
+  const aspectById = new Map(aspects.map((record) => [record.id, record]));
+  const aspectNameById = new Map(dataset.domains.weapons.aspects.map((record) => [record.id, record.name]));
+  return dataset.domains.weapons.weapons.map((weapon) => {
+    const weaponAspects = dataset.domains.weapons.aspects
+      .filter((record) => record.weaponId === weapon.id)
+      .map((record) => aspectById.get(record.id))
+      .filter((record): record is AspectGuideRecord => record !== undefined);
+    const selectedCounts = new Map<string, { preferred: number; fallback: number }>();
+    for (const aspectGuide of weaponAspects) {
+      const preferredIds = new Set<string>();
+      const fallbackIds = new Set<string>();
+      for (const priority of aspectGuide.boonPriorities) {
+        for (const entry of priority.preferred) {
+          preferredIds.add(entry.reference.id);
+        }
+        for (const entry of priority.fallback) {
+          fallbackIds.add(entry.reference.id);
+        }
+      }
+      for (const target of aspectGuide.duoLegendaryTargets) {
+        preferredIds.add(target.id);
+      }
+      for (const id of preferredIds) {
+        const counts = selectedCounts.get(id) ?? { preferred: 0, fallback: 0 };
+        counts.preferred += 1;
+        selectedCounts.set(id, counts);
+      }
+      for (const id of fallbackIds) {
+        if (preferredIds.has(id)) continue;
+        const counts = selectedCounts.get(id) ?? { preferred: 0, fallback: 0 };
+        counts.fallback += 1;
+        selectedCounts.set(id, counts);
+      }
+    }
+    const boonRankings = dataset.domains.boons.boons.map((boon) => {
+      const counts = selectedCounts.get(boon.id) ?? { preferred: 0, fallback: 0 };
+      const rating: EditorialRating = counts.preferred >= Math.max(2, weaponAspects.length)
+        ? "S"
+        : counts.preferred > 0
+          ? "A"
+          : counts.fallback > 0
+            ? "B"
+            : "C";
+      const reason = counts.preferred > 0
+        ? `Preferred by ${counts.preferred} of ${weaponAspects.length} aspect guides for this weapon.`
+        : counts.fallback > 0
+          ? `Listed as a fallback by ${counts.fallback} of ${weaponAspects.length} aspect guides for this weapon.`
+          : "No authored aspect guide for this weapon selects it as a default boon.";
+      return { reference: reference("mechanics/boon", boon.id), rating, reason };
+    }).sort((left, right) => ratingScore(right.rating) - ratingScore(left.rating) || compareStrings(left.reference.id, right.reference.id));
+    const contexts = ["consistency", "speed", "safety", "high-fear"] as const;
+    const contextRatings = contexts.map((ratingContext) => {
+      const scores = weaponAspects.map((record) => ratingScore(record.contextRatings.find((entry) => entry.context === ratingContext)?.rating ?? "D"));
+      const average = scores.length === 0 ? 1 : scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      return { context: ratingContext, rating: scoreRating(average) };
+    });
+    const strongestAspect = [...weaponAspects].sort((left, right) => {
+      const leftRating = left.contextRatings.find((entry) => entry.context === "consistency")?.rating ?? "D";
+      const rightRating = right.contextRatings.find((entry) => entry.context === "consistency")?.rating ?? "D";
+      return ratingScore(rightRating) - ratingScore(leftRating) || compareStrings(left.id, right.id);
+    })[0];
+    return {
+      recordType: "editorial/weapon-guide",
+      id: weapon.id,
+      weaponReference: reference("mechanics/weapon", weapon.id),
+      context: context(dataset, "main-story"),
+      recommendation: strongestAspect === undefined
+        ? "Choose the aspect whose main move matches the player's safest combat sequence."
+        : `Start with ${aspectNameById.get(strongestAspect.id) ?? strongestAspect.id} for the weapon's most consistent authored plan.`,
+      reason: `The weapon rating combines all ${weaponAspects.length} aspect guides instead of treating one aspect as the whole weapon.`,
+      limitation: "A weapon-level average hides aspect-specific mechanics, so the selected aspect guide remains authoritative for the build.",
+      prerequisiteReferences: [reference("mechanics/weapon", weapon.id)],
+      fallback: "Use the highest-consistency unlocked aspect and follow its Boon rankings.",
+      verificationNotes: verificationNote(identity),
+      aspectReferences: weaponAspects.map((record) => record.aspectReference),
+      boonRankings,
+      contextRatings,
+    };
+  });
+}
+
+function selectedAspectCounts(profiles: readonly AspectProfile[], field: "arcanaIds" | "familiarId" | "hexId"): ReadonlyMap<string, number> {
+  const counts = new Map<string, number>();
+  for (const profile of profiles) {
+    const values = Array.isArray(profile[field]) ? profile[field] as readonly string[] : [profile[field] as string];
+    for (const id of new Set(values)) counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function usageRating(count: number, total: number): EditorialRating {
+  if (count >= Math.ceil(total * 0.5)) return "S";
+  if (count >= Math.ceil(total * 0.2)) return "A";
+  if (count > 0) return "B";
+  return "C";
+}
+
+function tierRecords(
+  dataset: CombinedDataset,
+  identity: EditorialSourceIdentity,
+  recordType: TierRatingRecord["recordType"],
+  factualRecordType: string,
+  records: readonly { readonly id: string }[],
+  counts: ReadonlyMap<string, number>,
+  aspectCount: number,
+  profiles: readonly TierProfile[] = [],
+): readonly TierRatingRecord[] {
+  const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
+  return records.map((record) => {
+    const selectionCount = counts.get(record.id) ?? 0;
+    const profile = profileById.get(record.id);
+    const rating = profile?.rating ?? usageRating(selectionCount, aspectCount);
+    return {
+      recordType,
+      id: record.id,
+      subjectReference: reference(factualRecordType, record.id),
+      context: context(dataset, "first-route-clear"),
+      rating,
+      evaluationDimension: "new-player-value",
+      recommendation: profile?.recommendation ?? (selectionCount > 0
+        ? "Prioritize it when it supports the selected aspect's documented combat loop."
+        : "Treat it as a specialized option after the first reliable Arcana layout is complete."),
+      reason: profile?.reason ?? `Selected by ${selectionCount} of ${aspectCount} authored aspect guides.`,
+      limitation: profile?.limitation ?? "Selection frequency measures coverage across the authored builds, not maximum value in every specialized setup.",
+      prerequisiteReferences: [],
+      fallback: profile?.fallback ?? "Use the highest-rated available option that supports the current aspect and progression stage.",
+      verificationNotes: verificationNote(identity),
+      recommendedByAspectCount: selectionCount,
+      aspectCount,
     };
   });
 }
@@ -517,7 +668,15 @@ function allReferences(dataset: EditorialDataset): readonly EditorialReference[]
       ...record.duoLegendaryTargets,
       ...record.hammerRankings.map((rating) => rating.reference),
     ]),
+    ...dataset.weaponGuides.flatMap((record) => [
+      record.weaponReference,
+      ...record.prerequisiteReferences,
+      ...record.aspectReferences,
+      ...record.boonRankings.map((rating) => rating.reference),
+    ]),
     ...dataset.boonRatings.flatMap((record) => [record.subjectReference, ...record.prerequisiteReferences]),
+    ...[...dataset.arcanaRatings, ...dataset.familiarRatings, ...dataset.hexRatings]
+      .flatMap((record) => [record.subjectReference, ...record.prerequisiteReferences]),
     ...dataset.keepsakePriorities.map((record) => record.subjectReference),
     ...dataset.resourceAdvice.map((record) => record.subjectReference),
     ...dataset.searchAliases.map((record) => record.subjectReference),
@@ -542,13 +701,40 @@ function invalidJudgment(record: EditorialJudgment & { readonly id: string; read
     record.context.packageVersion !== source.packageVersion;
 }
 
-function invalidRecords(editorial: EditorialDataset): readonly string[] {
+function invalidRecords(editorial: EditorialDataset, combined: CombinedDataset): readonly string[] {
   const invalid: string[] = [];
+  const boonIds = new Set(combined.domains.boons.boons.map((record) => record.id));
+  const aspectIdsByWeapon = new Map(combined.domains.weapons.weapons.map((weapon) => [
+    weapon.id,
+    new Set(combined.domains.weapons.aspects.filter((aspect) => aspect.weaponId === weapon.id).map((aspect) => aspect.id)),
+  ]));
+  const requiredLoadoutTypes = [
+    "mechanics/weapon",
+    "mechanics/weapon-aspect",
+    "mechanics/arcana-card",
+    "mechanics/keepsake",
+    "mechanics/familiar",
+    "mechanics/hex",
+  ];
   for (const record of editorial.progressionStages) {
+    const loadoutTypes = new Set(record.loadoutReferences.map((entry) => entry.recordType));
     if (invalidJudgment(record, editorial.source) || record.readerKnowledge.length === 0 ||
+      record.actionSequence.length < 5 || requiredLoadoutTypes.some((recordType) => !loadoutTypes.has(recordType)) ||
       record.purchaseUpgradePriorities.length === 0 || record.resourcePolicy.length === 0 ||
       record.loadoutReferences.length === 0 || record.boonEncounterPriorities.length === 0 ||
       record.routeLateGame.length === 0 || record.completionChecklist.length === 0 || record.completionReferences.length === 0) {
+      invalid.push(`${record.recordType}:${record.id}`);
+    }
+  }
+  for (const record of editorial.weaponGuides) {
+    const rankedBoonIds = new Set(record.boonRankings.map((entry) => entry.reference.id));
+    const referencedAspectIds = new Set(record.aspectReferences.map((entry) => entry.id));
+    const expectedAspectIds = aspectIdsByWeapon.get(record.id) ?? new Set<string>();
+    if (invalidJudgment(record, editorial.source) || record.aspectReferences.length === 0 ||
+      record.boonRankings.length !== boonIds.size || rankedBoonIds.size !== boonIds.size ||
+      [...rankedBoonIds].some((id) => !boonIds.has(id)) ||
+      referencedAspectIds.size !== expectedAspectIds.size || [...referencedAspectIds].some((id) => !expectedAspectIds.has(id)) ||
+      record.contextRatings.length !== 4) {
       invalid.push(`${record.recordType}:${record.id}`);
     }
   }
@@ -568,6 +754,12 @@ function invalidRecords(editorial: EditorialDataset): readonly string[] {
       invalid.push(`${record.recordType}:${record.id}`);
     }
   }
+  for (const record of [...editorial.arcanaRatings, ...editorial.familiarRatings, ...editorial.hexRatings]) {
+    if (invalidJudgment(record, editorial.source) || record.evaluationDimension !== "new-player-value" ||
+      record.aspectCount <= 0 || record.recommendedByAspectCount < 0 || record.recommendedByAspectCount > record.aspectCount) {
+      invalid.push(`${record.recordType}:${record.id}`);
+    }
+  }
   for (const record of [...editorial.keepsakePriorities, ...editorial.resourceAdvice]) {
     if (invalidJudgment(record, editorial.source)) invalid.push(`${record.recordType}:${record.id}`);
   }
@@ -577,11 +769,31 @@ function invalidRecords(editorial: EditorialDataset): readonly string[] {
       invalid.push(`${record.recordType}:${record.id}`);
     }
   }
+  for (const definition of editorial.pageDefinitions) {
+    const aliases = definition.aliases.map((alias) => alias.trim().toLocaleLowerCase("en-US"));
+    if (!nonempty(definition.id) || !nonempty(definition.title) || definition.sourceRecordTypes.length === 0 ||
+      aliases.length === 0 || aliases.some((alias) => alias.length === 0) || new Set(aliases).size !== aliases.length) {
+      invalid.push(`page-definition:${definition.id}`);
+    }
+  }
+  const arcanaPage = editorial.pageDefinitions.find((definition) => definition.id === "reference/arcana");
+  if (arcanaPage === undefined || !arcanaPage.aliases.map((alias) => alias.toLocaleLowerCase("en-US")).includes("tarot cards")) {
+    invalid.push("page-definition:reference/arcana");
+  }
   const aliasOwners = new Map<string, string>();
   for (const record of editorial.searchAliases) {
     for (const alias of record.aliases) {
       const normalized = alias.trim().toLocaleLowerCase("en-US");
       const owner = `${record.recordType}:${record.id}`;
+      const existing = aliasOwners.get(normalized);
+      if (existing !== undefined && existing !== owner) invalid.push(existing, owner);
+      aliasOwners.set(normalized, owner);
+    }
+  }
+  for (const definition of editorial.pageDefinitions) {
+    for (const alias of definition.aliases) {
+      const normalized = alias.trim().toLocaleLowerCase("en-US");
+      const owner = `page-definition:${definition.id}`;
       const existing = aliasOwners.get(normalized);
       if (existing !== undefined && existing !== owner) invalid.push(existing, owner);
       aliasOwners.set(normalized, owner);
@@ -604,54 +816,85 @@ export function createContentReport(
     ...combined.domains.boons.boons.filter((record) => coreBoonAliasSlot(record.id) !== null && record.godIds.length === 1).map((record) => `mechanics/boon:${record.id}`),
   ];
   const missingAliases = requiredAliases.filter((item) => !aliasSubjects.has(item)).sort(compareStrings);
+  const weaponIds = new Set(combined.domains.weapons.weapons.map((record) => record.id));
   const aspectIds = new Set(combined.domains.weapons.aspects.map((record) => record.id));
   const boonIds = new Set(combined.domains.boons.boons.map((record) => record.id));
+  const arcanaIds = new Set(combined.domains.arcana.cards.map((record) => record.id));
   const keepsakeIds = new Set(combined.domains.loadouts.keepsakes.map((record) => record.id));
+  const familiarIds = new Set(combined.domains.loadouts.familiars.map((record) => record.id));
+  const hexIds = new Set(combined.domains.loadouts.hexes.map((record) => record.id));
   const resourceIds = new Set(combined.domains.guide.resources.map((record) => record.id));
   const orphanRecordIds = [
+    ...editorial.weaponGuides.filter((record) => !weaponIds.has(record.id)).map((record) => `editorial/weapon-guide:${record.id}`),
     ...editorial.aspectGuides.filter((record) => !aspectIds.has(record.id)).map((record) => `editorial/aspect-guide:${record.id}`),
     ...editorial.boonRatings.filter((record) => !boonIds.has(record.subjectReference.id)).map((record) => `editorial/boon-rating:${record.id}`),
+    ...editorial.arcanaRatings.filter((record) => !arcanaIds.has(record.id)).map((record) => `editorial/arcana-rating:${record.id}`),
+    ...editorial.familiarRatings.filter((record) => !familiarIds.has(record.id)).map((record) => `editorial/familiar-rating:${record.id}`),
+    ...editorial.hexRatings.filter((record) => !hexIds.has(record.id)).map((record) => `editorial/hex-rating:${record.id}`),
     ...editorial.keepsakePriorities.filter((record) => !keepsakeIds.has(record.id)).map((record) => `mechanics/keepsake:${record.id}`),
     ...editorial.resourceAdvice.filter((record) => !resourceIds.has(record.id)).map((record) => `mechanics/resource:${record.id}`),
   ].sort(compareStrings);
   const covered = new Set([
+    ...editorial.pageDefinitions.map((record) => `page-definition:${record.id}`),
     ...editorial.progressionStages.map((record) => `editorial/progression-stage:${record.id}`),
+    ...editorial.weaponGuides.map((record) => `editorial/weapon-guide:${record.id}`),
     ...editorial.aspectGuides.map((record) => `editorial/aspect-guide:${record.id}`),
     ...editorial.boonRatings.map((record) => `editorial/boon-rating:${record.subjectReference.id}`),
+    ...editorial.arcanaRatings.map((record) => `editorial/arcana-rating:${record.id}`),
+    ...editorial.familiarRatings.map((record) => `editorial/familiar-rating:${record.id}`),
+    ...editorial.hexRatings.map((record) => `editorial/hex-rating:${record.id}`),
     ...editorial.keepsakePriorities.map((record) => `mechanics/keepsake:${record.id}`),
     ...editorial.resourceAdvice.map((record) => `mechanics/resource:${record.id}`),
   ]);
   const requiredPages = [
+    ...pageDefinitions.map((record) => `page-definition:${record.id}`),
     ...requiredStages.map((record) => `editorial/progression-stage:${record.id}`),
+    ...combined.domains.weapons.weapons.map((record) => `editorial/weapon-guide:${record.id}`),
     ...combined.domains.weapons.aspects.map((record) => `editorial/aspect-guide:${record.id}`),
     ...combined.domains.boons.boons.map((record) => `editorial/boon-rating:${record.id}`),
+    ...combined.domains.arcana.cards.map((record) => `editorial/arcana-rating:${record.id}`),
+    ...combined.domains.loadouts.familiars.map((record) => `editorial/familiar-rating:${record.id}`),
+    ...combined.domains.loadouts.hexes.map((record) => `editorial/hex-rating:${record.id}`),
     ...combined.domains.loadouts.keepsakes.map((record) => `mechanics/keepsake:${record.id}`),
     ...combined.domains.guide.resources.map((record) => `mechanics/resource:${record.id}`),
   ];
   const requiredPagesWithoutEditorialCoverage = requiredPages.filter((item) => !covered.has(item)).sort(compareStrings);
   const recordIds = [
+    ...editorial.pageDefinitions.map((record) => `page-definition:${record.id}`),
     ...editorial.progressionStages.map((record) => `${record.recordType}:${record.id}`),
+    ...editorial.weaponGuides.map((record) => `${record.recordType}:${record.id}`),
     ...editorial.aspectGuides.map((record) => `${record.recordType}:${record.id}`),
     ...editorial.boonRatings.map((record) => `${record.recordType}:${record.id}`),
+    ...editorial.arcanaRatings.map((record) => `${record.recordType}:${record.id}`),
+    ...editorial.familiarRatings.map((record) => `${record.recordType}:${record.id}`),
+    ...editorial.hexRatings.map((record) => `${record.recordType}:${record.id}`),
     ...editorial.keepsakePriorities.map((record) => `${record.recordType}:${record.id}`),
     ...editorial.resourceAdvice.map((record) => `${record.recordType}:${record.id}`),
     ...editorial.searchAliases.map((record) => `${record.recordType}:${record.id}`),
   ];
   const seen = new Set<string>();
   const duplicateRecordIds = [...new Set(recordIds.filter((id) => seen.has(id) || !seen.add(id)))].sort(compareStrings);
-  const invalidEditorialRecords = invalidRecords(editorial);
+  const invalidEditorialRecords = invalidRecords(editorial, combined);
   const counts = {
     progressionStages: editorial.progressionStages.length,
+    pageDefinitions: editorial.pageDefinitions.length,
+    weaponGuides: editorial.weaponGuides.length,
     aspectGuides: editorial.aspectGuides.length,
     boonRatings: editorial.boonRatings.length,
+    arcanaRatings: editorial.arcanaRatings.length,
+    familiarRatings: editorial.familiarRatings.length,
+    hexRatings: editorial.hexRatings.length,
     keepsakePriorities: editorial.keepsakePriorities.length,
     resourceAdvice: editorial.resourceAdvice.length,
     searchAliases: editorial.searchAliases.length,
   };
   const complete = [missingReferences, missingAliases, orphanRecordIds, requiredPagesWithoutEditorialCoverage, duplicateRecordIds, invalidEditorialRecords]
     .every((issues) => issues.length === 0) &&
-    counts.progressionStages === requiredStages.length && counts.aspectGuides === aspectIds.size &&
-    counts.boonRatings === boonIds.size && counts.keepsakePriorities === keepsakeIds.size && counts.resourceAdvice === resourceIds.size;
+    counts.progressionStages === requiredStages.length && counts.pageDefinitions === pageDefinitions.length &&
+    counts.weaponGuides === weaponIds.size && counts.aspectGuides === aspectIds.size &&
+    counts.boonRatings === boonIds.size && counts.arcanaRatings === arcanaIds.size &&
+    counts.familiarRatings === familiarIds.size && counts.hexRatings === hexIds.size &&
+    counts.keepsakePriorities === keepsakeIds.size && counts.resourceAdvice === resourceIds.size;
   return {
     schema: "neodes2-content-report-1",
     sourceDatasetAcquisitionId: editorial.source.datasetAcquisitionId,
@@ -672,6 +915,10 @@ export function compileEditorialDataset(
   profiles: readonly AspectProfile[] = aspectProfiles,
   stages: readonly ProgressionStageSource[] = progressionStages,
 ): { readonly dataset: EditorialDataset; readonly report: ContentReport } {
+  const compiledAspectGuides = aspectRecords(combined, identity, profiles);
+  const arcanaCounts = selectedAspectCounts(profiles, "arcanaIds");
+  const familiarCounts = selectedAspectCounts(profiles, "familiarId");
+  const hexCounts = selectedAspectCounts(profiles, "hexId");
   const dataset: EditorialDataset = {
     schema: "neodes2-editorial-1",
     source: {
@@ -681,8 +928,13 @@ export function compileEditorialDataset(
       packageVersion: combined.source.packageVersion,
     },
     progressionStages: progressionRecords(combined, identity, stages),
-    aspectGuides: aspectRecords(combined, identity, profiles),
+    pageDefinitions,
+    weaponGuides: weaponRecords(combined, identity, compiledAspectGuides),
+    aspectGuides: compiledAspectGuides,
     boonRatings: boonRecords(combined, identity),
+    arcanaRatings: tierRecords(combined, identity, "editorial/arcana-rating", "mechanics/arcana-card", combined.domains.arcana.cards, arcanaCounts, profiles.length),
+    familiarRatings: tierRecords(combined, identity, "editorial/familiar-rating", "mechanics/familiar", combined.domains.loadouts.familiars, familiarCounts, profiles.length, familiarProfiles),
+    hexRatings: tierRecords(combined, identity, "editorial/hex-rating", "mechanics/hex", combined.domains.loadouts.hexes, hexCounts, profiles.length, hexProfiles),
     keepsakePriorities: keepsakeRecords(combined, identity),
     resourceAdvice: resourceRecords(combined, identity),
     searchAliases: aliasRecords(combined),

@@ -1,6 +1,6 @@
 export { createEditorialArtifact } from "./artifact.js";
 export { compileEditorialDataset, createContentReport } from "./compiler.js";
-export { aspectProfiles, progressionStages } from "./content.js";
+export { aspectProfiles, familiarProfiles, hexProfiles, pageDefinitions, progressionStages } from "./content.js";
 export type {
   AspectGuideRecord,
   AspectProfile,
@@ -15,9 +15,13 @@ export type {
   EditorialRating,
   EditorialReference,
   KeepsakePriorityRecord,
+  PageDefinition,
   ProgressionStageRecord,
   ProgressionStageSource,
   RatedReference,
   ResourceAdviceRecord,
   SearchAliasRecord,
+  TierProfile,
+  TierRatingRecord,
+  WeaponGuideRecord,
 } from "./types.js";

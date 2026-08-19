@@ -51,8 +51,13 @@ try {
   process.stdout.write(`Editorial content complete.
 Acquisition: ${result.acquisitionId}
 Progression stages: ${result.report.counts.progressionStages}
+Page definitions: ${result.report.counts.pageDefinitions}
+Weapon guides: ${result.report.counts.weaponGuides}
 Aspect guides: ${result.report.counts.aspectGuides}
 Boon ratings: ${result.report.counts.boonRatings}
+Arcana ratings: ${result.report.counts.arcanaRatings}
+Familiar ratings: ${result.report.counts.familiarRatings}
+Hex ratings: ${result.report.counts.hexRatings}
 Keepsake priorities: ${result.report.counts.keepsakePriorities}
 Resource policies: ${result.report.counts.resourceAdvice}
 Directory: ${result.directory}

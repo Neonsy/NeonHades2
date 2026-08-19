@@ -303,8 +303,9 @@ It excludes internal evidence, raw source text, raw runtime structures, private 
 
 ## Author Phase 7 guide content
 
-Project-owned progression stages and aspect evaluations live in `/project/data/src/editorial/content.ts`.
-The compiler adds build-bound general Boon ratings, keepsake priorities, resource policies, search aliases, compatible Hammer rankings, and prerequisite references without copying maintained factual values into prose.
+Project-owned progression stages, aspect evaluations, Familiar and Hex recommendations, and page definitions live in `/project/data/src/editorial/content.ts`.
+The compiler adds build-bound weapon ratings, weapon-to-Boon rankings, general Boon ratings, Arcana ratings, keepsake priorities, resource policies, search aliases, compatible Hammer rankings, and prerequisite references.
+Aspect guides provide separate rank, consistency, speed, safety, and high-Fear ratings for the aspect tier lists.
 
 Build the editorial artifact from the normalized dataset certified by Phase 6.
 
@@ -313,7 +314,8 @@ pnpm editorial:build -- --dataset "C:\absolute\project\data\.local\datasets\comp
 ```
 
 The command validates every editorial reference against the selected dataset.
-It requires all five progression stages, every weapon aspect, every Boon, every keepsake, and every resource to have the required editorial coverage.
+It requires all five progression stages to include an ordered action sequence and a complete weapon, aspect, Arcana, keepsake, Familiar, and Hex loadout.
+It requires page definitions, every weapon and aspect, every Boon, every Arcana Card, every Familiar, every Hex, every keepsake, and every resource to have the required editorial coverage.
 It also rejects missing search aliases, orphan records, duplicate records, incomplete recommendation context, and required pages without editorial content.
 
 The completed artifact is written under `/project/data/.local/editorial/` with a manifest and completion marker.

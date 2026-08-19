@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, rename, writeFile } from "node:fs/promises";
 import { jsonBytes, readStableRegularFile, sha256 } from "../boons/runtime-acquisition.js";
 import { readCombinedDataset } from "../dataset/index.js";
 import { assertLocalOutputPath } from "../snapshot/index.js";
-import { aspectProfiles, progressionStages } from "./content.js";
+import { aspectProfiles, familiarProfiles, hexProfiles, pageDefinitions, progressionStages } from "./content.js";
 import { compileEditorialDataset } from "./compiler.js";
 import type { EditorialBuildOptions, EditorialBuildResult } from "./types.js";
 
@@ -120,7 +120,7 @@ export async function createEditorialArtifact(options: EditorialBuildOptions): P
   }
   const editorialContent = jsonBytes(compiled.dataset);
   const reportContent = jsonBytes(compiled.report);
-  const contentSourceSha256 = sha256(jsonBytes({ progressionStages, aspectProfiles }));
+  const contentSourceSha256 = sha256(jsonBytes({ progressionStages, aspectProfiles, familiarProfiles, hexProfiles, pageDefinitions }));
   const identity = {
     schema: "neodes2-editorial-manifest-1" as const,
     sourceDatasetAcquisitionId: combined.acquisitionId,

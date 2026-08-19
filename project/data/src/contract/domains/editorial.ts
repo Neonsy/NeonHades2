@@ -8,6 +8,28 @@ export const editorialDomain = {
   description: "Project-owned progression, build, aspect, rating, and completion guidance.",
   records: [
     {
+      id: "page-definition",
+      description: "One committed progression, reference, or tier-list page required by publication.",
+      stableId: "project-owned page identifier",
+      sourcePatterns: ["Committed NeonHades2 page definitions"],
+      fields: [
+        editorial({
+          id: "title-kind-sources",
+          description: "Page title, page kind, and source record types.",
+          normalization: "ordered-values",
+          cardinality: "one-or-more",
+          requirementIds: ["publication.page-definitions"],
+        }),
+        editorial({
+          id: "aliases-spoiler-level",
+          description: "Reviewed search aliases and spoiler level for the page.",
+          normalization: "ordered-values",
+          cardinality: "one-or-more",
+          requirementIds: ["publication.page-definitions", "foundation.search-aliases", "foundation.spoilers"],
+        }),
+      ],
+    },
+    {
       id: "progression-stage",
       description: "One ordered milestone in the fresh-save progression guide.",
       stableId: "project-owned progression stage identifier",
@@ -35,6 +57,13 @@ export const editorialDomain = {
           id: "next-objective",
           description: "The next required action and why it advances progression.",
           requirementIds: ["progression.stage-structure"],
+        }),
+        editorial({
+          id: "action-sequence",
+          description: "Ordered actions for completing the milestone with reliable growth and minimal duplicate runs.",
+          normalization: "ordered-values",
+          cardinality: "one-or-more",
+          requirementIds: ["progression.stage-structure", "progression.beginner-builds"],
         }),
         editorial({
           id: "purchase-upgrade-priorities",
@@ -222,6 +251,100 @@ export const editorialDomain = {
           sourcePatterns: ["Normalized factual records", "Documented NeonHades2 evaluation"],
           validations: ["observation-required"],
           requirementIds: ["weapon.context-ratings", "ratings.contexts", "ratings.evidence"],
+        }),
+      ],
+    },
+    {
+      id: "weapon-guide",
+      description: "Context ratings and Boon rankings for one weapon across all of its aspects.",
+      stableId: "weapon identifier",
+      sourcePatterns: ["Committed NeonHades2 aspect guides", "Normalized weapon and boon facts"],
+      fields: [
+        editorial({
+          id: "subject-aspects",
+          description: "Rated weapon and the aspect guides included in its evaluation.",
+          normalization: "references",
+          cardinality: "one-or-more",
+          validations: ["references-exist"],
+          requirementIds: ["ratings.weapons", "reference.weapons-aspects"],
+        }),
+        editorial({
+          id: "boon-rankings",
+          description: "Every Boon ranked by its preferred, fallback, or unselected relationship to the weapon's aspects.",
+          normalization: "authored-rating",
+          cardinality: "one-or-more",
+          validations: ["references-exist"],
+          requirementIds: ["ratings.weapons", "ratings.aspect-boons"],
+        }),
+        editorial({
+          id: "context-ratings-guidance",
+          description: "Consistency, speed, safety, and high-Fear ratings with a recommended starting aspect, reason, limitation, and fallback.",
+          normalization: "authored-rating",
+          cardinality: "one-or-more",
+          requirementIds: ["ratings.weapons", "ratings.contexts", "ratings.evidence"],
+        }),
+      ],
+    },
+    {
+      id: "arcana-rating",
+      description: "New-player value rating for one Arcana Card.",
+      stableId: "Arcana Card identifier",
+      sourcePatterns: ["Committed NeonHades2 aspect guides", "Normalized Arcana facts"],
+      fields: [
+        editorial({
+          id: "subject-context",
+          description: "Rated Arcana Card, progression state, and evaluation dimension.",
+          normalization: "references",
+          validations: ["references-exist"],
+          requirementIds: ["ratings.arcana", "ratings.contexts"],
+        }),
+        editorial({
+          id: "rating-guidance",
+          description: "Rating, recommendation, reason, limitation, fallback, and authored-build selection count.",
+          normalization: "authored-rating",
+          requirementIds: ["ratings.arcana", "ratings.evidence"],
+        }),
+      ],
+    },
+    {
+      id: "familiar-rating",
+      description: "New-player value rating and choice guidance for one Familiar.",
+      stableId: "Familiar identifier",
+      sourcePatterns: ["Committed NeonHades2 Familiar profiles", "Normalized Familiar facts"],
+      fields: [
+        editorial({
+          id: "subject-context",
+          description: "Rated Familiar, progression state, and evaluation dimension.",
+          normalization: "references",
+          validations: ["references-exist"],
+          requirementIds: ["ratings.familiars", "ratings.contexts"],
+        }),
+        editorial({
+          id: "rating-choice-guidance",
+          description: "Rating, when to choose the Familiar, reason, limitation, and fallback.",
+          normalization: "authored-rating",
+          requirementIds: ["ratings.familiars", "ratings.evidence"],
+        }),
+      ],
+    },
+    {
+      id: "hex-rating",
+      description: "New-player value rating and choice guidance for one Hex.",
+      stableId: "Hex identifier",
+      sourcePatterns: ["Committed NeonHades2 Hex profiles", "Normalized Hex facts"],
+      fields: [
+        editorial({
+          id: "subject-context",
+          description: "Rated Hex, progression state, and evaluation dimension.",
+          normalization: "references",
+          validations: ["references-exist"],
+          requirementIds: ["ratings.hexes", "ratings.contexts"],
+        }),
+        editorial({
+          id: "rating-choice-guidance",
+          description: "Rating, when to choose the Hex, reason, limitation, and fallback.",
+          normalization: "authored-rating",
+          requirementIds: ["ratings.hexes", "ratings.evidence"],
         }),
       ],
     },

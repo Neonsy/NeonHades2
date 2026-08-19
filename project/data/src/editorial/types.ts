@@ -28,6 +28,7 @@ export interface ProgressionStageSource {
   readonly readerKnowledge: readonly string[];
   readonly nextObjective: string;
   readonly reason: string;
+  readonly actionSequence: readonly string[];
   readonly purchaseUpgradePriorities: readonly string[];
   readonly resourcePolicy: readonly string[];
   readonly loadoutReferences: readonly EditorialReference[];
@@ -76,6 +77,7 @@ export interface ProgressionStageRecord extends EditorialJudgment {
   readonly spoilerLevel: SpoilerLevel;
   readonly context: EditorialContext;
   readonly readerKnowledge: readonly string[];
+  readonly actionSequence: readonly string[];
   readonly purchaseUpgradePriorities: readonly string[];
   readonly resourcePolicy: readonly string[];
   readonly loadoutReferences: readonly EditorialReference[];
@@ -126,6 +128,48 @@ export interface BoonRatingRecord extends EditorialJudgment {
   readonly evaluationDimension: "general-value";
 }
 
+export interface WeaponGuideRecord extends EditorialJudgment {
+  readonly recordType: "editorial/weapon-guide";
+  readonly id: string;
+  readonly weaponReference: EditorialReference;
+  readonly context: EditorialContext;
+  readonly aspectReferences: readonly EditorialReference[];
+  readonly boonRankings: readonly RatedReference[];
+  readonly contextRatings: readonly {
+    readonly context: "consistency" | "speed" | "safety" | "high-fear";
+    readonly rating: EditorialRating;
+  }[];
+}
+
+export interface TierRatingRecord extends EditorialJudgment {
+  readonly recordType: "editorial/arcana-rating" | "editorial/familiar-rating" | "editorial/hex-rating";
+  readonly id: string;
+  readonly subjectReference: EditorialReference;
+  readonly context: EditorialContext;
+  readonly rating: EditorialRating;
+  readonly evaluationDimension: "new-player-value";
+  readonly recommendedByAspectCount: number;
+  readonly aspectCount: number;
+}
+
+export interface TierProfile {
+  readonly id: string;
+  readonly rating: EditorialRating;
+  readonly recommendation: string;
+  readonly reason: string;
+  readonly limitation: string;
+  readonly fallback: string;
+}
+
+export interface PageDefinition {
+  readonly id: string;
+  readonly pageKind: "progression" | "reference" | "tier-list";
+  readonly title: string;
+  readonly sourceRecordTypes: readonly string[];
+  readonly aliases: readonly string[];
+  readonly spoilerLevel: SpoilerLevel;
+}
+
 export interface KeepsakePriorityRecord extends EditorialJudgment {
   readonly recordType: "mechanics/keepsake";
   readonly id: string;
@@ -161,8 +205,13 @@ export interface EditorialDataset {
     readonly packageVersion: string;
   };
   readonly progressionStages: readonly ProgressionStageRecord[];
+  readonly pageDefinitions: readonly PageDefinition[];
+  readonly weaponGuides: readonly WeaponGuideRecord[];
   readonly aspectGuides: readonly AspectGuideRecord[];
   readonly boonRatings: readonly BoonRatingRecord[];
+  readonly arcanaRatings: readonly TierRatingRecord[];
+  readonly familiarRatings: readonly TierRatingRecord[];
+  readonly hexRatings: readonly TierRatingRecord[];
   readonly keepsakePriorities: readonly KeepsakePriorityRecord[];
   readonly resourceAdvice: readonly ResourceAdviceRecord[];
   readonly searchAliases: readonly SearchAliasRecord[];
@@ -173,8 +222,13 @@ export interface ContentReport {
   readonly sourceDatasetAcquisitionId: string;
   readonly counts: {
     readonly progressionStages: number;
+    readonly pageDefinitions: number;
+    readonly weaponGuides: number;
     readonly aspectGuides: number;
     readonly boonRatings: number;
+    readonly arcanaRatings: number;
+    readonly familiarRatings: number;
+    readonly hexRatings: number;
     readonly keepsakePriorities: number;
     readonly resourceAdvice: number;
     readonly searchAliases: number;
