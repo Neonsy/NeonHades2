@@ -424,7 +424,7 @@ export const mechanicsDomain = {
         }),
         editorial({
           id: "leveling-priority",
-          description: "General acquisition and leveling priority with its progression context.",
+          description: "General acquisition and leveling priority, lifecycle type, and the condition for replacing an inactive keepsake.",
           requirementIds: ["reference.keepsakes", "progression.keepsakes"],
         }),
       ],
@@ -582,7 +582,7 @@ export const mechanicsDomain = {
         }),
         editorial({
           id: "reservation-advice",
-          description: "When the reader should spend or reserve the resource.",
+          description: "Priority, earliest recommended stage, exact ordered guide uses, and when the reader should spend or reserve every resource with a known use.",
           requirementIds: ["reference.resources", "progression.resources"],
         }),
       ],

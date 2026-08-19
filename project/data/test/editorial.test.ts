@@ -2,12 +2,14 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  arcanaProfiles,
   aspectProfiles,
   compileEditorialDataset,
   createContentReport,
   familiarProfiles,
   hexProfiles,
   pageDefinitions,
+  preferredHammersByAspect,
   progressionStages,
   type AspectProfile,
   type CombinedDataset,
@@ -160,6 +162,13 @@ const syntheticStage: ProgressionStageSource = {
     { recordType: "mechanics/familiar", id: "FrogFamiliar" },
     { recordType: "mechanics/hex", id: "TimeSlow" },
   ],
+  priorityReferences: [{
+    order: 1,
+    timing: "now",
+    required: true,
+    reference: { recordType: "mechanics/weapon", id: "Weapon" },
+    reason: "Use the available weapon for the stage objective.",
+  }],
   boonEncounterPriorities: ["Fill the core slot."],
   parallelObjectiveReferences: [],
   routeLateGame: ["Use either route."],
@@ -181,7 +190,11 @@ describe("Phase 7 editorial content", () => {
     assert.equal(new Set(aspectProfiles.map((profile) => profile.aspectId)).size, 24);
     assert.equal(familiarProfiles.length, 5);
     assert.equal(hexProfiles.length, 9);
+    assert.equal(arcanaProfiles.length, 25);
+    assert.equal(new Set(arcanaProfiles.map((profile) => profile.id)).size, 25);
     assert.equal(pageDefinitions.length, 24);
+    assert.equal(Object.keys(preferredHammersByAspect).length, 24);
+    assert.ok(Object.values(preferredHammersByAspect).every((ids) => ids.length === 3 && new Set(ids).size === 3));
     assert.ok(pageDefinitions.some((page) => page.id === "reference/arcana" && page.aliases.includes("tarot cards")));
     for (const stage of progressionStages) {
       assert.ok(stage.actionSequence.length >= 5);
@@ -200,7 +213,7 @@ describe("Phase 7 editorial content", () => {
       dataReadyAcquisitionId: "sha256:data-ready",
       verificationAcquisitionId: "sha256:verification",
     }, [syntheticProfile], [syntheticStage]);
-    assert.equal(result.report.complete, true);
+    assert.equal(result.report.complete, true, JSON.stringify(result.report));
     assert.deepEqual(result.report.missingReferences, []);
     assert.deepEqual(result.report.missingAliases, []);
     assert.deepEqual(result.report.orphanRecordIds, []);
@@ -220,10 +233,35 @@ describe("Phase 7 editorial content", () => {
       searchAliases: 5,
     });
     assert.equal(result.dataset.aspectGuides[0]?.boonPriorities[0]?.preferred[0]?.rating, "A");
+    assert.deepEqual(result.dataset.aspectGuides[0]?.boonPriorities.map((entry) => entry.slot), ["attack", "special", "cast", "sprint", "omega"]);
+    assert.equal(result.dataset.aspectGuides[0]?.boonRankings.length, 1);
+    assert.equal(result.dataset.aspectGuides[0]?.boonRankings[0]?.rating, "S");
+    assert.equal(result.dataset.aspectGuides[0]?.familiarHex[0]?.rating, "S");
+    assert.equal(result.dataset.aspectGuides[0]?.overallRating, "A");
+    assert.ok(result.dataset.aspectGuides[0]?.rankEvaluations.every((entry) => entry.reason.length > 0 && entry.limitation.length > 0));
+    assert.ok(result.dataset.aspectGuides[0]?.contextRatings.every((entry) => entry.reason.length > 0 && entry.limitation.length > 0));
+    assert.equal(result.dataset.aspectGuides[0]?.arcanaGraspCost, 1);
+    assert.equal(result.dataset.aspectGuides[0]?.arcanaLoadout[0]?.role, "core");
+    assert.ok(result.dataset.aspectGuides[0]?.arcanaLoadout.every((entry) => entry.reason.length > 0 && entry.limitation.length > 0));
+    assert.ok(result.dataset.aspectGuides[0]?.boonRankings.every((entry) => entry.reason.length > 0 && entry.limitation.length > 0));
+    assert.ok(result.dataset.aspectGuides[0]?.familiarHex.every((entry) => entry.reason.length > 0 && entry.limitation.length > 0));
+    assert.deepEqual(result.dataset.aspectGuides[0]?.keepsakeRoute.map((entry) => entry.stage), ["opening", "later-region", "final-region", "fallback"]);
+    assert.ok(result.dataset.aspectGuides[0]?.keepsakeRoute.every((entry) => entry.lifecycle === "persistent" || entry.switchCondition.includes("next keepsake cabinet")));
+    assert.ok((result.dataset.aspectGuides[0]?.buildInteractions.length ?? 0) >= 3);
+    assert.ok(result.dataset.aspectGuides[0]?.buildInteractions.some((entry) => entry.kind === "synergy"));
+    assert.deepEqual(result.dataset.aspectGuides[0]?.rewardPriorities.map((entry) => entry.reward), ["core-boon", "hammer", "maximum-life", "pom", "magick-recovery", "duo-legendary"]);
+    assert.ok(result.dataset.aspectGuides[0]?.rewardDecisionRules.some((entry) => entry.choose === "permanent-resource"));
     assert.equal(result.dataset.aspectGuides[0]?.keepsakeRoute[0]?.stage, "opening");
     assert.equal(result.dataset.weaponGuides[0]?.boonRankings.length, 1);
+    assert.ok(result.dataset.weaponGuides[0]?.overallReason.length);
+    assert.ok(result.dataset.weaponGuides[0]?.contextRatings.every((entry) => entry.reason.length > 0 && entry.limitation.length > 0));
+    assert.ok(result.dataset.weaponGuides[0]?.boonRankings.every((entry) => entry.reason.length > 0 && entry.limitation.length > 0));
     assert.equal(result.dataset.weaponGuides[0]?.boonRankings[0]?.reason, "Preferred by 1 of 1 aspect guides for this weapon.");
     assert.equal(result.dataset.arcanaRatings[0]?.evaluationDimension, "new-player-value");
+    assert.doesNotMatch(result.dataset.arcanaRatings[0]?.reason ?? "", /^Selected by /);
+    assert.ok(result.dataset.keepsakePriorities.every((entry) => entry.switchWhenInactive.length > 0));
+    assert.equal(result.dataset.resourceAdvice[0]?.priority, "C");
+    assert.equal(result.dataset.resourceAdvice[0]?.earliestRecommendedStage, "unprioritized");
     assert.ok(result.dataset.pageDefinitions.some((page) => page.id === "reference/arcana" && page.aliases.includes("tarot cards")));
   });
 
@@ -259,5 +297,51 @@ describe("Phase 7 editorial content", () => {
     }, combined, [syntheticStage]);
     assert.equal(report.complete, false);
     assert.deepEqual(report.invalidEditorialRecords, ["editorial/weapon-guide:Weapon"]);
+  });
+
+  it("rejects an aspect guide without every boon ranking and all five boon slots", () => {
+    const combined = syntheticCombinedDataset();
+    const compiled = compileEditorialDataset(combined, {
+      datasetAcquisitionId: "sha256:dataset",
+      datasetSha256: "dataset-sha",
+      dataReadyAcquisitionId: "sha256:data-ready",
+      verificationAcquisitionId: "sha256:verification",
+    }, [syntheticProfile], [syntheticStage]);
+    const aspectGuide = compiled.dataset.aspectGuides[0];
+    assert.ok(aspectGuide);
+    const report = createContentReport({
+      ...compiled.dataset,
+      aspectGuides: [{ ...aspectGuide, boonRankings: [], boonPriorities: aspectGuide.boonPriorities.slice(0, 1) }],
+    }, combined, [syntheticStage]);
+    assert.equal(report.complete, false);
+    assert.deepEqual(report.invalidEditorialRecords, ["editorial/aspect-guide:Aspect"]);
+  });
+
+  it("rejects an aspect guide without reasons, limitations, interactions, decisions, Grasp accounting, keepsake switches, and reward order", () => {
+    const combined = syntheticCombinedDataset();
+    const compiled = compileEditorialDataset(combined, {
+      datasetAcquisitionId: "sha256:dataset",
+      datasetSha256: "dataset-sha",
+      dataReadyAcquisitionId: "sha256:data-ready",
+      verificationAcquisitionId: "sha256:verification",
+    }, [syntheticProfile], [syntheticStage]);
+    const aspectGuide = compiled.dataset.aspectGuides[0];
+    assert.ok(aspectGuide);
+    const report = createContentReport({
+      ...compiled.dataset,
+      aspectGuides: [{
+        ...aspectGuide,
+        overallReason: "",
+        arcanaGraspCost: 0,
+        keepsakeRoute: aspectGuide.keepsakeRoute.map((entry) => ({ ...entry, switchCondition: "" })),
+        rewardPriorities: aspectGuide.rewardPriorities.slice(1),
+        buildInteractions: [],
+        rewardDecisionRules: [],
+        boonRankings: aspectGuide.boonRankings.map((entry) => ({ ...entry, limitation: "" })),
+        contextRatings: aspectGuide.contextRatings.map((entry) => ({ ...entry, reason: "", limitation: "" })),
+      }],
+    }, combined, [syntheticStage]);
+    assert.equal(report.complete, false);
+    assert.deepEqual(report.invalidEditorialRecords, ["editorial/aspect-guide:Aspect"]);
   });
 });

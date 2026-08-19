@@ -1,12 +1,15 @@
 export { createEditorialArtifact } from "./artifact.js";
 export { compileEditorialDataset, createContentReport } from "./compiler.js";
-export { aspectProfiles, familiarProfiles, hexProfiles, pageDefinitions, progressionStages } from "./content.js";
+export { arcanaProfiles, aspectProfiles, familiarProfiles, hexProfiles, pageDefinitions, preferredHammersByAspect, progressionStages } from "./content.js";
 export type {
   AspectGuideRecord,
   AspectProfile,
+  ArcanaRecommendation,
+  BuildInteraction,
   BoonRatingRecord,
   CombatFocus,
   ContentReport,
+  ContextRating,
   EditorialBuildOptions,
   EditorialBuildResult,
   EditorialContext,
@@ -15,13 +18,18 @@ export type {
   EditorialRating,
   EditorialReference,
   KeepsakePriorityRecord,
+  KeepsakeLifecycle,
   PageDefinition,
   ProgressionStageRecord,
   ProgressionStageSource,
+  ProgressionPriority,
   RatedReference,
   ResourceAdviceRecord,
+  RewardPriority,
+  RewardDecisionRule,
   SearchAliasRecord,
   TierProfile,
   TierRatingRecord,
+  UpgradeConflict,
   WeaponGuideRecord,
 } from "./types.js";

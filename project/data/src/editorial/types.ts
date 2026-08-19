@@ -32,6 +32,7 @@ export interface ProgressionStageSource {
   readonly purchaseUpgradePriorities: readonly string[];
   readonly resourcePolicy: readonly string[];
   readonly loadoutReferences: readonly EditorialReference[];
+  readonly priorityReferences: readonly ProgressionPriority[];
   readonly boonEncounterPriorities: readonly string[];
   readonly parallelObjectiveReferences: readonly EditorialReference[];
   readonly routeLateGame: readonly string[];
@@ -81,6 +82,7 @@ export interface ProgressionStageRecord extends EditorialJudgment {
   readonly purchaseUpgradePriorities: readonly string[];
   readonly resourcePolicy: readonly string[];
   readonly loadoutReferences: readonly EditorialReference[];
+  readonly priorityReferences: readonly ProgressionPriority[];
   readonly boonEncounterPriorities: readonly string[];
   readonly parallelObjectiveReferences: readonly EditorialReference[];
   readonly routeLateGame: readonly string[];
@@ -92,6 +94,54 @@ export interface RatedReference {
   readonly reference: EditorialReference;
   readonly rating: EditorialRating;
   readonly reason: string;
+  readonly limitation: string;
+  readonly prerequisiteReferences: readonly EditorialReference[];
+}
+
+export interface ContextRating {
+  readonly context: "consistency" | "speed" | "safety" | "high-fear";
+  readonly rating: EditorialRating;
+  readonly reason: string;
+  readonly limitation: string;
+}
+
+export interface ArcanaRecommendation extends RatedReference {
+  readonly role: "core" | "support";
+}
+
+export interface RewardPriority {
+  readonly order: number;
+  readonly reward: "core-boon" | "magick-recovery" | "hammer" | "maximum-life" | "pom" | "duo-legendary";
+  readonly reason: string;
+}
+
+export interface RewardDecisionRule {
+  readonly condition: string;
+  readonly choose: "core-boon" | "magick-recovery" | "hammer" | "maximum-life" | "pom" | "duo-legendary" | "permanent-resource";
+  readonly over: readonly RewardDecisionRule["choose"][];
+  readonly reason: string;
+}
+
+export interface BuildInteraction {
+  readonly kind: "synergy" | "conflict";
+  readonly references: readonly EditorialReference[];
+  readonly reason: string;
+  readonly condition: string;
+}
+
+export type KeepsakeLifecycle = "persistent" | "limited-use" | "timed" | "decaying" | "depleting";
+
+export interface ProgressionPriority {
+  readonly order: number;
+  readonly timing: "now" | "when-available" | "after-core" | "optional";
+  readonly required: boolean;
+  readonly reference: EditorialReference;
+  readonly reason: string;
+}
+
+export interface UpgradeConflict {
+  readonly references: readonly EditorialReference[];
+  readonly reason: string;
 }
 
 export interface AspectGuideRecord extends EditorialJudgment {
@@ -99,24 +149,45 @@ export interface AspectGuideRecord extends EditorialJudgment {
   readonly id: string;
   readonly aspectReference: EditorialReference;
   readonly context: EditorialContext;
-  readonly rankEvaluations: readonly { readonly rank: "rank-one" | "maximum"; readonly rating: EditorialRating; readonly reason: string }[];
+  readonly rankEvaluations: readonly {
+    readonly rank: "rank-one" | "maximum";
+    readonly rating: EditorialRating;
+    readonly reason: string;
+    readonly limitation: string;
+  }[];
+  readonly overallRating: EditorialRating;
+  readonly overallReason: string;
   readonly strengths: readonly string[];
   readonly weaknesses: readonly string[];
   readonly beginnerDifficulty: number;
   readonly playstyleCombatSequence: readonly string[];
-  readonly arcanaLoadout: readonly EditorialReference[];
+  readonly arcanaLoadout: readonly ArcanaRecommendation[];
+  readonly arcanaGraspCost: number;
+  readonly arcanaConstraint: string;
   readonly keepsakeRoute: readonly {
     readonly stage: "opening" | "later-region" | "final-region" | "fallback";
     readonly reference: EditorialReference;
     readonly reason: string;
+    readonly switchCondition: string;
+    readonly lifecycle: KeepsakeLifecycle;
   }[];
-  readonly familiarHex: readonly EditorialReference[];
-  readonly boonPriorities: readonly { readonly slot: CombatFocus; readonly preferred: readonly RatedReference[]; readonly fallback: readonly RatedReference[] }[];
-  readonly duoLegendaryTargets: readonly EditorialReference[];
+  readonly familiarHex: readonly RatedReference[];
+  readonly boonPriorities: readonly {
+    readonly slot: Exclude<CombatFocus, "hex">;
+    readonly role: "core" | "support";
+    readonly preferred: readonly RatedReference[];
+    readonly fallback: readonly RatedReference[];
+  }[];
+  readonly boonRankings: readonly RatedReference[];
+  readonly duoLegendaryTargets: readonly RatedReference[];
   readonly hammerRankings: readonly RatedReference[];
+  readonly buildInteractions: readonly BuildInteraction[];
+  readonly rewardPriorities: readonly RewardPriority[];
+  readonly rewardDecisionRules: readonly RewardDecisionRule[];
   readonly conflicts: readonly string[];
+  readonly upgradeConflicts: readonly UpgradeConflict[];
   readonly bossRouteConsiderations: readonly string[];
-  readonly contextRatings: readonly { readonly context: "consistency" | "speed" | "safety" | "high-fear"; readonly rating: EditorialRating }[];
+  readonly contextRatings: readonly ContextRating[];
 }
 
 export interface BoonRatingRecord extends EditorialJudgment {
@@ -133,12 +204,11 @@ export interface WeaponGuideRecord extends EditorialJudgment {
   readonly id: string;
   readonly weaponReference: EditorialReference;
   readonly context: EditorialContext;
+  readonly overallRating: EditorialRating;
+  readonly overallReason: string;
   readonly aspectReferences: readonly EditorialReference[];
   readonly boonRankings: readonly RatedReference[];
-  readonly contextRatings: readonly {
-    readonly context: "consistency" | "speed" | "safety" | "high-fear";
-    readonly rating: EditorialRating;
-  }[];
+  readonly contextRatings: readonly ContextRating[];
 }
 
 export interface TierRatingRecord extends EditorialJudgment {
@@ -176,6 +246,8 @@ export interface KeepsakePriorityRecord extends EditorialJudgment {
   readonly subjectReference: EditorialReference;
   readonly context: EditorialContext;
   readonly priority: EditorialRating;
+  readonly lifecycle: KeepsakeLifecycle;
+  readonly switchWhenInactive: string;
 }
 
 export interface ResourceAdviceRecord extends EditorialJudgment {
@@ -184,6 +256,9 @@ export interface ResourceAdviceRecord extends EditorialJudgment {
   readonly subjectReference: EditorialReference;
   readonly context: EditorialContext;
   readonly policy: "reserve" | "spend-for-next-target" | "optional";
+  readonly priority: EditorialRating;
+  readonly earliestRecommendedStage: ProgressionStageSource["endpoint"] | "unprioritized";
+  readonly recommendedUseReferences: readonly EditorialReference[];
 }
 
 export interface SearchAliasRecord {

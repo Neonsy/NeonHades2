@@ -304,8 +304,15 @@ It excludes internal evidence, raw source text, raw runtime structures, private 
 ## Author Phase 7 guide content
 
 Project-owned progression stages, aspect evaluations, Familiar and Hex recommendations, and page definitions live in `/project/data/src/editorial/content.ts`.
-The compiler adds build-bound weapon ratings, weapon-to-Boon rankings, general Boon ratings, Arcana ratings, keepsake priorities, resource policies, search aliases, compatible Hammer rankings, and prerequisite references.
-Aspect guides provide separate rank, consistency, speed, safety, and high-Fear ratings for the aspect tier lists.
+The compiler adds build-bound weapon ratings, weapon-to-Boon rankings, complete per-aspect Boon rankings, item-specific general Boon ratings, card-specific Arcana ratings, keepsake priorities, resource policies, search aliases, compatible Hammer rankings, and prerequisite references.
+Aspect guides cover all five core Boon slots and distinguish the aspect's core moves from support slots.
+They include explicit Boon and Arcana packages, same-slot conflicts, rated Familiar and Hex choices, and only those Duo and Legendary targets whose full prerequisite path is represented.
+Each aspect also includes three authored top Hammers with effect-specific reasons and exact Hammer exclusions from the normalized compatibility records.
+Keepsake routes record whether an effect persists, has limited uses, expires on a timer, decays, or depletes.
+Every inactive keepsake has a condition for replacing it at the next keepsake cabinet.
+Conditional reward rules explain when a core Boon, Magick recovery, a Hammer, maximum Life, a Pom, a rare target, or a permanent resource takes priority.
+Progression stages bind the written order to exact Arcana Cards, incantations, aspects, prophecies, Oath conditions, Testaments, achievements, and other factual records.
+Resource policies assign a progression stage to every resource with a known guide use and leave resources without a verified use unprioritized.
 
 Build the editorial artifact from the normalized dataset certified by Phase 6.
 
@@ -315,7 +322,11 @@ pnpm editorial:build -- --dataset "C:\absolute\project\data\.local\datasets\comp
 
 The command validates every editorial reference against the selected dataset.
 It requires all five progression stages to include an ordered action sequence and a complete weapon, aspect, Arcana, keepsake, Familiar, and Hex loadout.
+It also requires an ordered list of exact progression targets for every stage.
 It requires page definitions, every weapon and aspect, every Boon, every Arcana Card, every Familiar, every Hex, every keepsake, and every resource to have the required editorial coverage.
+Every aspect must rank every Boon exactly once and cover Attack, Special, Cast, Sprint, and Magick priorities.
+Every aspect must include valid build interactions, reward decisions, Grasp accounting, and lifecycle-aware keepsake switches.
+Every normalized Hammer exclusion must appear in the affected aspect guide.
 It also rejects missing search aliases, orphan records, duplicate records, incomplete recommendation context, and required pages without editorial content.
 
 The completed artifact is written under `/project/data/.local/editorial/` with a manifest and completion marker.
