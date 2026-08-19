@@ -300,3 +300,27 @@ The gate re-reads every hash-bound artifact, validates all product requirements 
 It also writes `publication-allowlist.json` for Phase 8.
 The allowlist permits only public contract fields and the structural `recordType` and `id` keys.
 It excludes internal evidence, raw source text, raw runtime structures, private save state, and binary assets.
+
+## Author Phase 7 guide content
+
+Project-owned progression stages and aspect evaluations live in `/project/data/src/editorial/content.ts`.
+The compiler adds build-bound general Boon ratings, keepsake priorities, resource policies, search aliases, compatible Hammer rankings, and prerequisite references without copying maintained factual values into prose.
+
+Build the editorial artifact from the normalized dataset certified by Phase 6.
+
+```powershell
+pnpm editorial:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --data-ready "C:\absolute\project\data\.local\data-ready\completed-run"
+```
+
+The command validates every editorial reference against the selected dataset.
+It requires all five progression stages, every weapon aspect, every Boon, every keepsake, and every resource to have the required editorial coverage.
+It also rejects missing search aliases, orphan records, duplicate records, incomplete recommendation context, and required pages without editorial content.
+
+The completed artifact is written under `/project/data/.local/editorial/` with a manifest and completion marker.
+It is the Phase 8 input and is replaceable by a new artifact for a later verified game build.
+Delete an obsolete acquisition directory only when no publication build references it.
+
+The repository owns the editorial source and compiler.
+The normalized game dataset, combined editorial artifact, and later publication dataset remain local.
+The artifact contains no raw scripts, runtime structures, saves, dialogue, or binary assets.
+No game launch is required for this phase unless the verified facts contradict an editorial recommendation.

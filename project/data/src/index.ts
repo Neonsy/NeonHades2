@@ -10,3 +10,4 @@ export * from "./verification/index.js";
 export * from "./observation/index.js";
 export * from "./training/index.js";
 export * from "./data-ready/index.js";
+export * from "./editorial/index.js";
