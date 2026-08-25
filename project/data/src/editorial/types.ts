@@ -2,7 +2,12 @@ import type { SpoilerLevel } from "../contract/index.js";
 
 export type EditorialRating = "S" | "A" | "B" | "C" | "D";
 
-export type CombatFocus = "attack" | "cast" | "hex" | "omega" | "special" | "sprint";
+export type CombatFocus =
+  "attack" | "cast" | "hex" | "omega" | "special" | "sprint";
+
+export type BoonPrioritySlot = Exclude<CombatFocus, "hex">;
+
+export type BuildGoal = "safest" | "strongest";
 
 export interface EditorialReference {
   readonly recordType: string;
@@ -23,7 +28,12 @@ export interface ProgressionStageSource {
   readonly id: string;
   readonly order: number;
   readonly title: string;
-  readonly endpoint: "first-route-clear" | "main-story" | "true-ending" | "practical-postgame" | "exhaustive-completion";
+  readonly endpoint:
+    | "first-route-clear"
+    | "main-story"
+    | "true-ending"
+    | "practical-postgame"
+    | "exhaustive-completion";
   readonly spoilerLevel: SpoilerLevel;
   readonly readerKnowledge: readonly string[];
   readonly nextObjective: string;
@@ -41,23 +51,33 @@ export interface ProgressionStageSource {
   readonly fallback: string;
 }
 
-export interface AspectProfile {
-  readonly aspectId: string;
+export interface AspectBuildPlan {
   readonly focuses: readonly CombatFocus[];
-  readonly beginnerDifficulty: 1 | 2 | 3 | 4 | 5;
-  readonly rankOneEvaluation: string;
-  readonly maximumRankEvaluation: string;
+  /** Rank all five core slots for this plan's stated goal. */
+  readonly boonPriorityOrder: readonly BoonPrioritySlot[];
   readonly strengths: readonly string[];
   readonly weaknesses: readonly string[];
   readonly combatSequence: readonly string[];
   readonly arcanaIds: readonly string[];
+  /** The first core Boon for each slot is the preferred package. The first array item also selects the opening god keepsake. */
   readonly primaryBoonIds: readonly string[];
   readonly fallbackBoonIds: readonly string[];
+  readonly boonReasons: Readonly<Record<string, string>>;
   readonly familiarId: string;
   readonly hexId: string;
-  readonly contextRatings: Readonly<Record<"consistency" | "speed" | "safety" | "high-fear", EditorialRating>>;
+  readonly contextRatings: Readonly<
+    Record<"consistency" | "speed" | "safety" | "high-fear", EditorialRating>
+  >;
   readonly bossConsideration: string;
   readonly routeConsideration: string;
+}
+
+export interface AspectProfile extends AspectBuildPlan {
+  readonly aspectId: string;
+  readonly beginnerDifficulty: 1 | 2 | 3 | 4 | 5;
+  readonly rankOneEvaluation: string;
+  readonly maximumRankEvaluation: string;
+  readonly safest: AspectBuildPlan;
 }
 
 export interface EditorialJudgment {
@@ -98,6 +118,22 @@ export interface RatedReference {
   readonly prerequisiteReferences: readonly EditorialReference[];
 }
 
+export interface BuildTargetReference extends RatedReference {
+  /** Exact prerequisite alternatives, preserving the game's one-from-each-group structure. */
+  readonly requirementGroups: readonly (readonly EditorialReference[])[];
+  /** One compatible selection from the authored plan, not every possible prerequisite. */
+  readonly selectedPrerequisites: readonly EditorialReference[];
+  readonly requirementSummary: string;
+}
+
+export interface BuildPowerBreakpoint {
+  readonly stage: "foundation" | "online" | "power-spike";
+  readonly title: string;
+  readonly condition: string;
+  readonly effect: string;
+  readonly references: readonly EditorialReference[];
+}
+
 export interface ContextRating {
   readonly context: "consistency" | "speed" | "safety" | "high-fear";
   readonly rating: EditorialRating;
@@ -111,13 +147,26 @@ export interface ArcanaRecommendation extends RatedReference {
 
 export interface RewardPriority {
   readonly order: number;
-  readonly reward: "core-boon" | "magick-recovery" | "hammer" | "maximum-life" | "pom" | "duo-legendary";
+  readonly reward:
+    | "core-boon"
+    | "magick-recovery"
+    | "hammer"
+    | "maximum-life"
+    | "pom"
+    | "duo-legendary";
   readonly reason: string;
 }
 
 export interface RewardDecisionRule {
   readonly condition: string;
-  readonly choose: "core-boon" | "magick-recovery" | "hammer" | "maximum-life" | "pom" | "duo-legendary" | "permanent-resource";
+  readonly choose:
+    | "core-boon"
+    | "magick-recovery"
+    | "hammer"
+    | "maximum-life"
+    | "pom"
+    | "duo-legendary"
+    | "permanent-resource";
   readonly over: readonly RewardDecisionRule["choose"][];
   readonly reason: string;
 }
@@ -129,7 +178,8 @@ export interface BuildInteraction {
   readonly condition: string;
 }
 
-export type KeepsakeLifecycle = "persistent" | "limited-use" | "timed" | "decaying" | "depleting";
+export type KeepsakeLifecycle =
+  "persistent" | "limited-use" | "timed" | "decaying" | "depleting";
 
 export interface ProgressionPriority {
   readonly order: number;
@@ -157,15 +207,17 @@ export interface AspectGuideRecord extends EditorialJudgment {
   }[];
   readonly overallRating: EditorialRating;
   readonly overallReason: string;
+  readonly overallLimitation: string;
   readonly strengths: readonly string[];
   readonly weaknesses: readonly string[];
   readonly beginnerDifficulty: number;
   readonly playstyleCombatSequence: readonly string[];
+  readonly powerBreakpoints: readonly BuildPowerBreakpoint[];
   readonly arcanaLoadout: readonly ArcanaRecommendation[];
   readonly arcanaGraspCost: number;
   readonly arcanaConstraint: string;
   readonly keepsakeRoute: readonly {
-    readonly stage: "opening" | "later-region" | "final-region" | "fallback";
+    readonly stage: "opening" | "later-region" | "final-region";
     readonly reference: EditorialReference;
     readonly reason: string;
     readonly switchCondition: string;
@@ -173,13 +225,41 @@ export interface AspectGuideRecord extends EditorialJudgment {
   }[];
   readonly familiarHex: readonly RatedReference[];
   readonly boonPriorities: readonly {
-    readonly slot: Exclude<CombatFocus, "hex">;
+    readonly slot: BoonPrioritySlot;
     readonly role: "core" | "support";
     readonly preferred: readonly RatedReference[];
     readonly fallback: readonly RatedReference[];
   }[];
   readonly boonRankings: readonly RatedReference[];
-  readonly duoLegendaryTargets: readonly RatedReference[];
+  readonly duoLegendaryTargets: readonly BuildTargetReference[];
+  readonly hammerRankings: readonly RatedReference[];
+  readonly buildInteractions: readonly BuildInteraction[];
+  readonly rewardPriorities: readonly RewardPriority[];
+  readonly rewardDecisionRules: readonly RewardDecisionRule[];
+  readonly conflicts: readonly string[];
+  readonly upgradeConflicts: readonly UpgradeConflict[];
+  readonly bossRouteConsiderations: readonly string[];
+  readonly contextRatings: readonly ContextRating[];
+  readonly buildVariants: Readonly<Record<BuildGoal, AspectBuildVariantRecord>>;
+}
+
+export interface AspectBuildVariantRecord extends EditorialJudgment {
+  readonly goal: BuildGoal;
+  readonly overallRating: EditorialRating;
+  readonly overallReason: string;
+  readonly overallLimitation: string;
+  readonly strengths: readonly string[];
+  readonly weaknesses: readonly string[];
+  readonly playstyleCombatSequence: readonly string[];
+  readonly powerBreakpoints: readonly BuildPowerBreakpoint[];
+  readonly arcanaLoadout: readonly ArcanaRecommendation[];
+  readonly arcanaGraspCost: number;
+  readonly arcanaConstraint: string;
+  readonly keepsakeRoute: AspectGuideRecord["keepsakeRoute"];
+  readonly familiarHex: readonly RatedReference[];
+  readonly boonPriorities: AspectGuideRecord["boonPriorities"];
+  readonly boonRankings: readonly RatedReference[];
+  readonly duoLegendaryTargets: readonly BuildTargetReference[];
   readonly hammerRankings: readonly RatedReference[];
   readonly buildInteractions: readonly BuildInteraction[];
   readonly rewardPriorities: readonly RewardPriority[];
@@ -212,7 +292,10 @@ export interface WeaponGuideRecord extends EditorialJudgment {
 }
 
 export interface TierRatingRecord extends EditorialJudgment {
-  readonly recordType: "editorial/arcana-rating" | "editorial/familiar-rating" | "editorial/hex-rating";
+  readonly recordType:
+    | "editorial/arcana-rating"
+    | "editorial/familiar-rating"
+    | "editorial/hex-rating";
   readonly id: string;
   readonly subjectReference: EditorialReference;
   readonly context: EditorialContext;
@@ -257,7 +340,8 @@ export interface ResourceAdviceRecord extends EditorialJudgment {
   readonly context: EditorialContext;
   readonly policy: "reserve" | "spend-for-next-target" | "optional";
   readonly priority: EditorialRating;
-  readonly earliestRecommendedStage: ProgressionStageSource["endpoint"] | "unprioritized";
+  readonly earliestRecommendedStage:
+    ProgressionStageSource["endpoint"] | "unprioritized";
   readonly recommendedUseReferences: readonly EditorialReference[];
 }
 

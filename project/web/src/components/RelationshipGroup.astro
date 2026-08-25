@@ -1,0 +1,60 @@
+---
+import type { PublicationRecord } from '../lib/publication';
+import RelationshipRecordLink from './RelationshipRecordLink.astro';
+
+type Props = {
+    title: string;
+    records: PublicationRecord[];
+    previewLimit: number;
+    moreNoun: string;
+    hideLabel: string;
+};
+
+const { title, records, previewLimit, moreNoun, hideLabel } = Astro.props;
+const additionalRecords = records.slice(previewLimit);
+---
+
+<section>
+    <h3>{title}</h3>
+    <ul
+        data-balanced-grid
+        data-balanced-grid-layout='justified'
+        data-balanced-grid-min='14rem'
+        data-balanced-grid-max='6'>
+        {
+            records.slice(0, previewLimit).map((record) => (
+                <li>
+                    <RelationshipRecordLink record={record} />
+                </li>
+            ))
+        }
+    </ul>
+    {
+        additionalRecords.length > 0 && (
+            <details class='relationship-disclosure'>
+                <summary>
+                    <span class='relationship-disclosure__label relationship-disclosure__label--closed'>
+                        Show {additionalRecords.length} more {moreNoun}
+                    </span>
+                    <span class='relationship-disclosure__label relationship-disclosure__label--open'>{hideLabel}</span>
+                    <span class='relationship-disclosure__chevron' aria-hidden='true' />
+                </summary>
+                <div class='relationship-disclosure__panel'>
+                    <div>
+                        <ul
+                            data-balanced-grid
+                            data-balanced-grid-layout='justified'
+                            data-balanced-grid-min='14rem'
+                            data-balanced-grid-max='6'>
+                            {additionalRecords.map((record) => (
+                                <li>
+                                    <RelationshipRecordLink record={record} />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </details>
+        )
+    }
+</section>

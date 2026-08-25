@@ -1,0 +1,1074 @@
+/* Record identity and answer share one reading lane; artwork occupies the margin. */
+.record-page-frame {
+    --divine-primary: var(--thread);
+    --divine-secondary: var(--projection);
+}
+.record-hero,
+.record-hero--illustrated,
+.record-hero--character-art,
+.record-hero--without-quick-facts,
+.record-hero--character-art.record-hero--without-quick-facts,
+.record-hero--region {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    grid-template-rows: auto auto auto;
+    align-items: start;
+    gap: 1.8rem clamp(2rem, 4vw, 5rem);
+    min-height: 0;
+    padding-block: 0 3rem;
+}
+.record-return {
+    grid-column: 1 / -1;
+    grid-row: 1;
+}
+.record-hero--illustrated > .subject-art,
+.record-hero--region > .region-map {
+    grid-column: 2;
+    grid-row: 2 / 4;
+}
+.record-hero--illustrated > .record-title-block {
+    grid-column: 1;
+    grid-row: 2;
+}
+.record-hero--illustrated > .subject-art {
+    align-self: start;
+    justify-self: center;
+    width: min(100%, 26rem);
+    height: clamp(16rem, 28vw, 26rem);
+    min-height: 0;
+}
+.record-hero--without-quick-facts > .subject-art {
+    grid-row: 2;
+}
+.record-hero--region > .record-quick-facts {
+    grid-column: 1;
+    grid-row: 3;
+}
+.region-map {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+    margin: 0;
+}
+.region-map svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 1.5rem 2.4rem rgb(2 4 10 / 0.46));
+}
+.region-map__art {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+.region-map__terrain path {
+    fill: color-mix(in srgb, var(--map-accent) 8%, transparent);
+    stroke: color-mix(in srgb, var(--map-accent) 48%, transparent);
+    stroke-width: 2;
+}
+.region-map__terrain path:not(:first-child) {
+    fill: color-mix(in srgb, var(--map-secondary) 7%, transparent);
+    stroke: color-mix(in srgb, var(--map-secondary) 40%, transparent);
+}
+.region-map__contours path {
+    fill: none;
+    stroke: color-mix(in srgb, var(--map-secondary) 58%, transparent);
+    stroke-width: 2;
+    stroke-dasharray: 5 9;
+}
+.region-map__route-shadow,
+.region-map__route {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.region-map__route-shadow {
+    stroke: #05070d;
+    stroke-width: 15;
+}
+.region-map__route {
+    stroke: var(--map-accent);
+    stroke-width: 7;
+    stroke-dasharray: 16 10;
+    filter: drop-shadow(0 0 0.5rem color-mix(in srgb, var(--map-accent) 52%, transparent));
+}
+.region-map__landmark > circle {
+    fill: #0a1019;
+    stroke: var(--map-accent);
+    stroke-width: 4;
+    filter: drop-shadow(0 0 0.55rem color-mix(in srgb, var(--map-accent) 48%, transparent));
+}
+
+.region-map__landmark > path,
+.region-map__landmark > g path {
+    fill: color-mix(in srgb, var(--map-secondary) 74%, white);
+    stroke: #070a11;
+    stroke-width: 2;
+    stroke-linejoin: round;
+}
+.region-map__compass circle {
+    fill: rgb(6 10 17 / 0.82);
+    stroke: color-mix(in srgb, var(--map-secondary) 42%, transparent);
+    stroke-width: 2;
+}
+.region-map__compass path:first-of-type {
+    fill: var(--map-accent);
+}
+.region-map__compass path:last-of-type {
+    fill: color-mix(in srgb, var(--map-secondary) 72%, white);
+}
+.region-map__key {
+    display: grid;
+    grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.28fr);
+    gap: var(--space-4) var(--space-6);
+    align-items: start;
+    padding: var(--space-4);
+    border-block: 1px solid color-mix(in srgb, var(--map-accent) 42%, transparent);
+    background: color-mix(in srgb, var(--map-accent) 6%, var(--ink-deep));
+    font-size: var(--type-support);
+}
+.region-map__key dl {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+}
+.region-map__key dl > div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-3);
+}
+.region-map__key dt {
+    color: var(--map-accent);
+    font-weight: 780;
+}
+.region-map__key dd {
+    margin: 0;
+    color: var(--paper);
+}
+.region-map__key ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding: 0;
+    color: var(--paper-soft);
+    list-style: none;
+}
+.region-map__key li {
+    position: relative;
+    padding-left: var(--space-4);
+}
+.region-map__key li::before {
+    position: absolute;
+    top: 0.72em;
+    left: 0;
+    width: 0.38rem;
+    aspect-ratio: 1;
+    background: var(--map-accent);
+    content: '';
+    transform: rotate(45deg);
+}
+.region-map figcaption {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1rem 1.5rem;
+    align-items: baseline;
+    padding-inline: 1rem;
+}
+.region-map figcaption strong {
+    color: var(--map-accent);
+    font-size: 1.125rem;
+}
+.region-map figcaption span {
+    color: var(--paper-dim);
+    line-height: 1.55;
+}
+.record-return {
+    grid-column: 1 / -1;
+}
+.record-return a,
+.chapter-breadcrumb a {
+    color: var(--paper-dim);
+    font-size: 1.125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.record-return a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-block: 0.35rem;
+}
+.record-title-block {
+    align-self: center;
+}
+.record-title-block h1 {
+    color: var(--divine-primary);
+    font-size: clamp(3.5rem, 6vw, 6rem);
+}
+.record-givers {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin: 1rem 0 0;
+}
+.record-givers dt {
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.record-givers dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+}
+.record-givers .record-link {
+    min-height: 4.5rem;
+    padding-block: 0.25rem;
+    color: var(--paper);
+    font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+    font-weight: 700;
+    text-decoration-color: color-mix(in srgb, var(--divine-primary) 58%, transparent);
+    text-decoration-thickness: var(--link-underline-thickness);
+    text-underline-offset: var(--link-underline-offset);
+}
+.record-givers .subject-art--identity {
+    flex: 0 0 auto;
+    width: 4.25rem;
+    height: 4.5rem;
+}
+.record-givers .subject-art--character.subject-art--identity.subject-art--raster img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: none;
+}
+.record-givers + p {
+    margin-top: 1.25rem;
+}
+@media (max-width: 600px) {
+    .record-givers {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+.record-hero--illustrated .record-title-block h1 {
+    max-width: 12ch;
+    font-size: clamp(3.25rem, 4.4vw, 6rem);
+    overflow-wrap: normal;
+    text-wrap: balance;
+}
+.record-quick-facts {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+    padding: 1.5rem 0;
+    border-block: 1px solid var(--rule);
+}
+.record-quick-facts > a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--divine-primary);
+    font-size: 1.125rem;
+}
+.record-quick-facts .record-dossier {
+    gap: clamp(2rem, 4vw, 3rem);
+}
+.record-quick-facts .record-field {
+    padding: 0;
+    background: transparent;
+    clip-path: none;
+}
+.record-hero--familiar > .subject-art {
+    grid-column: 2;
+    grid-row: 2 / 5;
+}
+.record-hero--familiar > .record-title-block {
+    grid-column: 1;
+    grid-row: 2;
+}
+.record-hero--familiar > .record-quick-facts {
+    grid-column: 1;
+    grid-row: 4;
+}
+.record-hero--familiar .record-quick-facts h2 {
+    color: var(--divine-primary);
+    font-size: clamp(1.7rem, 2.4vw, 2.35rem);
+}
+.familiar-role-grid {
+    display: grid;
+    grid-column: 1;
+    grid-row: 3;
+    gap: 0.75rem;
+    margin: 0;
+}
+.familiar-role-grid > div {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 1.25rem;
+    padding: 1.15rem 1.3rem;
+    background: linear-gradient(112deg, rgb(12 29 33 / 0.96), rgb(17 15 31 / 0.94));
+    clip-path: polygon(0 0.45rem, 0.55rem 0, 100% 0, 100% calc(100% - 0.5rem), calc(100% - 0.7rem) 100%, 0 100%);
+}
+.familiar-role-grid dt {
+    color: var(--thread);
+    font-size: 1.125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.familiar-role-grid dd {
+    margin: 0;
+    color: var(--paper-soft);
+    line-height: 1.5;
+}
+.record-field--familiar-upgrades {
+    width: min(100%, 64rem);
+    justify-self: center;
+}
+.record-field--familiar-upgrades .upgrade-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-4);
+}
+.record-field--familiar-upgrades .upgrade-groups > .field-lead {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+.record-field--familiar-upgrades .upgrade-groups > section {
+    display: grid;
+    min-width: 0;
+    align-content: start;
+    padding-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, var(--divine-primary) 30%, transparent);
+}
+.record-field--familiar-upgrades .upgrade-groups h3 {
+    margin-bottom: var(--space-3);
+}
+.record-field--familiar-upgrades .upgrade-groups ol {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.record-field--familiar-upgrades .upgrade-groups li {
+    display: grid;
+    gap: var(--space-2);
+}
+.record-field--familiar-upgrades .upgrade-groups li + li {
+    padding-top: var(--space-3);
+    border-top: 1px solid color-mix(in srgb, var(--divine-primary) 24%, transparent);
+}
+.record-field--familiar-upgrades .upgrade-groups :where(p, span) {
+    margin: 0;
+}
+@media (max-width: 600px) {
+    .record-field--familiar-upgrades .upgrade-groups {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+.record-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 24rem);
+    gap: clamp(4rem, 9vw, 10rem);
+    align-items: start;
+    margin-top: clamp(4rem, 7vw, 7rem);
+}
+.record-layout-relations-only {
+    grid-template-columns: minmax(0, 42rem);
+    justify-content: end;
+}
+.record-layout-details-only {
+    grid-template-columns: minmax(0, 1fr);
+}
+.record-layout-relations-dense {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(3.5rem, 7vw, 7rem);
+}
+.record-layout-relations-dense > .record-dossier {
+    width: 100%;
+}
+.record-layout-relations-dense.record-layout-relations-only {
+    grid-template-columns: minmax(0, 72rem);
+    justify-content: center;
+}
+.record-dossier {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5.5rem;
+    min-width: 0;
+    align-self: start;
+    align-content: start;
+}
+.record-field {
+    position: relative;
+    min-width: 0;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    background: linear-gradient(108deg, rgb(15 23 31 / 0.78), rgb(16 14 30 / 0.56));
+    clip-path: polygon(0 0.65rem, 0.9rem 0, 96% 0, 100% 1.2rem, 100% 100%, 1rem 100%, 0 96%);
+}
+.record-field h2,
+.record-field h3 {
+    margin-bottom: 1rem;
+    color: var(--divine-primary);
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+    letter-spacing: -0.02em;
+}
+.record-field p,
+.record-field li,
+.reader-facts dd {
+    color: var(--paper-soft);
+}
+.named-description-list > li {
+    min-width: 0;
+}
+.named-description-list > li > :where(strong, span) {
+    display: block;
+    overflow-wrap: anywhere;
+}
+.named-description-list > li > span {
+    margin-top: var(--space-1);
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+}
+.metric-list,
+.rarity-scaling-list,
+.fact-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.8rem;
+    margin: 0;
+}
+.metric-list > div,
+.rarity-scaling-list > div,
+.fact-list > div {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--divine-primary) 7%, var(--ink-deep));
+    border: 1px solid color-mix(in srgb, var(--divine-primary) 24%, transparent);
+    clip-path: polygon(0 0.4rem, 0.5rem 0, 100% 0, 100% calc(100% - 0.4rem), calc(100% - 0.5rem) 100%, 0 100%);
+}
+.metric-list :where(dt, dd),
+.rarity-scaling-list :where(dt, dd),
+.fact-list :where(dt, dd) {
+    margin: 0;
+}
+.metric-list dt,
+.rarity-scaling-list dt,
+.fact-list dt {
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.metric-list dd,
+.rarity-scaling-list dd,
+.fact-list dd {
+    color: var(--paper);
+    font-size: var(--type-body);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+.reader-facts {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem 2rem;
+    margin: 0;
+}
+
+.reader-steps {
+    display: grid;
+    gap: 0.8rem;
+    margin: 1rem 0 0;
+    padding-inline-start: 1.5rem;
+}
+
+.reader-steps li {
+    padding-inline-start: 0.3rem;
+}
+.reader-facts dt {
+    color: var(--paper-dim);
+}
+.reader-facts dd {
+    margin: 0;
+}
+.reference-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.35rem;
+}
+.record-field-derived p + .reference-cloud,
+.record-field-derived .reader-facts + .reference-cloud {
+    margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
+}
+.reference-cloud a {
+    padding: 0.2rem 0;
+    border: 0;
+    text-decoration-color: color-mix(in srgb, var(--divine-primary) 58%, transparent);
+    text-decoration-thickness: var(--link-underline-thickness);
+    text-underline-offset: var(--link-underline-offset);
+}
+
+.boon-pool-groups {
+    display: grid;
+    padding: 0;
+    margin: clamp(1.5rem, 2.5vw, 2.25rem) 0 0;
+    list-style: none;
+    border-block: 1px solid color-mix(in srgb, var(--divine-primary) 32%, transparent);
+}
+
+.boon-pool-group {
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+    gap: 1.25rem clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+    padding: clamp(1.2rem, 2vw, 1.65rem) 0;
+}
+
+.boon-pool-group + .boon-pool-group {
+    border-top: 1px solid color-mix(in srgb, var(--divine-primary) 20%, transparent);
+}
+
+.boon-pool-group > header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-inline-start: 0.85rem;
+    border-inline-start: 2px solid color-mix(in srgb, var(--divine-primary) 62%, transparent);
+}
+
+.boon-pool-group h3 {
+    margin: 0;
+    color: var(--paper);
+    font-size: var(--type-support);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.boon-pool-group > header > span {
+    color: var(--paper-dim);
+    font-variant-numeric: tabular-nums;
+}
+
+.boon-pool-group > .reference-cloud {
+    gap: 0.75rem 1.5rem;
+    margin: 0;
+}
+
+.boon-pool-group--legendary > header {
+    border-inline-start-color: var(--ember);
+}
+
+.boon-pool-group--legendary h3 {
+    color: var(--ember);
+}
+
+.boon-pool-group--duo > header {
+    border-inline-start-color: color-mix(in srgb, var(--projection) 82%, var(--divine-primary));
+}
+.prerequisite-choice {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+.prerequisite-choice > .field-lead {
+    max-width: 46rem;
+    margin: 0;
+    color: var(--paper);
+    font-size: clamp(1.125rem, 1.5vw, 1.35rem);
+    font-weight: 700;
+}
+.prerequisite-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.prerequisite-groups > li {
+    display: grid;
+    align-content: start;
+    gap: 1.1rem;
+    min-width: 0;
+    padding: 1.15rem 1.25rem 1.35rem;
+    background:
+        linear-gradient(115deg, color-mix(in srgb, var(--divine-primary) 13%, transparent), transparent 58%),
+        rgb(8 15 25 / 0.5);
+    border-inline-start: 2px solid color-mix(in srgb, var(--divine-primary) 64%, transparent);
+    clip-path: polygon(0 0, calc(100% - 0.7rem) 0, 100% 0.7rem, 100% 100%, 0 100%);
+}
+.prerequisite-groups header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    align-items: baseline;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--divine-primary) 30%, transparent);
+}
+.prerequisite-groups header span {
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+.prerequisite-groups header strong {
+    color: var(--divine-primary);
+    font-size: var(--type-support);
+    letter-spacing: 0.04em;
+}
+.prerequisite-groups .reference-cloud {
+    gap: 0.75rem 1.25rem;
+}
+.prerequisite-groups-single {
+    grid-template-columns: minmax(0, 46rem);
+}
+.cost-groups,
+.cost-groups > div,
+.cost-groups dd {
+    margin: 0;
+}
+.cost-groups {
+    display: grid;
+    gap: 1.25rem;
+}
+.cost-groups > div {
+    display: grid;
+    gap: 0.8rem;
+}
+.cost-groups dt {
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.cost-groups dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+.progression-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    margin: 0;
+    border-block: 1px solid color-mix(in srgb, var(--divine-primary) 34%, transparent);
+    background: rgb(7 12 21 / 0.32);
+}
+.progression-matrix {
+    display: grid;
+    gap: var(--space-4);
+    width: min(100%, 78rem);
+    margin-inline: auto;
+}
+.progression-shared-effects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid color-mix(in srgb, var(--divine-primary) 34%, transparent);
+    border-radius: var(--control-radius);
+    background:
+        radial-gradient(circle at 100% 0, color-mix(in srgb, var(--divine-primary) 16%, transparent), transparent 45%),
+        color-mix(in srgb, var(--ink-deep) 82%, transparent);
+    box-shadow: var(--depth-low);
+}
+.progression-shared-effects > div {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--space-2) var(--space-4);
+    align-items: baseline;
+}
+.progression-shared-effects :where(dt, dd) {
+    margin: 0;
+}
+.progression-shared-effects dt {
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+    font-weight: 750;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.progression-shared-effects dd {
+    color: var(--paper);
+    font-size: var(--type-body);
+    font-weight: 780;
+}
+.progression-shared-effects small,
+.progression-matrix-value small {
+    display: block;
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+}
+.progression-table {
+    min-width: 42rem;
+    margin: 0;
+}
+.progression-table--matrix {
+    width: 100%;
+    min-width: 52rem;
+    table-layout: fixed;
+}
+.progression-table--matrix caption {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid color-mix(in srgb, var(--divine-primary) 34%, transparent);
+    color: var(--paper);
+    font-size: clamp(1.3rem, 1.6vw, 1.55rem);
+    font-weight: 780;
+    text-align: left;
+}
+.progression-table--matrix :where(th, td) {
+    min-width: 0;
+    padding: var(--space-4) var(--space-5);
+}
+.progression-table--matrix thead th {
+    border-bottom-color: color-mix(in srgb, var(--divine-primary) 48%, transparent);
+    background: color-mix(in srgb, var(--divine-primary) 7%, transparent);
+    color: var(--paper);
+    font-size: var(--type-support);
+}
+.progression-table--matrix thead th:first-child,
+.progression-table--matrix tbody th {
+    width: 9rem;
+}
+.progression-table--matrix tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--divine-primary) 4%, transparent);
+}
+.progression-table--matrix tbody th {
+    color: var(--divine-primary);
+    font-size: var(--type-support);
+    white-space: nowrap;
+}
+.progression-table--single-metric tbody td {
+    text-align: center;
+}
+.progression-matrix-value {
+    display: inline-grid;
+    color: var(--paper);
+    font-size: clamp(1.3rem, 1.6vw, 1.55rem);
+    line-height: 1.25;
+}
+.progression-table--matrix-compact {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+.progression-table--matrix-compact :where(th:first-child, tbody th) {
+    width: 34%;
+}
+.progression-table :where(th, td) {
+    padding: 1rem 1.15rem;
+}
+.progression-table tbody > tr:last-child > :is(th, td) {
+    border-bottom: 0;
+}
+.progression-table tbody :where(th, td) {
+    vertical-align: middle;
+}
+.progression-table tbody th {
+    color: var(--paper);
+}
+.progression-table tbody th small {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.progression-effects {
+    display: grid;
+    gap: 0.45rem;
+    align-content: center;
+    margin: 0;
+}
+.progression-effects > div {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    min-width: 0;
+}
+.progression-effects :where(dt, dd) {
+    margin: 0;
+}
+.progression-effects dt {
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+}
+.progression-effects dd {
+    min-width: 0;
+    color: var(--paper);
+    font-weight: 750;
+    overflow-wrap: normal;
+}
+.progression-effects dd small {
+    display: block;
+    margin-top: 0.1rem;
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+    font-weight: 650;
+    text-transform: capitalize;
+}
+.progression-table--matrix-compact .progression-effects > div {
+    display: grid;
+    grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.35fr);
+    align-items: baseline;
+}
+.progression-costs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+}
+.progression-costs > span {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    white-space: nowrap;
+}
+.progression-costs b {
+    color: var(--paper);
+}
+.progression-empty {
+    color: var(--paper-dim);
+    font-size: var(--type-support);
+}
+@media (max-width: 700px) {
+    .region-map__key {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .progression-matrix {
+        gap: var(--space-3);
+    }
+    .progression-shared-effects {
+        padding: var(--space-4);
+    }
+    .progression-shared-effects > div {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .progression-table-wrap {
+        margin-inline: -0.25rem;
+        padding-inline: 0.25rem;
+    }
+    .progression-table :where(th, td) {
+        padding: 0.85rem 0.95rem;
+    }
+}
+.cost-item {
+    display: inline-grid;
+    grid-template-columns: auto minmax(0, auto);
+    gap: 0.7rem;
+    align-items: center;
+    min-height: 3.2rem;
+    padding: 0.45rem 1rem 0.45rem 0.55rem;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--divine-primary) 19%, #111725), rgb(12 15 26 / 0.82));
+    clip-path: polygon(0 0.55rem, 0.6rem 0, 100% 0, 100% calc(100% - 0.5rem), calc(100% - 0.6rem) 100%, 0 100%);
+}
+.cost-quantity {
+    display: grid;
+    min-width: 2.25rem;
+    aspect-ratio: 1;
+    place-items: center;
+    background: color-mix(in srgb, var(--divine-primary) 25%, #101521);
+    clip-path: polygon(50% 0, 95% 28%, 83% 82%, 50% 100%, 10% 78%, 0 30%);
+    color: var(--paper);
+    font-size: 1.2rem;
+    line-height: 1;
+}
+.relationship-rail {
+    align-self: start;
+    position: sticky;
+    top: 8rem;
+}
+.relationship-rail h2 {
+    font-size: clamp(1.6rem, 3vw, 2.8rem);
+}
+.relationship-rail h3 {
+    margin-block: 2rem 1rem;
+    color: var(--paper-dim);
+    font-size: 1.125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.relationship-rail ul {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+@media (max-width: 900px) {
+    .relationship-rail:not(.relationship-rail--dense) ul > li,
+    .relationship-rail:not(.relationship-rail--dense) ul > li > a {
+        inline-size: 100%;
+        width: 100%;
+    }
+}
+.relationship-rail a {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.8rem 0.95rem;
+    background:
+        radial-gradient(
+            circle at var(--archive-light-x) -20%,
+            color-mix(in srgb, var(--archive-accent) 22%, transparent),
+            transparent 54%
+        ),
+        linear-gradient(104deg, var(--archive-surface-a), var(--archive-surface-b));
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--archive-accent) 24%, transparent),
+        inset 0 -1px 0 rgb(0 0 0 / 0.42),
+        0 0.8rem 1.8rem rgb(1 4 10 / 0.2);
+    clip-path: polygon(0 0.35rem, 0.45rem 0, 100% 0, 100% calc(100% - 0.35rem), calc(100% - 0.55rem) 100%, 0 100%);
+    text-decoration: none;
+}
+.relationship-rail a:hover strong {
+    color: var(--archive-accent);
+}
+.relationship-rail span {
+    color: var(--paper-dim);
+    font-size: 1.125rem;
+}
+.relationship-rail .record-link {
+    display: grid;
+    grid-template-columns: 2.35rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+.relationship-record-link__copy {
+    display: grid;
+    min-width: 0;
+    gap: 0.15rem;
+}
+.relationship-rail summary {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    width: fit-content;
+    min-height: 3rem;
+    margin-top: 1.25rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--divine-primary) 46%, transparent);
+    background: linear-gradient(110deg, rgb(11 31 35 / 0.9), rgb(18 15 34 / 0.82));
+    clip-path: polygon(0 0.45rem, 0.55rem 0, 100% 0, 100% calc(100% - 0.45rem), calc(100% - 0.55rem) 100%, 0 100%);
+    color: var(--divine-primary);
+    font-weight: 700;
+    list-style: none;
+    cursor: pointer;
+}
+.relationship-rail summary::-webkit-details-marker {
+    display: none;
+}
+.relationship-rail summary:is(:hover, :focus-visible) {
+    border-color: color-mix(in srgb, var(--divine-primary) 76%, transparent);
+    background: linear-gradient(110deg, rgb(15 45 47 / 0.96), rgb(25 20 46 / 0.9));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--divine-primary) 16%, transparent);
+}
+.relationship-rail summary:active {
+    transform: translateY(1px) scale(0.985);
+}
+.relationship-rail summary :where(.relationship-disclosure__label, .relationship-disclosure__chevron) {
+    color: inherit;
+}
+.relationship-disclosure__label--open {
+    display: none;
+}
+.relationship-disclosure[open] .relationship-disclosure__label--closed {
+    display: none;
+}
+.relationship-disclosure[open] .relationship-disclosure__label--open {
+    display: inline;
+}
+.relationship-disclosure__chevron {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-right: 0.14rem solid currentColor;
+    border-bottom: 0.14rem solid currentColor;
+    transform: translateY(-0.12rem) rotate(45deg);
+}
+.relationship-disclosure[open] .relationship-disclosure__chevron {
+    transform: translateY(0.12rem) rotate(225deg);
+}
+.relationship-disclosure__panel ul {
+    margin-top: var(--space-3);
+}
+@media (prefers-reduced-motion: no-preference) {
+    .relationship-rail summary {
+        transition:
+            border-color 160ms ease,
+            background 160ms ease,
+            box-shadow 160ms ease,
+            transform 90ms ease;
+    }
+    .relationship-disclosure__chevron {
+        transition: transform 180ms ease;
+    }
+}
+.relationship-rail--dense {
+    position: relative;
+    top: auto;
+    grid-column: 1 / -1;
+    width: 100%;
+}
+.relationship-rail--dense > header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--divine-primary) 38%, transparent);
+}
+.relationship-rail--dense > section {
+    margin-top: 2rem;
+}
+.relationship-rail--dense h3 {
+    margin-top: 0;
+}
+.relationship-rail--dense > section > ul,
+.relationship-rail--dense .relationship-disclosure__panel ul {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    grid-auto-rows: 9rem;
+    gap: var(--space-3);
+}
+
+.relationship-rail--dense li {
+    min-width: 0;
+    height: 100%;
+}
+.relationship-rail--dense a {
+    align-content: center;
+    height: 100%;
+    min-height: 0;
+}
+
+@supports (content-visibility: auto) {
+    .relationship-rail li {
+        content-visibility: auto;
+        contain-intrinsic-block-size: auto 7rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .relationship-rail--dense > section > ul,
+    .relationship-rail--dense .relationship-disclosure__panel ul {
+        grid-auto-rows: auto;
+    }
+
+    .relationship-rail--dense a {
+        min-height: 6.5rem;
+    }
+}

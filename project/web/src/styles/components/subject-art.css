@@ -1,0 +1,134 @@
+.subject-art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+    pointer-events: none;
+}
+.subject-art svg,
+.subject-art img {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    object-fit: contain;
+    transition:
+        transform 420ms var(--ease-stage),
+        filter 420ms var(--ease-stage);
+}
+.subject-art--raster {
+    overflow: visible;
+}
+.subject-art--raster img {
+    position: absolute;
+    inset: 0;
+}
+.subject-art--raster .subject-art__raster-core {
+    filter: drop-shadow(0 1.1rem 1rem rgb(1 5 10 / 0.58));
+}
+.subject-art--hero.subject-art--raster .subject-art__raster-core,
+.subject-art--stage.subject-art--raster .subject-art__raster-core {
+    filter: drop-shadow(0 1.1rem 1rem rgb(1 5 10 / 0.62))
+        drop-shadow(-0.12rem -0.16rem 0.1rem color-mix(in srgb, var(--subject-accent) 32%, transparent))
+        drop-shadow(0.14rem 0.12rem 0.12rem rgb(242 189 87 / 0.12));
+}
+.subject-art--hero::before,
+.subject-art--stage::before {
+    position: absolute;
+    z-index: -1;
+    inset: 16% 10% 5%;
+    border-radius: 48%;
+    background:
+        radial-gradient(circle at 42% 28%, color-mix(in srgb, var(--subject-accent) 18%, transparent), transparent 42%),
+        radial-gradient(circle at 62% 68%, rgb(165 137 255 / 0.1), transparent 48%);
+    content: '';
+    filter: blur(1.4rem);
+}
+.subject-art--raster .subject-art__raster-effects {
+    opacity: 0.82;
+    mix-blend-mode: screen;
+    transform-origin: 68% 52%;
+}
+.subject-art--feathered-character {
+    -webkit-mask-image:
+        linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent),
+        linear-gradient(to bottom, #000 0%, #000 84%, transparent 100%);
+    mask-image:
+        linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent),
+        linear-gradient(to bottom, #000 0%, #000 84%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .subject-art--raster .subject-art__raster-effects {
+        animation: subject-sea-light 3.8s ease-in-out infinite;
+    }
+}
+@keyframes subject-sea-light {
+    0%,
+    100% {
+        opacity: 0.62;
+        filter: drop-shadow(0 0 0.2rem rgb(91 238 220 / 0.28));
+        transform: scale(0.995);
+    }
+    45% {
+        opacity: 1;
+        filter: drop-shadow(0 0 0.65rem rgb(91 238 220 / 0.62));
+        transform: scale(1.008);
+    }
+}
+.subject-art--row {
+    width: 4.75rem;
+    height: 4.75rem;
+    align-self: center;
+}
+.subject-art--inline {
+    flex: 0 0 auto;
+    width: 2.35rem;
+    height: 2.35rem;
+}
+.subject-art--inline svg {
+    filter: drop-shadow(0 0.25rem 0.25rem rgb(2 3 10 / 0.45));
+}
+.record-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: fit-content;
+    max-width: 100%;
+    vertical-align: middle;
+}
+.record-link > span:last-child {
+    min-width: 0;
+}
+.subject-art--character.subject-art--row svg {
+    width: 3.7rem;
+}
+.subject-art--character.subject-art--row.subject-art--raster img,
+.subject-art--character.subject-art--inline.subject-art--raster img {
+    height: 100%;
+    transform: none;
+}
+.surface-guide .subject-art--character.subject-art--inline.subject-art--raster img {
+    height: 100%;
+    transform: none;
+}
+.subject-art--hero {
+    align-self: stretch;
+    width: min(19vw, 16rem);
+    min-height: 27rem;
+}
+.subject-art--ember {
+    --subject-accent: var(--ember);
+}
+.subject-art--moon {
+    --subject-accent: #d4d7ee;
+}
+.subject-art--night {
+    --subject-accent: #d75b75;
+}
+.subject-art--thread {
+    --subject-accent: var(--thread);
+}
+.subject-art--violet {
+    --subject-accent: var(--projection);
+}

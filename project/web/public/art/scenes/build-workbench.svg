@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 860" role="img" aria-labelledby="title desc">
+  <title id="title">Nocturnal weapon assembly workbench</title>
+  <desc id="desc">A three-quarter workbench with a disassembled crescent weapon, drafting folio, vice, tools, fasteners and reagent vessels arranged as a working plan.</desc>
+  <defs>
+    <linearGradient id="bench-top" x1="117" y1="170" x2="906" y2="751" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#313347"/>
+      <stop offset=".42" stop-color="#1d2331"/>
+      <stop offset="1" stop-color="#10151f"/>
+    </linearGradient>
+    <linearGradient id="bench-edge" x1="118" y1="658" x2="1000" y2="792" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#161b27"/>
+      <stop offset=".55" stop-color="#0a0e17"/>
+      <stop offset="1" stop-color="#05070c"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="306" y1="292" x2="763" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ded8c8"/>
+      <stop offset=".62" stop-color="#bdb8aa"/>
+      <stop offset="1" stop-color="#8f8d89"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d7dceb"/>
+      <stop offset=".22" stop-color="#778299"/>
+      <stop offset=".52" stop-color="#293243"/>
+      <stop offset=".78" stop-color="#8794a9"/>
+      <stop offset="1" stop-color="#1a202c"/>
+    </linearGradient>
+    <linearGradient id="bronze" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f2bd57"/>
+      <stop offset=".32" stop-color="#a76835"/>
+      <stop offset=".7" stop-color="#5c3029"/>
+      <stop offset="1" stop-color="#24171b"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#744052"/>
+      <stop offset=".45" stop-color="#412536"/>
+      <stop offset="1" stop-color="#1b1420"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#c6fff3" stop-opacity=".86"/>
+      <stop offset=".24" stop-color="#4ccfbd" stop-opacity=".72"/>
+      <stop offset=".7" stop-color="#174f55" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#0c222c" stop-opacity=".94"/>
+    </linearGradient>
+    <linearGradient id="violet-metal" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#b7a4ff"/>
+      <stop offset=".25" stop-color="#7259cf"/>
+      <stop offset=".62" stop-color="#332c65"/>
+      <stop offset="1" stop-color="#17172c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- cast shadows and bench -->
+  <path d="M86 754 737 683 1064 752 431 851 92 816Z" fill="#02040a" opacity=".72"/>
+  <path d="m65 218 893-124 95 547-925 137Z" fill="url(#bench-top)" stroke="#080b12" stroke-width="7" stroke-linejoin="round"/>
+  <path d="m128 778 925-137-37 83-864 126Z" fill="url(#bench-edge)" stroke="#080b12" stroke-width="7" stroke-linejoin="round"/>
+  <path d="m151 742 853-126 9 39-862 127Z" fill="#080c14" opacity=".72"/>
+  <path d="m182 793 120-18-15 76-116 9Z" fill="#080b12"/>
+  <path d="m835 689 121-18 48 99-118 18Z" fill="#080b12"/>
+  <path d="M109 264 950 147" fill="none" stroke="#596177" stroke-width="3" opacity=".42"/>
+  <path d="M135 334 973 216M146 403l842-117M154 471l846-118M168 542l843-119M181 611l841-119" fill="none" stroke="#596177" stroke-width="2" opacity=".22"/>
+  <path d="m196 279 106-15m-65 70 166-23m-235 109 92-13m523-186 138-19m-83 92 121-17m-23 162 61-9M179 672l139-21m510-9 148-22" fill="none" stroke="#8790a5" stroke-width="4" stroke-linecap="round" opacity=".28"/>
+  <path d="m213 284 47 39m87-65-31 74m510-127 74 45m-24 138 73 26m-709 176 63 52m500-3 67 29" fill="none" stroke="#090c13" stroke-width="5" opacity=".42"/>
+
+  <!-- raised tool rail -->
+  <path d="m91 176 361-54 9 111-355 53Z" fill="#0b1019" stroke="#07090f" stroke-width="5"/>
+  <path d="m112 194 326-49 4 22-326 49Z" fill="#252b3b"/>
+  <path d="m131 221 286-43" fill="none" stroke="#767f94" stroke-width="3" opacity=".55"/>
+  <path d="m151 154 17 109" stroke="#9d6840" stroke-width="14"/>
+  <path d="m148 157 8 105" stroke="#efbd62" stroke-width="4" opacity=".72"/>
+  <path d="m204 146 13 108" stroke="#5e7189" stroke-width="12"/>
+  <path d="m203 149 4 103" stroke="#c8d4e2" stroke-width="3" opacity=".7"/>
+  <path d="m267 135-7 113" stroke="#8c4e5f" stroke-width="16"/>
+  <path d="m265 139-2 104" stroke="#d9818f" stroke-width="4" opacity=".55"/>
+  <path d="m327 130 20 106" stroke="#6b58b5" stroke-width="13"/>
+  <path d="m326 133 10 100" stroke="#c1b5ff" stroke-width="3" opacity=".55"/>
+  <path d="m384 118-4 108" stroke="#9b7450" stroke-width="15"/>
+  <path d="m383 122-1 101" stroke="#f2bd57" stroke-width="3" opacity=".62"/>
+  <path d="m137 143 27-20 20 16-8 29-30 4Z" fill="#252d3e" stroke="#090c13" stroke-width="4"/>
+  <path d="m199 133 17-25 22 14-4 31-30 5Z" fill="#36465c" stroke="#090c13" stroke-width="4"/>
+  <path d="m249 126 20-27 27 17-5 31-36 6Z" fill="#503045" stroke="#090c13" stroke-width="4"/>
+  <path d="m315 116 23-25 25 18-2 31-38 5Z" fill="#302a64" stroke="#090c13" stroke-width="4"/>
+  <path d="m368 110 21-29 28 18-4 31-39 6Z" fill="#513925" stroke="#090c13" stroke-width="4"/>
+
+  <!-- vellum assembly folio -->
+  <path d="m300 315 423-61 105 339-446 67Z" fill="#060910" opacity=".54"/>
+  <path d="m286 296 424-62 104 338-445 68Z" fill="url(#paper)" stroke="#171821" stroke-width="5" stroke-linejoin="round"/>
+  <path d="m304 313 388-57 93 298-407 62Z" fill="none" stroke="#5f5d67" stroke-width="2"/>
+  <path d="m319 344 352-52m-335 104 360-53m-343 105 370-55m-352 109 378-56m-360 110 384-57" fill="none" stroke="#706c72" stroke-width="2" opacity=".3"/>
+  <path d="m347 323 46-7-4 17-37 6Zm316-47 30-5 8 23-31 5Z" fill="#2b303c" opacity=".62"/>
+  <path d="M406 352c57-41 151-64 225-47 51 12 82 45 89 92-47-25-102-28-157-8-56 20-99 59-130 116-22-39-34-93-27-153Z" fill="none" stroke="#5b5791" stroke-width="4"/>
+  <path d="M440 373c47-30 114-45 166-34 27 6 49 18 66 36-61-5-122 21-174 78-21-21-42-49-58-80Z" fill="none" stroke="#8d7be5" stroke-width="3"/>
+  <path d="m434 515 266-39m-222 92 248-36" fill="none" stroke="#3f766f" stroke-width="3" stroke-dasharray="12 9"/>
+  <path d="m390 593 24-30 17 19 28-8 8 21-33 20Z" fill="none" stroke="#6c666c" stroke-width="3"/>
+  <path d="m726 284 45 24-24 35-20-16-22 13-12-28Z" fill="none" stroke="#6c666c" stroke-width="3"/>
+
+  <!-- disassembled crescent head, laid diagonally -->
+  <path d="M420 515c51-87 139-137 244-144-38 17-68 45-89 84-25 47-25 92-1 136-66-4-117-31-154-76Z" fill="#070a11" opacity=".55" transform="translate(13 18)"/>
+  <path d="M405 495c51-87 139-137 244-144-38 17-68 45-89 84-25 47-25 92-1 136-66-4-117-31-154-76Z" fill="url(#steel)" stroke="#0a0d14" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M435 486c40-61 98-97 173-109-36 29-59 64-68 105-7 31-5 58 8 82-44-7-82-33-113-78Z" fill="#c5cabf" opacity=".9"/>
+  <path d="M457 476c30-42 69-69 117-81-23 25-39 54-46 88-5 21-4 40 1 57-29-11-53-33-72-64Z" fill="#f0e8ce" opacity=".64"/>
+  <path d="M418 492c48-73 118-116 210-132" fill="none" stroke="#edf4f5" stroke-width="4" stroke-linecap="round" opacity=".68"/>
+  <path d="m548 548 59-11 27 38-46 38-55-22Z" fill="url(#violet-metal)" stroke="#0a0d14" stroke-width="5"/>
+  <path d="m568 554 34-7 17 25-31 25-34-14Z" fill="#171a29"/>
+  <path d="m580 563 17-4 9 13-17 13-17-7Z" fill="#63e6d2"/>
+  <path d="m611 609 40-6 12 43-40 7Z" fill="url(#bronze)" stroke="#0a0d14" stroke-width="4"/>
+  <path d="m626 614 10-2 10 35-10 2Z" fill="#f2bd57" opacity=".64"/>
+
+  <!-- separated shaft and wrapped grip -->
+  <path d="m678 588 247-36 17 38-250 37Z" fill="#05080e" opacity=".48"/>
+  <path d="m663 569 246-36 16 36-248 37Z" fill="url(#wood)" stroke="#0a0d14" stroke-width="5"/>
+  <path d="m685 571 204-30" stroke="#b9677e" stroke-width="5" opacity=".5"/>
+  <path d="m686 583 45-7m2-7 8 18m9-22 8 18m9-22 8 18m9-22 8 18m9-22 8 18m9-22 8 18m9-22 8 18" fill="none" stroke="#c9995c" stroke-width="4"/>
+  <path d="m885 530 41-6 23 43-41 7Z" fill="url(#bronze)" stroke="#0a0d14" stroke-width="4"/>
+  <path d="m921 528 30-4 11 42-18 29-18-28Z" fill="#252b39" stroke="#0a0d14" stroke-width="4"/>
+
+  <!-- vice -->
+  <path d="m768 160 180-26 31 97-185 29Z" fill="#03060b" opacity=".5"/>
+  <path d="m749 139 182-27 31 96-187 29Z" fill="#222938" stroke="#080b12" stroke-width="5"/>
+  <path d="m771 150 142-21 10 31-143 21Z" fill="url(#steel)" stroke="#090c13" stroke-width="4"/>
+  <path d="m781 182 145-21 20 53-151 23Z" fill="#111722"/>
+  <path d="m802 185 103-15 7 20-105 16Z" fill="#4c566d"/>
+  <path d="m829 201 36-5 5 35-36 5Z" fill="url(#bronze)" stroke="#090c13" stroke-width="4"/>
+  <path d="m943 175 62-9 7 18-63 10Z" fill="#8a92a5" stroke="#090c13" stroke-width="4"/>
+  <path d="m1002 163 30 15-19 25-18-11Z" fill="#b07a43" stroke="#090c13" stroke-width="4"/>
+
+  <!-- reagent vessels -->
+  <path d="m154 477 98-15 42 122-105 16Z" fill="#04070d" opacity=".5"/>
+  <path d="m163 445 78-12 9 32-82 13Z" fill="#c7d0d9" stroke="#080b12" stroke-width="4"/>
+  <path d="m177 472 68-10 33 105c-15 18-64 26-85 8Z" fill="url(#glass)" stroke="#080b12" stroke-width="5"/>
+  <path d="m188 500 66-10 20 69c-17 12-55 17-76 7Z" fill="#35b8a7" opacity=".76"/>
+  <path d="m184 482 13-2 13 72" stroke="#d7fff8" stroke-width="4" opacity=".72"/>
+  <path d="m210 518 20-3 12 24-14 20-24-13Z" fill="#b5fff2" opacity=".82"/>
+  <path d="m196 424 41-6 8 18-44 7Z" fill="#8b633d" stroke="#080b12" stroke-width="4"/>
+
+  <path d="m854 336 88-13 30 93-94 14Z" fill="#05080e" opacity=".45"/>
+  <path d="m861 313 69-10 8 27-72 11Z" fill="#c7d0d9" stroke="#080b12" stroke-width="4"/>
+  <path d="m871 338 62-9 24 75c-13 16-53 21-70 8Z" fill="url(#glass)" stroke="#080b12" stroke-width="5"/>
+  <path d="m879 361 61-9 15 48c-13 11-45 15-64 8Z" fill="#5675c5" opacity=".67"/>
+  <path d="m884 346 11-2 10 56" stroke="#e3f2ff" stroke-width="3" opacity=".65"/>
+
+  <!-- hardware dishes and loose parts -->
+  <path d="m104 632 148-22 43 54-133 43Z" fill="#080c13" opacity=".5"/>
+  <path d="m96 611 142-21 39 51-125 40Z" fill="#2d3445" stroke="#080b12" stroke-width="5"/>
+  <path d="m121 620 101-15 28 29-91 28Z" fill="#111823"/>
+  <path d="m137 626 18-3 9 13-16 11-17-8Zm36-5 16-2 7 10-13 12-16-7Zm31-5 20-3 7 11-16 13-18-8Z" fill="#b9854a"/>
+  <path d="m134 637 13-2m34-5 11-2m31-5 10-2" stroke="#f2bd57" stroke-width="3"/>
+
+  <path d="m771 695 133-20 47 42-113 39Z" fill="#080b12" opacity=".52"/>
+  <path d="m760 677 128-19 43 39-106 36Z" fill="#252c3b" stroke="#080b12" stroke-width="5"/>
+  <path d="m786 684 74-11 33 21-69 22Z" fill="#10151f"/>
+  <path d="m797 690 17-3 8 12-15 9-16-7Zm30-5 15-2 8 10-13 10-15-7Zm29-4 16-3 7 10-13 10-15-7Z" fill="#8d7be5"/>
+
+  <!-- drafting tools -->
+  <path d="m305 678 107-16 12 15-106 16Z" fill="#c5c0ae" stroke="#080b12" stroke-width="3"/>
+  <path d="m323 678 76-11" stroke="#665f56" stroke-width="2"/>
+  <path d="m454 682 39-89 10 5-34 91Z" fill="#8993a4" stroke="#080b12" stroke-width="3"/>
+  <path d="m500 599 46 74-10 6-52-70Z" fill="#677286" stroke="#080b12" stroke-width="3"/>
+  <path d="m497 598 18 3-7 16-16-3Z" fill="#d4d7ee" stroke="#080b12" stroke-width="3"/>
+  <path d="M493 621c15 4 29 13 42 26" fill="none" stroke="#63e6d2" stroke-width="3"/>
+
+  <!-- material wear and tiny decision marks -->
+  <path d="m77 238 39-6m855-118 31-4M122 719l73-11m742-109 61-9" stroke="#f2bd57" stroke-width="3" opacity=".55"/>
+  <path d="m533 721 26-4 12 10-9 13-28 4-11-10Z" fill="#111722" stroke="#63e6d2" stroke-width="3"/>
+  <path d="m542 729 10-1 4 5-4 4-11 2-4-5Z" fill="#b5fff2"/>
+  <path d="m572 695 14-2m16-3 9-1m14-3 22-3m-124 45-17 2" stroke="#8d7be5" stroke-width="3" stroke-linecap="round"/>
+  <path d="m327 236 21-3m16-3 45-7m-263 300 19-3m17-2 28-5m751-246 20-3" stroke="#63e6d2" stroke-width="2" opacity=".45"/>
+</svg>

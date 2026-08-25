@@ -1,0 +1,369 @@
+---
+import CollectionToolbar from './CollectionToolbar.astro';
+import ResourceToken from '../ResourceToken.astro';
+import SubjectArtwork from '../SubjectArtwork.astro';
+import { getRecordName, recordHref } from '../../lib/publication';
+import { recordSummary } from '../../lib/presentation';
+import { getRecordSubjectArt } from '../../lib/subject-art';
+import type { CollectionViewModel } from '../../lib/collection-view-model';
+
+type Props = Pick<
+    CollectionViewModel,
+    | 'runRewardRecords'
+    | 'fishRows'
+    | 'toolRows'
+    | 'cultivationRows'
+    | 'mysterySeedRows'
+    | 'marketSections'
+    | 'resourceName'
+    | 'titleCase'
+>;
+const {
+    runRewardRecords,
+    fishRows,
+    toolRows,
+    cultivationRows,
+    mysterySeedRows,
+    marketSections,
+    resourceName,
+    titleCase,
+} = Astro.props;
+---
+
+<nav class='resource-jump-nav' aria-label='Resources page sections'>
+    <a href='#gathering-tools'>Gathering tools</a>
+    <a href='#cultivation'>Garden</a>
+    <a href='#fish-values'>Fish</a>
+    <a href='#broker-exchanges'>Broker</a>
+    <a href='#run-rewards'>Run rewards</a>
+    <a href='#material-details'>Materials</a>
+</nav>
+<CollectionToolbar title='Resources' resource />
+<div class='economy-reference'>
+    <section id='gathering-tools' aria-labelledby='gathering-tools-title'>
+        <header>
+            <h2 id='gathering-tools-title'>Gathering tools</h2>
+            <p>
+                Night's Craftwork opens all four tool recipes. Craft the Crescent Pick first for Silver, then add each
+                remaining tool when its route material becomes available. Greater Favor of Gaia unlocks their elemental
+                upgrades.
+            </p>
+        </header>
+        <div class='reference-table-wrap' role='region' aria-label='Scrollable gathering tools table'>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope='col'>Tool</th>
+                        <th scope='col'>What it gathers</th>
+                        <th scope='col'>Craft cost</th>
+                        <th scope='col'>Greater Favor of Gaia upgrade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        toolRows.map((tool) => {
+                            if (!tool.baseRecord || !tool.upgradeRecord) {
+                                throw new Error(`Gathering tool is missing a base or upgraded record: ${tool.name}`);
+                            }
+                            const baseArt = getRecordSubjectArt(tool.baseRecord);
+                            const upgradeArt = getRecordSubjectArt(tool.upgradeRecord);
+                            return (
+                                <tr>
+                                    <th scope='row'>
+                                        <span class='tool-identity'>
+                                            <SubjectArtwork subject={baseArt} size='row' />
+                                            <span>{tool.name}</span>
+                                        </span>
+                                    </th>
+                                    <td>{tool.purpose}</td>
+                                    <td>
+                                        <span class='resource-amounts'>
+                                            {tool.craftCosts.map(({ amount, resource }) => (
+                                                <ResourceToken amount={amount} name={resourceName(resource)} />
+                                            ))}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class='tool-upgrade'>
+                                            <SubjectArtwork subject={upgradeArt} size='row' />
+                                            <span>
+                                                <strong class='resource-amounts'>
+                                                    {tool.upgradeCosts.map(({ amount, resource }) => (
+                                                        <ResourceToken amount={amount} name={resourceName(resource)} />
+                                                    ))}
+                                                </strong>
+                                                <span>{tool.upgradeEffect}</span>
+                                            </span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            );
+                        })
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <section id='cultivation' aria-labelledby='cultivation-title'>
+            <header>
+                <h2 id='cultivation-title'>Garden harvests</h2>
+                <p>
+                    Entering a new chamber normally advances the garden clock by one tick. Some special time-passage
+                    events advance it further. Plant long crops before a full route and short crops when only a few
+                    encounters remain.
+                </p>
+            </header>
+            <div class='sortable-reference'>
+                <label>
+                    <span class='sort-control-copy'>Order garden harvests</span>
+                    <span class='sort-control-field'>
+                        <select data-table-sort>
+                            <option value='default'>Default</option>
+                            <option value='alpha'>A–Z</option>
+                            <option value='reverse-alpha'>Z–A</option>
+                            <option value='low'>Fewest clock ticks</option>
+                            <option value='high'>Most clock ticks</option>
+                        </select>
+                        <i class='ph ph-caret-right' aria-hidden='true'></i>
+                    </span>
+                </label>
+                <div class='reference-table-wrap' role='region' aria-label='Scrollable garden harvests table'>
+                    <table data-sort-table>
+                        <thead>
+                            <tr>
+                                <th scope='col'>Plant</th>
+                                <th scope='col'>Harvest</th>
+                                <th scope='col'>Yield</th>
+                                <th scope='col'>Clock ticks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                cultivationRows.map((crop, index) => (
+                                    <tr
+                                        data-sort-name={crop.seed}
+                                        data-sort-value={crop.growTime}
+                                        data-sort-index={index}>
+                                        <th scope='row'>
+                                            <ResourceToken name={crop.seed} />
+                                        </th>
+                                        <td>
+                                            <ResourceToken name={crop.harvest} />
+                                        </td>
+                                        <td>{crop.amount}</td>
+                                        <td>{crop.growTime}</td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        <details>
+            <summary>What Mystery Seeds can grow</summary>
+            <p>
+                Mystery Seeds always take 11 clock ticks. Their outcome is weighted, and later plants join the pool only
+                after you have gathered their own seeds once.
+            </p>
+            <div class='sortable-reference'>
+                <label>
+                    <span class='sort-control-copy'>Order possible harvests</span>
+                    <span class='sort-control-field'>
+                        <select data-table-sort>
+                            <option value='default'>Default</option>
+                            <option value='alpha'>A–Z</option>
+                            <option value='reverse-alpha'>Z–A</option>
+                            <option value='low'>Lowest relative chance</option>
+                            <option value='high'>Highest relative chance</option>
+                        </select>
+                        <i class='ph ph-caret-right' aria-hidden='true'></i>
+                    </span>
+                </label>
+                <div class='reference-table-wrap' role='region' aria-label='Scrollable Mystery Seed outcomes table'>
+                    <table data-sort-table>
+                        <thead>
+                            <tr>
+                                <th scope='col'>Possible harvest</th>
+                                <th scope='col'>Possible bonus seed</th>
+                                <th scope='col'>Relative chance</th>
+                                <th scope='col'>Condition</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                mysterySeedRows.map((outcome, index) => (
+                                    <tr
+                                        data-sort-name={outcome.harvest}
+                                        data-sort-value={outcome.weight}
+                                        data-sort-index={index}>
+                                        <th scope='row'>
+                                            <ResourceToken name={outcome.harvest} />
+                                        </th>
+                                        <td>
+                                            {outcome.bonusSeed ? (
+                                                <ResourceToken name={outcome.bonusSeed} />
+                                            ) : (
+                                                'No bonus seed'
+                                            )}
+                                        </td>
+                                        <td>{outcome.weight}</td>
+                                        <td>{outcome.conditions.join(' ') || 'Available from the start'}</td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </details>
+    </section>
+
+    <section id='fish-values' aria-labelledby='fish-values-title'>
+        <header>
+            <h2 id='fish-values-title'>Fish sale values</h2>
+            <p>
+                Complete Deathly Fortune to sell fish to the Wretched Broker. The sale gives Bones, it does not consume
+                a material needed by another recipe.
+            </p>
+        </header>
+        <div class='sortable-reference'>
+            <label>
+                <span class='sort-control-copy'>Order fish</span>
+                <span class='sort-control-field'>
+                    <select data-table-sort>
+                        <option value='default'>Default</option>
+                        <option value='alpha'>A–Z</option>
+                        <option value='reverse-alpha'>Z–A</option>
+                        <option value='low'>Lowest sale value</option>
+                        <option value='high'>Highest sale value</option>
+                    </select>
+                    <i class='ph ph-caret-right' aria-hidden='true'></i>
+                </span>
+            </label>
+            <div class='reference-table-wrap' role='region' aria-label='Scrollable fish sale values table'>
+                <table data-sort-table>
+                    <thead>
+                        <tr>
+                            <th scope='col'>Fish</th>
+                            <th scope='col'>Region</th>
+                            <th scope='col'>Rarity</th>
+                            <th scope='col'>Sale value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            fishRows.map((fish, index) => (
+                                <tr data-sort-name={fish.name} data-sort-value={fish.amount} data-sort-index={index}>
+                                    <th scope='row'>
+                                        <ResourceToken href={fish.href} name={fish.name} />
+                                    </th>
+                                    <td>{fish.region}</td>
+                                    <td>{titleCase(fish.rarity)}</td>
+                                    <td>
+                                        <ResourceToken amount={fish.amount} name={fish.currency} />
+                                    </td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id='broker-exchanges' aria-labelledby='broker-exchanges-title'>
+        <header>
+            <h2 id='broker-exchanges-title'>Wretched Broker exchanges</h2>
+            <p>
+                The tables separate repeatable stock from late conversion sinks so the useful purchases are not buried
+                among completion-only trades.
+            </p>
+        </header>
+        <div class='market-sections'>
+            {
+                marketSections.map((market) => (
+                    <details open={market.category !== 'Market Screen Exchange'}>
+                        <summary>{market.title}</summary>
+                        <p>{market.intro}</p>
+                        {market.sharedRules.length > 0 && (
+                            <ul class='market-rules'>
+                                {market.sharedRules.map((rule) => (
+                                    <li>{rule}</li>
+                                ))}
+                            </ul>
+                        )}
+                        <div
+                            class='reference-table-wrap'
+                            role='region'
+                            aria-label={`Scrollable ${market.title.toLowerCase()} table`}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope='col'>Give</th>
+                                        <th scope='col'>Receive</th>
+                                        {market.hasSpecificConditions && <th scope='col'>Additional condition</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {market.rows.map((row) => (
+                                        <tr>
+                                            <th scope='row'>
+                                                <span class='resource-amounts'>
+                                                    {row.costs.map(({ amount, resource }) => (
+                                                        <ResourceToken amount={amount} name={resourceName(resource)} />
+                                                    ))}
+                                                </span>
+                                            </th>
+                                            <td>
+                                                <ResourceToken
+                                                    amount={row.receive.amount}
+                                                    name={resourceName(row.receive.resource)}
+                                                />
+                                            </td>
+                                            {market.hasSpecificConditions && <td>{row.conditions.join(' ')}</td>}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                ))
+            }
+        </div>
+    </section>
+</div>
+
+<section id='run-rewards' class='resource-detail-section' aria-labelledby='run-rewards-title'>
+    <h2 id='run-rewards-title'>In-run rewards</h2>
+    <p>Open a reward to see what it changes during a night and when it should outrank another door.</p>
+    <ol class='record-index record-index-v2' data-record-index>
+        {
+            runRewardRecords.map((record, index) => {
+                const name = getRecordName(record);
+                const summary = recordSummary(record);
+                const subjectArt = getRecordSubjectArt(record);
+                return (
+                    <li
+                        data-record-row
+                        data-record-tone={index % 4}
+                        data-filter={`${name} in-run reward`.toLowerCase()}>
+                        <a class='record-index-link--illustrated' href={recordHref(record)}>
+                            <SubjectArtwork subject={subjectArt} size='row' />
+                            <span class='record-index-copy'>
+                                <strong>{name}</strong>
+                                <span>{summary}</span>
+                            </span>
+                            <i class='ph ph-arrow-right' aria-hidden='true' />
+                        </a>
+                    </li>
+                );
+            })
+        }
+    </ol>
+</section>
+
+<section id='material-details' class='resource-index-intro' aria-labelledby='resource-index-title'>
+    <h2 id='resource-index-title'>Material details</h2>
+    <p>Open a material to see where it comes from and what consumes it.</p>
+</section>

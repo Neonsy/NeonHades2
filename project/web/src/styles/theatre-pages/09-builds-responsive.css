@@ -1,0 +1,73 @@
+.aspect-unlock-overview {
+    display: grid;
+    grid-template-columns: minmax(13rem, 0.65fr) minmax(0, 1.35fr);
+    gap: clamp(1.5rem, 4vw, 5rem);
+    align-items: start;
+    margin-top: clamp(4rem, 8vw, 9rem);
+    padding-block: clamp(1.5rem, 3vw, 3rem);
+    border-block: 2px solid var(--build-rule);
+}
+.aspect-unlock-overview > header {
+    display: grid;
+    gap: var(--space-3);
+}
+.aspect-unlock-overview h2 {
+    color: var(--build-bone);
+    font-size: var(--type-section);
+}
+.aspect-unlock-overview > div {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--build-rule-quiet);
+    border-bottom: 1px solid var(--build-rule-quiet);
+}
+.aspect-unlock-overview article {
+    padding: var(--space-4);
+    border-right: 1px solid var(--build-rule-quiet);
+}
+.aspect-unlock-overview article:last-child {
+    border-right: 0;
+}
+.aspect-unlock-overview article strong {
+    color: var(--ember);
+    font-size: var(--type-support);
+}
+.aspect-unlock-overview article p {
+    margin-top: var(--space-2);
+    color: var(--build-muted);
+}
+.aspect-unlock-overview > a {
+    grid-column: 2;
+    color: var(--build-witchfire);
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .aspect-unlock-overview {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .aspect-unlock-overview > a {
+        grid-column: 1;
+    }
+}
+@media (max-width: 620px) {
+    .builds-workshop {
+        padding-block: 2rem 4rem;
+    }
+    .aspect-unlock-overview > div {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .aspect-unlock-overview article {
+        border-right: 0;
+        border-bottom: 1px solid var(--build-rule-quiet);
+    }
+    .aspect-unlock-overview article:last-child {
+        border-bottom: 0;
+    }
+    .weapon-lines {
+        gap: 4rem;
+    }
+    .aspect-card {
+        min-height: 0;
+    }
+}

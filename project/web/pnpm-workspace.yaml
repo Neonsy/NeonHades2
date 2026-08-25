@@ -1,0 +1,23 @@
+allowBuilds:
+    '@tsparticles/engine': true
+    esbuild: true
+    sharp: true
+minimumReleaseAgeExclude:
+    - '@astrojs/internal-helpers@0.10.4'
+    - '@astrojs/markdown-satteri@0.3.7'
+    - '@bruits/satteri-darwin-arm64@0.10.3'
+    - '@bruits/satteri-darwin-x64@0.10.3'
+    - '@bruits/satteri-linux-arm64-gnu@0.10.3'
+    - '@bruits/satteri-linux-arm64-musl@0.10.3'
+    - '@bruits/satteri-linux-x64-gnu@0.10.3'
+    - '@bruits/satteri-linux-x64-musl@0.10.3'
+    - '@bruits/satteri-wasm32-wasi@0.10.3'
+    - '@bruits/satteri-win32-arm64-msvc@0.10.3'
+    - '@bruits/satteri-win32-x64-msvc@0.10.3'
+    - astro@7.2.4
+    - satteri@0.10.3
+# eslint-plugin-astro 3 requires both ESLint 10 and eslint-plugin-jsx-a11y 6.10.2.
+# The jsx-a11y peer range has not added ESLint 10 yet.
+peerDependencyRules:
+    allowedVersions:
+        'eslint-plugin-jsx-a11y@6.10.2>eslint': '10'

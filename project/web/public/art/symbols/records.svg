@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="800" viewBox="0 0 1600 800">
+  <title>NeonHades2 record emblems</title>
+  <desc>Project-authored cut-paper emblems informed by the silhouette hierarchy of Hades II interface art. No official game asset is included.</desc>
+  <defs>
+    <filter id="record-shadow" x="-30%" y="-30%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="6" stdDeviation="3" flood-color="#02030a" flood-opacity="0.72"/>
+    </filter>
+    <style>
+      .o{stroke:#080a11;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}.line{fill:none;stroke:#f2eee5;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.fine{fill:none;stroke:#f2eee5;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:.68}.paper{fill:#f2eee5}.ink{fill:#151925}.deep{fill:#28253c}.thread{fill:#63e6d2}.violet{fill:#8868f3}.ember{fill:#f2bd57}.rose{fill:#d75b75}.moon{fill:#d4d7ee}.sage{fill:#74b99b}.rust{fill:#a94b3e}.blue{fill:#5aa6d8}.badge{fill:#151925;stroke:#080a11;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.markline{fill:none;stroke:#f2eee5;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.shadowed{filter:url(#record-shadow)}
+    </style>
+
+    <symbol id="boon-scroll" viewBox="0 0 160 160" class="shadowed">
+      <path class="deep o" d="M24 119c15-26 16-51 4-75 26 10 44 3 56-21 17 18 35 24 55 18-11 26-8 50 9 72-30-7-52 2-66 27-13-22-32-29-58-21z"/>
+      <path class="paper o" d="M45 104c10-20 10-38 1-55 19 6 32 1 40-15 13 12 26 16 40 12-8 20-5 37 8 51-22-4-39 3-49 22-10-16-24-21-40-15z"/>
+      <path class="fine" d="M48 49c18 10 46 8 73-3M45 104c24-7 57-2 89-7"/>
+    </symbol>
+    <symbol id="tarot-frame" viewBox="0 0 160 160" class="shadowed">
+      <path class="paper o" d="M35 19h90l12 13v106H23V32z"/>
+      <path class="deep o" d="M38 39h84v80H38z"/>
+      <path class="ember o" d="M24 32l15-13M121 19l16 13M24 138l15-19M121 119l16 19"/>
+    </symbol>
+    <symbol id="charm-loop" viewBox="0 0 160 160" class="shadowed">
+      <path class="thread o" d="M80 20c23 0 35 13 35 31 0 14-8 26-21 33l-11-17c7-4 11-9 11-16 0-8-5-13-14-13s-14 5-14 13c0 7 4 13 11 17L66 84C52 77 45 65 45 51c0-18 12-31 35-31z"/>
+      <circle class="deep o" cx="80" cy="105" r="34"/>
+    </symbol>
+
+    <symbol id="boon-aphrodite" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="rose o" d="M80 100c-24-15-31-29-20-40 8-8 16-5 20 4 5-9 13-12 21-4 11 11 3 25-21 40z"/><path class="ink" d="M78 67l5 10-6 8-5-9z"/></symbol>
+    <symbol id="boon-apollo" viewBox="0 0 160 160"><use href="#boon-scroll"/><circle class="ember o" cx="80" cy="77" r="16"/><path class="ember o" d="M80 50V39M80 115v-11M53 77H42M118 77h-11M61 58l-8-8M107 104l-8-8M99 58l8-8M53 104l8-8"/></symbol>
+    <symbol id="boon-ares" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="rust o" d="M52 102l37-49 15 8-37 50zM58 59l48 42-10 11-49-42z"/><circle class="ember" cx="80" cy="82" r="8"/></symbol>
+    <symbol id="boon-artemis" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="sage o" d="M52 101c32-4 49-22 52-53-22 16-39 34-52 53z"/><path class="ink o" d="M52 101l57-57M73 78l-18-3M87 64l3-18"/></symbol>
+    <symbol id="boon-athena" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="moon o" d="M80 48l29 12-4 35-25 17-25-17-4-35z"/><path class="blue o" d="M63 73l17-12 17 12-17 23z"/></symbol>
+    <symbol id="boon-chaos" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="violet o" d="M48 80c17-23 47-26 65-3-16 27-48 29-65 3z"/><circle class="ink o" cx="80" cy="79" r="12"/><circle class="thread" cx="84" cy="74" r="4"/></symbol>
+    <symbol id="boon-demeter" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="blue o" d="M80 48v60M54 63l52 30M106 63L54 93M66 50l14 13 14-13M66 106l14-13 14 13"/></symbol>
+    <symbol id="boon-dionysus" viewBox="0 0 160 160"><use href="#boon-scroll"/><circle class="violet o" cx="68" cy="74" r="12"/><circle class="violet o" cx="88" cy="67" r="12"/><circle class="rose o" cx="80" cy="88" r="13"/><path class="sage o" d="M84 56c8-11 18-14 30-9-6 11-16 16-30 9z"/></symbol>
+    <symbol id="boon-hephaestus" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="ember o" d="M51 91h57l-10 19H62zM66 49h16v43H66zM78 49l27 13-7 14-27-13z"/></symbol>
+    <symbol id="boon-hera" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="thread o" d="M80 45l29 34-29 34-29-34z"/><path class="violet o" d="M80 60l14 19-14 19-14-19z"/></symbol>
+    <symbol id="boon-hermes" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="ember o" d="M74 54c-15-5-27-1-36 12 14 2 25 8 34 18M86 54c15-5 27-1 36 12-14 2-25 8-34 18"/><path class="paper o" d="M67 75h26l-4 35H71z"/></symbol>
+    <symbol id="boon-hestia" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="rust o" d="M80 44c18 17 23 33 14 48-8 13-27 17-39 5-14-14-5-31 12-45-2 13 3 21 13 24-5-11-5-22 0-32z"/><path class="ember o" d="M78 72c10 9 12 17 7 25-7 8-19 4-20-5-1-6 3-13 13-20z"/></symbol>
+    <symbol id="boon-poseidon" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="blue o" d="M47 90c13-17 26-17 39 0 12-17 24-17 36 0-11 18-24 18-37 0-13 18-25 18-38 0z"/><path class="thread o" d="M80 48v45M65 62l15-14 15 14"/></symbol>
+    <symbol id="boon-selene" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="moon o" d="M94 50c-23 5-36 26-28 46 6 17 24 25 41 19-15 13-40 11-53-5-19-23-6-58 23-65 6-2 12-1 17 5z"/></symbol>
+    <symbol id="boon-zeus" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="ember o" d="M87 43L55 84h23l-7 31 35-46H84z"/></symbol>
+    <symbol id="boon-generic" viewBox="0 0 160 160"><use href="#boon-scroll"/><path class="violet o" d="M80 48l10 21 23 4-17 16 4 23-20-11-21 11 4-23-17-16 24-4z"/></symbol>
+
+    <symbol id="boon-mark-attack" viewBox="0 0 160 160">
+      <circle class="badge" cx="116" cy="112" r="23"/><path class="moon o" d="M101 124l20-30 8 6-20 30z"/><path class="ember o" d="M100 101l29 20-6 8-29-20z"/>
+    </symbol>
+    <symbol id="boon-mark-special" viewBox="0 0 160 160">
+      <circle class="badge" cx="116" cy="112" r="23"/><path class="ember o" d="M116 91l6 13 14 2-10 10 3 14-13-7-13 7 3-14-10-10 14-2z"/>
+    </symbol>
+    <symbol id="boon-mark-cast" viewBox="0 0 160 160">
+      <circle class="badge" cx="116" cy="112" r="23"/><circle class="thread" cx="116" cy="112" r="14"/><circle class="ink" cx="116" cy="112" r="7"/><path class="markline" d="M116 91v8M116 125v8M95 112h8M129 112h8"/>
+    </symbol>
+    <symbol id="boon-mark-sprint" viewBox="0 0 160 160">
+      <circle class="badge" cx="116" cy="112" r="23"/><path class="moon o" d="M96 115c12-19 25-25 40-20-6 4-10 9-12 15l11 1c-8 12-20 18-39 18 7-4 11-9 13-14z"/>
+    </symbol>
+    <symbol id="boon-mark-magick" viewBox="0 0 160 160">
+      <circle class="badge" cx="116" cy="112" r="23"/><path class="violet o" d="M123 92c-13 4-20 15-16 26 4 11 15 16 26 12-9 10-25 10-34 1-12-12-7-33 9-39 5-2 10-2 15 0z"/><path class="thread" d="M124 113l7 12h-14z"/>
+    </symbol>
+    <symbol id="boon-mark-utility" viewBox="0 0 160 160">
+      <circle class="badge" cx="116" cy="112" r="23"/><path class="thread o" d="M116 92l5 13 14 5-12 7-2 14-10-10-14 3 7-12-7-12 14 3z"/>
+    </symbol>
+
+    <symbol id="boon-mark-legendary" viewBox="0 0 160 160">
+      <path class="ember o shadowed" d="M27 36l8-17 12 11 14-15 13 15 12-11 8 17-9 15H36z"/><path class="paper" d="M42 37h37l-3 6H45z"/>
+    </symbol>
+    <symbol id="boon-mark-duo" viewBox="0 0 160 160">
+      <circle class="badge shadowed" cx="49" cy="35" r="23"/><path class="markline" d="M35 38c0-9 10-14 18-9l10 7c8 6 3 18-7 18-4 0-8-3-11-6M63 32c0 9-10 14-18 9l-10-7c-8-6-3-18 7-18 4 0 8 3 11 6"/><circle class="thread" cx="49" cy="35" r="4"/>
+    </symbol>
+
+    <symbol id="boon-effect-frost" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="markline" d="M47 97v30M34 104l26 16M60 104l-26 16"/>
+    </symbol>
+    <symbol id="boon-effect-flame" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="ember o" d="M48 96c10 10 12 18 7 26-7 10-22 4-21-7 1-7 6-12 12-18-1 7 1 11 6 13-3-6-4-10-4-14z"/>
+    </symbol>
+    <symbol id="boon-effect-wave" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="markline" d="M32 108c6-8 12-8 18 0 6-8 12-8 18 0M32 118c6-8 12-8 18 0 6-8 12-8 18 0"/>
+    </symbol>
+    <symbol id="boon-effect-bolt" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="ember o" d="M51 95l-15 19h10l-3 15 16-22H49z"/>
+    </symbol>
+    <symbol id="boon-effect-knot" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="markline" d="M33 114c7-15 17-18 29-8-7 16-17 19-29 8zM34 105l27 16"/>
+    </symbol>
+    <symbol id="boon-effect-star" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="thread o" d="M47 96l5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z"/>
+    </symbol>
+    <symbol id="boon-effect-heart" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="rose o" d="M47 126c-14-9-19-17-12-24 5-4 9-2 12 3 3-5 8-7 12-3 7 7 2 15-12 24z"/>
+    </symbol>
+    <symbol id="boon-effect-prime" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="violet o" d="M47 95l13 12-5 19H39l-5-19z"/><path class="paper" d="M47 102v17M40 111h14"/>
+    </symbol>
+    <symbol id="boon-effect-thorn" viewBox="0 0 160 160">
+      <circle class="badge" cx="47" cy="112" r="18"/><path class="rust o" d="M47 95l5 11 12 2-9 8 3 12-11-6-11 6 3-12-9-8 12-2z"/>
+    </symbol>
+
+    <symbol id="arcana" viewBox="0 0 160 160"><use href="#tarot-frame"/><path class="sage o" d="M80 48c19 0 31 15 31 31-13 19-26 28-31 28-6 0-19-9-31-28 0-16 12-31 31-31z"/><path class="ink o" d="M80 56c8 12 8 24 0 36-8-12-8-24 0-36z"/><circle class="ember" cx="80" cy="103" r="5"/></symbol>
+    <symbol id="weapon-staff" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M69 47h22l-5 83-7 15-8-15z"/>
+      <path class="moon o" d="M43 42c5-23 21-35 44-33-13 8-19 18-18 31 1 12 8 21 21 27-25 4-42-5-47-25z"/>
+      <path class="violet o" d="M80 24l13 16-13 17-13-17z"/><circle class="thread o" cx="80" cy="40" r="6"/>
+      <path class="violet o" d="M70 72l21-13-2 16-19 12zM69 99l19-12-1 15-19 12z"/>
+      <path class="ember o" d="M61 121l19-7 20 7-7 13H67z"/><path class="paper fine" d="M76 54l-2 62M84 54l-2 62"/>
+    </symbol>
+    <symbol id="weapon-blades" viewBox="0 0 160 160">
+      <path class="moon o shadowed" d="M27 124c15-42 29-75 43-99l18-12-3 25c-8 30-19 61-34 95z"/>
+      <path class="moon o shadowed" d="M133 124c-15-42-29-75-43-99L72 13l3 25c8 30 19 61 34 95z"/>
+      <path class="violet o" d="M27 117l30 4-2 17-34-4zM133 117l-30 4 2 17 34-4z"/>
+      <path class="thread o" d="M35 109l12-31M125 109l-12-31"/><path class="ember o" d="M44 118l9-10 9 13-8 8zM116 118l-9-10-9 13 8 8z"/>
+      <path class="fine" d="M42 101c11-31 21-53 31-68M118 101c-11-31-21-53-31-68"/>
+    </symbol>
+    <symbol id="weapon-torches" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M35 132l20-77 20 6-19 78zM104 132L84 61l20-6 21 77z"/>
+      <path class="violet o" d="M40 117l22 6-4 14-22-5zM120 117l-22 6 4 14 22-5z"/>
+      <path class="moon o" d="M46 58l7-21 23 5 3 18-16 12zM114 58l-7-21-23 5-3 18 16 12z"/>
+      <path class="ember o" d="M52 39c-8-17 2-29 20-37-5 12-2 20 8 27-6 13-15 17-28 10zM108 39c8-17-2-29-20-37 5 12 2 20-8 27 6 13 15 17 28 10z"/>
+      <path class="rust o" d="M53 84l16 5-4 13-16-5zM107 84l-16 5 4 13 16-5z"/>
+    </symbol>
+    <symbol id="weapon-axe" viewBox="0 0 160 160">
+      <path class="rust o shadowed" d="M71 49h18l-2 91H72z"/><path class="violet o" d="M68 88h24l-2 15H69z"/>
+      <path class="moon o" d="M18 37c24-23 49-27 73-11l-7 48c-18-14-38-14-60 0 8-18 6-30-6-37z"/>
+      <path class="moon o" d="M142 37c-24-23-49-27-73-11l7 48c18-14 38-14 60 0-8-18-6-30 6-37z"/>
+      <path class="deep o" d="M67 29l13-15 14 15-6 25H73z"/><circle class="thread o" cx="80" cy="35" r="7"/>
+      <path class="ember o" d="M61 132h38l-6 15H67z"/><path class="fine" d="M30 39c17-11 33-12 49-4M130 39c-17-11-33-12-49-4"/>
+    </symbol>
+    <symbol id="weapon-skull" viewBox="0 0 160 160">
+      <path class="paper o shadowed" d="M80 17c35 0 56 23 53 56-2 20-12 35-31 44l-5 25H63l-5-25c-19-9-29-24-31-44-3-33 18-56 53-56z"/>
+      <path class="violet o" d="M43 76c8-16 21-22 36-15-2 18-13 27-31 25zM81 61c16-7 29-1 36 15l-5 10c-19 2-29-7-31-25z"/>
+      <path class="deep o" d="M63 108l17-13 17 13-7 25H70z"/><path class="thread o" d="M71 111l9-7 9 7-4 10H75z"/>
+      <path class="fine" d="M50 45c19-16 40-18 62-5M43 95c24 10 49 10 74 0"/>
+    </symbol>
+    <symbol id="weapon-coat" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M48 23l32 16 32-16 24 34-19 83H43L24 57z"/>
+      <path class="thread o" d="M51 31l29 32 29-32 14 28-18 62H55L37 59z"/>
+      <path class="violet o" d="M80 63l18 22-18 23-18-23z"/><circle class="paper o" cx="80" cy="85" r="7"/>
+      <path class="moon o" d="M29 56l20-12 12 23-24 25-13-12zM131 56l-20-12-12 23 24 25 13-12z"/>
+      <path class="ember o" d="M51 123h58l-6 17H57z"/><path class="fine" d="M52 78l-8 35M108 78l8 35M65 118V95M95 118V95"/>
+    </symbol>
+    <symbol id="hammer" viewBox="0 0 160 160"><path class="ember o shadowed" d="M28 35h83l19 20-17 29H84v59H62V84H35L20 58z"/><path class="paper o" d="M41 50h60l10 10-8 10H38L31 59z"/></symbol>
+    <symbol id="keepsake" viewBox="0 0 160 160"><use href="#charm-loop"/><path class="ember o" d="M80 82l9 16 19 4-13 13 2 19-17-8-17 8 2-19-13-13 19-4z"/></symbol>
+    <symbol id="familiar-cat" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M27 128c7-18 18-30 34-35-10-17-8-39 6-53l-2-22 19 14c7-2 14-2 21 1l21-14-4 25c11 17 10 38-1 54 12 7 21 17 25 30-31 15-87 15-119 0z"/>
+      <path class="ember o" d="M70 42l-1-12 12 9c12-5 24-4 34 3l-2-11-10 8c6 13 5 25-2 36-8 11-29 11-38-1-7-10-7-21-1-31z"/>
+      <path class="paper o" d="M67 56l13-6 8 9-12 10zM106 56l-12-6-8 9 12 10z"/>
+      <path class="thread o" d="M79 75l8-5 8 5-8 9zM76 91c8 6 16 6 24 0"/>
+      <path class="fine" d="M57 76l-22-4M58 85l-23 5M116 76l22-4M115 85l23 5M67 112c13-5 28-5 43 1"/>
+      <path class="violet o" d="M57 104c20 8 41 8 62 0l-5 13c-18 7-36 7-53 0z"/>
+      <circle class="thread" cx="87" cy="113" r="5"/>
+    </symbol>
+    <symbol id="familiar-frog" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M21 126c6-19 19-31 38-35-8-10-11-22-8-35 4-20 16-31 29-31s26 11 30 31c3 13 0 25-8 35 19 4 32 16 38 35-29 15-90 15-119 0z"/>
+      <path class="sage o" d="M43 76c0-20 16-36 37-36s37 16 37 36c0 23-16 38-37 38S43 99 43 76z"/>
+      <circle class="paper o" cx="58" cy="51" r="17"/><circle class="paper o" cx="102" cy="51" r="17"/>
+      <path class="ink o" d="M54 47l9 4-5 10-8-5zM106 47l-9 4 5 10 8-5z"/>
+      <path class="thread o" d="M66 83c9 7 19 7 28 0M72 93c5 3 11 3 16 0"/>
+      <path class="sage o" d="M59 100c-23 0-36 10-40 31 18 3 34-2 47-15zM101 100c23 0 36 10 40 31-18 3-34-2-47-15z"/>
+      <path class="fine" d="M38 119l18-3M122 119l-18-3M52 73l-12 3M108 73l12 3"/>
+      <circle class="violet" cx="69" cy="69" r="4"/><circle class="violet" cx="94" cy="72" r="3"/><circle class="ember" cx="82" cy="105" r="4"/>
+    </symbol>
+    <symbol id="familiar-hound" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M27 134c5-20 17-34 35-42-7-12-9-26-5-41L33 21l35 12c8-4 16-5 24-2l35-12-21 34c3 14 1 27-6 39 18 8 29 22 34 42-29 12-78 12-107 0z"/>
+      <path class="rust o" d="M41 30l24 9-10 25-15-11zM119 28l-22 12 9 24 16-12z"/>
+      <path class="moon o" d="M58 55c13-16 31-17 45-2 10 11 10 30 0 42-12 15-35 15-47 0-10-12-9-29 2-40z"/>
+      <path class="ink o" d="M64 70l13-6 7 8-12 9zM100 70l-12-6-7 8 12 9zM67 96l13-8 14 8-14 17z"/>
+      <path class="thread o" d="M68 116c8 5 16 5 24 0"/>
+      <path class="violet o" d="M53 104c18 12 37 13 56 1l-3 16c-17 9-34 9-50 0z"/>
+      <path class="fine" d="M50 51l13 7M111 50l-13 8M49 89l-15 5M111 89l15 5M80 114v11"/>
+      <circle class="ember" cx="80" cy="116" r="5"/>
+    </symbol>
+    <symbol id="familiar-raven" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M28 134l27-15c-11-30-7-57 11-78 12-14 28-22 49-25-8 10-10 20-6 30l25 14-23 9c1 22-7 39-24 51l17 15c-25 8-51 8-76-1z"/>
+      <path class="violet o" d="M53 111c-3-27 4-48 21-64 10-9 22-15 36-18-7 12-7 23 1 32-5 8-7 18-6 29-10 18-27 29-52 33z"/>
+      <path class="moon o" d="M107 47l27 13-27 10-12-10z"/>
+      <path class="ink o" d="M62 107c8-25 21-39 40-43-12 13-16 29-13 47-9 7-18 10-27 9z"/>
+      <path class="fine" d="M68 104c8-13 18-23 30-30M70 116c10-9 20-16 31-20M48 126l22 9M86 123l17 12"/>
+      <path class="ember o" d="M54 129l-8 12M64 130l1 13M88 129l-2 13M98 127l8 12"/>
+      <circle class="thread o" cx="104" cy="48" r="6"/><circle class="paper" cx="106" cy="46" r="2"/>
+    </symbol>
+    <symbol id="familiar-polecat" viewBox="0 0 160 160">
+      <path class="deep o shadowed" d="M24 126c5-17 17-28 35-33-8-13-10-28-5-43L45 24l24 13c8-3 16-3 23 0l25-14-10 29c5 15 3 29-5 42 18 5 30 16 35 32-29 17-84 17-113 0z"/>
+      <path class="moon o" d="M55 51c14-15 35-17 51-4 14 12 15 35 3 50-13 17-42 17-56 0-11-14-10-33 2-46z"/>
+      <path class="paper o" d="M54 57l16-10 10 13-15 11zM106 57L91 47 80 60l15 11z"/>
+      <path class="deep o" d="M74 40c4-3 9-4 14-2l8 22-16 18-16-18zM69 89l11-8 12 8-12 14z"/>
+      <path class="thread o" d="M68 108c8 6 16 6 24 0"/>
+      <path class="moon o" d="M105 98c28-3 44 8 48 33-20 10-38 4-53-17z"/>
+      <path class="fine" d="M47 78l-18-3M48 87l-18 6M112 78l18-3M111 87l18 6M115 108c12 2 21 8 29 18"/>
+      <path class="violet o" d="M57 117c16 7 32 7 48 0l-4 14c-14 5-28 5-41 0z"/>
+    </symbol>
+    <symbol id="hex" viewBox="0 0 160 160"><circle class="deep o shadowed" cx="80" cy="80" r="57"/><path class="moon o" d="M95 30c-25 9-38 32-30 55 8 24 34 37 58 27-14 22-43 32-68 20-32-15-43-55-23-84 15-22 40-29 63-18z"/><path class="violet o" d="M82 60l15 21-17 25-16-24z"/></symbol>
+    <symbol id="incantation" viewBox="0 0 160 160"><path class="deep o shadowed" d="M34 71h92l-12 58c-21 17-47 17-68 0z"/><path class="violet o" d="M45 83h70l-10 36c-15 11-35 11-50 0z"/><path class="thread o" d="M31 69c18 10 80 10 98 0M54 61c-8-18 1-31 23-40-2 15 4 25 17 31M85 61c7-13 17-19 31-18"/></symbol>
+    <symbol id="prophecy" viewBox="0 0 160 160"><path class="paper o shadowed" d="M31 31c17 8 34 8 51 0 16 8 32 8 47 0v98c-16-8-32-8-47 0-17-8-34-8-51 0z"/><path class="violet o" d="M48 55h67M48 75h50M48 95h61"/><path class="ember o" d="M80 31v98"/></symbol>
+    <symbol id="achievement" viewBox="0 0 160 160"><path class="ember o shadowed" d="M80 20l17 35 39 6-28 27 7 39-35-18-35 18 7-39-28-27 39-6z"/><path class="paper o" d="M59 81l14 14 30-34"/></symbol>
+    <symbol id="oath" viewBox="0 0 160 160"><path class="deep o shadowed" d="M40 20h80l14 21-12 99H38L26 41z"/><path class="rose o" d="M80 43l10 24 26 4-20 18 5 26-21-13-22 13 6-26-20-18 26-4z"/><path class="paper o" d="M80 57v45"/></symbol>
+    <symbol id="relationship" viewBox="0 0 160 160"><path class="deep o shadowed" d="M33 137c6-39 23-63 47-69 25 6 42 30 48 69z"/><circle class="paper o" cx="80" cy="51" r="30"/><path class="violet o" d="M49 55c-4-31 19-48 44-39 17 5 27 20 27 39l-22-15-8 18-18-14-16 18z"/><path class="thread o" d="M60 94c14 13 28 13 41 0"/></symbol>
+    <symbol id="region" viewBox="0 0 160 160"><path class="deep o shadowed" d="M25 136V46l55-30 55 30v90z"/><path class="violet o" d="M48 136V64l32-22 32 22v72z"/><path class="ink o" d="M66 136V86c0-19 28-19 28 0v50z"/><path class="thread o" d="M39 55l41-23 41 23"/></symbol>
+    <symbol id="fish" viewBox="0 0 160 160"><path class="blue o shadowed" d="M25 82c24-36 64-45 99-20l23-18-7 37 7 37-24-18c-34 25-74 16-98-18z"/><circle class="paper o" cx="59" cy="72" r="9"/><circle class="ink" cx="61" cy="72" r="4"/><path class="fine" d="M78 57c10 14 12 30 5 47"/></symbol>
+    <symbol id="tool" viewBox="0 0 160 160"><path class="moon o shadowed" d="M68 22h24v118H68z"/><path class="thread o" d="M26 57c17-27 38-39 65-35l34 22-9 18-37-15-37 24z"/><path class="ember o" d="M57 128h46v14H57z"/></symbol>
+    <symbol id="exchange" viewBox="0 0 160 160"><path class="ember o shadowed" d="M29 58c10-23 29-35 55-35 25 0 45 12 55 35l-20-7-9 19-17-20-18 20-10-19-19 7z"/><path class="violet o" d="M36 82h88l-8 50H44z"/><path class="paper o" d="M58 96h44M66 113h28"/></symbol>
+    <symbol id="aid" viewBox="0 0 160 160"><path class="thread o shadowed" d="M80 21l20 34 38 8-26 29 4 39-36-16-36 16 4-39-26-29 38-8z"/><path class="ink o" d="M80 48v60M50 78h60"/></symbol>
+    <symbol id="guide" viewBox="0 0 160 160"><path class="paper o shadowed" d="M26 27h108v106H26z"/><path class="deep o" d="M42 44h76v72H42z"/><path class="thread o" d="M52 93l17-18 13 11 25-31M94 55h13v13"/></symbol>
+    <symbol id="record-generic" viewBox="0 0 160 160"><path class="deep o shadowed" d="M24 36l32-17 32 11 31-10 18 30-11 33 11 29-29 25-34-7-31 10-20-29 10-34z"/><path class="violet o" d="M80 43l15 25 29 7-20 22 2 30-26-13-27 13 3-30-20-22 29-7z"/><circle class="thread" cx="80" cy="82" r="10"/></symbol>
+  </defs>
+</svg>

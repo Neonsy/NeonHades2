@@ -1,0 +1,47 @@
+/* Directional controls use CSS geometry so they cannot degrade into private-use font glyphs. */
+.ph-arrow-right::before,
+.ph-arrow-left::before,
+.ph-caret-right::before,
+.ph-arrow-square-out::before {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    content: '';
+    background: currentColor;
+}
+
+.ph-arrow-right::before,
+.ph-arrow-left::before {
+    clip-path: polygon(0 42%, 62% 42%, 62% 10%, 100% 50%, 62% 90%, 62% 58%, 0 58%);
+}
+
+.ph-arrow-left::before {
+    transform: scaleX(-1);
+}
+
+.ph-caret-right::before {
+    width: 0.72em;
+    height: 0.72em;
+    clip-path: polygon(18% 0, 100% 50%, 18% 100%, 0 82%, 58% 50%, 0 18%);
+}
+
+.ph-caret-right {
+    align-self: center;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.ph-arrow-square-out::before {
+    clip-path: polygon(0 42%, 62% 42%, 62% 10%, 100% 50%, 62% 90%, 62% 58%, 0 58%);
+    transform: rotate(-45deg);
+}
+
+.record-link--requirement-item {
+    text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :is(a[href], button, input, select, textarea, summary, [role='button']):active {
+        translate: none;
+    }
+}

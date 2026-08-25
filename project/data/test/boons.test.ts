@@ -153,11 +153,10 @@ function runtimeReport(overrides: {
                   id: "Count",
                   source: {
                     kind: "static-base-data",
-                    baseType: "EffectData",
-                    baseName: "SyntheticEffect",
-                    baseProperty: ["OnWeaponFiredFunctions", "FunctionArgs"],
-                    runtimePath:
-                      "EffectData.SyntheticEffect.OnWeaponFiredFunctions.FunctionArgs",
+                    baseType: "ConsumableData",
+                    baseName: "SyntheticConsumable",
+                    baseProperty: ["AddResources", "Amount"],
+                    runtimePath: "ConsumableData.SyntheticConsumable.AddResources.Amount",
                     value: 2,
                   },
                   staticInputs: [],

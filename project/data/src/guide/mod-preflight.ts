@@ -48,6 +48,7 @@ export async function preflightGuideExporter(
     "NarrativeData",
     "QuestData",
     "QuestOrderData",
+    "PresetEventArgs",
     "ResourceData",
     "RewardData",
     "RoomData",
@@ -57,6 +58,22 @@ export async function preflightGuideExporter(
     "TraitData",
   ]) {
     if (!guideSource.includes(`"${sourceTable}"`)) issues.push(`Guide source metadata omits ${sourceTable}.`);
+  }
+  if (!guideSource.includes("encounterAidTraits = collect_encounter_aid_traits")) {
+    issues.push("Guide exporter omits processed encounter-aid traits.");
+  }
+  if (!mainSource.includes("collect_samples = collect_samples")) {
+    issues.push("Guide exporter cannot resolve encounter-aid effect values.");
+  }
+  for (const token of [
+    'base_type == "ConsumableData"',
+    'instruction.Format == "FinalBoss"',
+    'format == "MaxHealth"',
+    'format == "MaxMana"',
+    'instruction.Format == "ResourceAmount"',
+    'instruction.Format == "TotalHeroTraitValue"',
+  ]) {
+    if (!mainSource.includes(token)) issues.push(`Guide exporter omits runtime extraction support for ${token}.`);
   }
   for (const token of ["CurrentRun", "GameState.", "SaveFile", "SaveName"]) {
     if (guideSource.includes(token)) issues.push(`Guide exporter reads player-specific state through ${token}.`);

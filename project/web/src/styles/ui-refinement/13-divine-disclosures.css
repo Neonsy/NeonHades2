@@ -1,0 +1,73 @@
+/* God and Boon groups stay legible as one opaque disclosure surface. */
+.divine-house {
+    background:
+        radial-gradient(circle at 10% 18%, color-mix(in srgb, var(--divine-primary) 12%, transparent), transparent 34%),
+        linear-gradient(
+            108deg,
+            color-mix(in srgb, var(--divine-primary) 13%, var(--ink-deep)),
+            color-mix(in srgb, var(--divine-secondary) 7%, var(--ink-deep)) 56%,
+            color-mix(in srgb, var(--projection) 7%, var(--ink-deep))
+        );
+    box-shadow: var(--depth-low);
+}
+
+.divine-house > summary,
+.divine-house--shared > summary {
+    grid-template-columns: 7rem minmax(0, 1fr) minmax(13rem, auto);
+    align-items: start;
+}
+
+.divine-house-copy {
+    min-width: 0;
+}
+
+.divine-house-command {
+    display: flex;
+    align-items: flex-start;
+    align-self: start;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    min-width: 0;
+}
+
+.divine-house-command > .ph {
+    display: grid;
+    flex: 0 0 var(--control-height);
+    width: var(--control-height);
+    height: var(--control-height);
+    place-items: center;
+    color: var(--divine-primary);
+    font-size: 1.3rem;
+}
+
+.divine-house[data-disclosure-state='open'] > summary .ph-caret-right {
+    transform: rotate(90deg);
+}
+
+.divine-house[data-disclosure-state='closed'] > summary .ph-caret-right {
+    transform: rotate(0deg);
+}
+
+.record-index {
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-block-color: var(--rule-medium);
+}
+
+.record-index-viewport.is-virtualized > .record-index {
+    position: relative;
+    display: block;
+    margin: 0;
+}
+
+.record-index > li,
+.relationship-rail a {
+    box-shadow:
+        inset 0 2px color-mix(in srgb, var(--archive-accent) 30%, transparent),
+        var(--depth-low);
+}
+
+.record-index > li > a {
+    min-height: 7.75rem;
+    padding-block: var(--space-5);
+}

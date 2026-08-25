@@ -1,0 +1,84 @@
+.record-title-block > p {
+    font-size: clamp(1.3rem, 1.45vw, 1.55rem);
+    line-height: 1.58;
+}
+
+.record-layout {
+    row-gap: var(--section-space);
+    column-gap: clamp(4rem, 7vw, 7rem);
+    margin-top: var(--section-space-compact);
+}
+
+.record-dossier {
+    gap: var(--section-space-compact);
+}
+
+.record-field {
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--rule);
+    background: none;
+    box-shadow: none;
+    clip-path: none;
+}
+
+.record-field h2,
+.record-field h3 {
+    margin-bottom: var(--space-4);
+}
+
+.reader-facts {
+    gap: var(--space-4) var(--space-6);
+}
+
+.reference-cloud {
+    gap: var(--space-3) var(--space-5);
+}
+
+.reference-cloud a {
+    min-height: 2.25rem;
+    padding-block: var(--space-1);
+}
+
+.prerequisite-groups > li {
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5) var(--space-5);
+    border-inline-start-color: color-mix(in srgb, var(--divine-primary) 78%, transparent);
+    box-shadow: var(--depth-low);
+}
+
+.prerequisite-groups header span,
+.prerequisite-groups header strong,
+.tier-view-control span {
+    font-size: var(--type-label);
+}
+
+.relationship-rail ul {
+    gap: var(--space-3);
+}
+
+.relationship-rail a {
+    min-height: var(--control-height);
+    padding: var(--space-3) var(--space-4);
+}
+
+.record-quick-facts > a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.record-quick-facts > a > span {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+    .record-quick-facts .record-field {
+        clip-path: none;
+        box-shadow: none;
+    }
+
+    .record-quick-facts .record-field + .record-field {
+        padding-top: var(--space-5);
+        border-top: 1px solid color-mix(in srgb, var(--divine-primary) 34%, transparent);
+    }
+}

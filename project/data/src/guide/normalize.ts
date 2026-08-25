@@ -1,6 +1,20 @@
 import type { JsonObject, JsonValue } from "../boons/runtime-schema.js";
 import type { GuideSourceAudit } from "./source-audit.js";
 import type {
+  StaticCultivation,
+  StaticEncounterAid,
+  StaticEncounterFriend,
+  StaticElement,
+  StaticFish,
+  StaticGatheringTool,
+  StaticGodAppearance,
+  StaticMarketOffer,
+  StaticRunReward,
+  StaticOpeningState,
+  StaticStrifeCurse,
+  StaticSurfacePenalty,
+} from "./static-systems.js";
+import type {
   RuntimeEncounter,
   RuntimeEnemy,
   RuntimeGuideRecord,
@@ -23,7 +37,7 @@ export interface NormalizedAchievement extends RuntimeGuideRecord {
 }
 
 export interface NormalizedGuideDataset {
-  readonly schema: "neodes2-guide-data-1";
+  readonly schema: "neodes2-guide-data-2";
   readonly source: {
     readonly acquisitionId: string;
     readonly exporterVersion: string;
@@ -51,12 +65,26 @@ export interface NormalizedGuideDataset {
   readonly achievements: readonly NormalizedAchievement[];
   readonly namedRequirements: readonly RuntimeGuideRecord[];
   readonly runClearMessages: readonly RuntimeGuideRecord[];
+  readonly gatheringTools: readonly StaticGatheringTool[];
+  readonly fish: readonly StaticFish[];
+  readonly cultivation: readonly StaticCultivation[];
+  readonly marketOffers: readonly StaticMarketOffer[];
+  readonly runRewards: readonly StaticRunReward[];
+  readonly openingStates: readonly StaticOpeningState[];
+  readonly godAppearances: readonly StaticGodAppearance[];
+  readonly encounterFriends: readonly StaticEncounterFriend[];
+  readonly encounterAids: readonly StaticEncounterAid[];
+  readonly encounterAidEffects: readonly RuntimeGuideRecord[];
+  readonly strifeCurses: readonly StaticStrifeCurse[];
+  readonly surfacePenalties: readonly StaticSurfacePenalty[];
+  readonly gardenPlotCount: number;
 }
 
 export interface GuideCoverageIssue {
   readonly code:
     | "cross-reference"
     | "empty-domain"
+    | "failed-runtime-sample"
     | "missing-official-text"
     | "source-disagreement";
   readonly domain: string;
@@ -101,6 +129,21 @@ function ids(records: readonly { readonly id: string }[]): ReadonlySet<string> {
   return new Set(records.map((record) => record.id));
 }
 
+function staticElementRecord(element: StaticElement): RuntimeGuideRecord {
+  return {
+    id: element.id,
+    displayName: `${element.id} element`,
+    description: `Counts as one ${element.id} element toward Infusion requirements.`,
+    data: { amount: 1, essenceTraitId: element.essenceTraitId },
+    omissions: [],
+    evidence: {
+      runtimePath: `TraitData.${element.essenceTraitId}`,
+      localizationPath: null,
+    },
+    classification: "element-or-infusion",
+  };
+}
+
 function sameValues(left: readonly string[], right: readonly string[]): boolean {
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
@@ -129,6 +172,49 @@ function referencesTo(
     }
   }
   return [...output].sort(compareStrings);
+}
+
+function recordProducesResource(record: RuntimeGuideRecord, resourceId: string): boolean {
+  if (typeof record.data !== "object" || record.data === null || Array.isArray(record.data)) return false;
+  const data = record.data as JsonObject;
+  const added = data.AddResources;
+  if (typeof added === "object" && added !== null && !Array.isArray(added)) {
+    const amount = (added as JsonObject)[resourceId];
+    if (typeof amount === "number" && amount > 0) return true;
+  }
+  return resourceId === "Money" && typeof data.DropMoney === "number" && data.DropMoney > 0;
+}
+
+function rewardAcquisitionReferences(
+  resourceId: string,
+  records: readonly RuntimeGuideRecord[],
+): readonly string[] {
+  return records
+    .filter((record) => recordProducesResource(record, resourceId))
+    .map((record) => record.evidence.runtimePath)
+    .sort(compareStrings);
+}
+
+function staticAcquisitionReferences(resourceId: string, sourceAudit: GuideSourceAudit): readonly string[] {
+  const systems = sourceAudit.systems;
+  return [
+    ...systems.gatheringTools.flatMap((tool) => tool.elementYield?.elementId === resourceId ? [`gathering-tool:${tool.id}`] : []),
+    ...systems.fish.flatMap((fish) => fish.resourceId === resourceId ? [`fishing:${fish.id}`] : []),
+    ...systems.fish.flatMap((fish) => fish.sellCurrencyId === resourceId ? [`fish-sale:${fish.id}`] : []),
+    ...systems.cultivation.flatMap((entry) =>
+      entry.outputResourceId === resourceId || entry.bonusSeedResourceId === resourceId ? [`cultivation:${entry.id}`] : []),
+    ...systems.marketOffers.flatMap((offer) => offer.outputResourceId === resourceId ? [`market:${offer.id}`] : []),
+  ].sort(compareStrings);
+}
+
+function staticUseReferences(resourceId: string, sourceAudit: GuideSourceAudit): readonly string[] {
+  const systems = sourceAudit.systems;
+  return [
+    ...systems.gatheringTools.flatMap((tool) => tool.costs.some((cost) => cost.resourceId === resourceId) ? [`gathering-tool:${tool.id}`] : []),
+    ...systems.fish.flatMap((fish) => fish.resourceId === resourceId ? [`fish-sale:${fish.id}`] : []),
+    ...systems.cultivation.flatMap((entry) => entry.seedResourceId === resourceId ? [`cultivation:${entry.id}`] : []),
+    ...systems.marketOffers.flatMap((offer) => offer.costs.some((cost) => cost.resourceId === resourceId) ? [`market:${offer.id}`] : []),
+  ].sort(compareStrings);
 }
 
 function addEmptyIssue(
@@ -286,22 +372,45 @@ export function normalizeRuntimeGuide(
     .filter((resource) => resource.displayName !== null)
     .map((resource): NormalizedResource => ({
       ...canonicalRecord(resource),
-      acquisitionReferences: referencesTo(resource.id, [
-        report.rewards,
-        report.consumables,
-        report.rooms,
-        report.encounters,
-      ]),
-      useReferences: referencesTo(resource.id, [
-        report.oathConditions,
-        report.bounties,
-        report.relationships,
-        report.prophecies,
-      ]),
+      acquisitionReferences: [...new Set([
+        ...rewardAcquisitionReferences(resource.id, [...report.rewards, ...report.consumables]),
+        ...referencesTo(resource.id, [report.rooms, report.encounters]),
+        ...staticAcquisitionReferences(resource.id, sourceAudit),
+      ])].sort(compareStrings),
+      useReferences: [...new Set(staticUseReferences(resource.id, sourceAudit))].sort(compareStrings),
     }));
-  const statusElements = [...report.statusEffects, ...report.elementalTraits]
+  const statusElements = [...report.statusEffects, ...report.elementalTraits, ...sourceAudit.systems.elements.map(staticElementRecord)]
     .filter((record) => record.displayName !== null)
-    .map(canonicalRecord);
+    .map(canonicalRecord)
+    .sort((left, right) => compareStrings(left.id, right.id));
+  const encounterAidEffects = report.encounterAidTraits.map(canonicalRecord);
+  for (const effect of encounterAidEffects) {
+    if (typeof effect.data !== "object" || effect.data === null || Array.isArray(effect.data)) continue;
+    const samples = (effect.data as JsonObject).samples;
+    if (!Array.isArray(samples)) continue;
+    for (const sample of samples) {
+      if (typeof sample !== "object" || sample === null || Array.isArray(sample)) continue;
+      const result = sample.result;
+      if (typeof result !== "object" || result === null || Array.isArray(result) || result.status !== "error") continue;
+      issues.push({
+        code: "failed-runtime-sample",
+        domain: "encounterAidEffects",
+        recordId: effect.id,
+        detail: `Runtime processing failed for ${String(sample.rarity)} ${String(sample.endpoint)} level ${String(sample.level)}: ${String(result.message)}.`,
+      });
+    }
+  }
+  if (!sameValues(
+    encounterAidEffects.map((record) => record.id).sort(compareStrings),
+    sourceAudit.systems.encounterAids.map((record) => record.id).sort(compareStrings),
+  )) {
+    issues.push({
+      code: "source-disagreement",
+      domain: "encounterAidEffects",
+      recordId: "TraitData",
+      detail: "Runtime encounter-aid traits differ from the source-derived encounter-aid list.",
+    });
+  }
 
   const requiredDomains = {
     routes: report.routes,
@@ -320,6 +429,18 @@ export function normalizeRuntimeGuide(
     outros: report.outros,
     achievements,
     namedRequirements: report.namedRequirements,
+    gatheringTools: sourceAudit.systems.gatheringTools,
+    fish: sourceAudit.systems.fish,
+    cultivation: sourceAudit.systems.cultivation,
+    marketOffers: sourceAudit.systems.marketOffers,
+    runRewards: sourceAudit.systems.runRewards,
+    openingStates: sourceAudit.systems.openingStates,
+    godAppearances: sourceAudit.systems.godAppearances,
+    encounterFriends: sourceAudit.systems.encounterFriends,
+    encounterAids: sourceAudit.systems.encounterAids,
+    encounterAidEffects,
+    strifeCurses: sourceAudit.systems.strifeCurses,
+    surfacePenalties: sourceAudit.systems.surfacePenalties,
   };
   for (const [domain, records] of Object.entries(requiredDomains)) addEmptyIssue(domain, records, issues);
   requireText("resources", resources, issues);
@@ -336,6 +457,7 @@ export function normalizeRuntimeGuide(
     ...report.resources,
     ...report.statusEffects,
     ...report.elementalTraits,
+    ...report.encounterAidTraits,
     ...report.oathConditions,
     ...report.bounties,
     ...report.relationships,
@@ -356,7 +478,7 @@ export function normalizeRuntimeGuide(
     Object.entries(requiredDomains).map(([domain, records]) => [domain, records.length]),
   );
   const dataset: NormalizedGuideDataset = {
-    schema: "neodes2-guide-data-1",
+    schema: "neodes2-guide-data-2",
     source: {
       acquisitionId: report.game.acquisitionId,
       exporterVersion: report.exporterVersion,
@@ -384,6 +506,19 @@ export function normalizeRuntimeGuide(
     achievements,
     namedRequirements: report.namedRequirements.map(canonicalRecord),
     runClearMessages: report.runClearMessages.map(canonicalRecord),
+    gatheringTools: sourceAudit.systems.gatheringTools,
+    fish: sourceAudit.systems.fish,
+    cultivation: sourceAudit.systems.cultivation,
+    marketOffers: sourceAudit.systems.marketOffers,
+    runRewards: sourceAudit.systems.runRewards,
+    openingStates: sourceAudit.systems.openingStates,
+    godAppearances: sourceAudit.systems.godAppearances,
+    encounterFriends: sourceAudit.systems.encounterFriends,
+    encounterAids: sourceAudit.systems.encounterAids,
+    encounterAidEffects,
+    strifeCurses: sourceAudit.systems.strifeCurses,
+    surfacePenalties: sourceAudit.systems.surfacePenalties,
+    gardenPlotCount: sourceAudit.systems.gardenPlotCount,
   };
   return {
     dataset,

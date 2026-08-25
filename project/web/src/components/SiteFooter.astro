@@ -1,0 +1,50 @@
+---
+import { getSteamPatch } from '../lib/steam-patches';
+
+type Props = {
+    steamBuildId?: string;
+};
+
+const { steamBuildId } = Astro.props;
+const steamPatch = steamBuildId ? getSteamPatch(steamBuildId) : undefined;
+---
+
+<footer class='world-footer'>
+    <div class='world-footer-brand'>
+        <a class='world-footer-mark' href='/' aria-label='NeonHades2 home'>
+            <img src='/neonhades2-mark.svg' width='48' height='48' alt='' loading='lazy' decoding='async' />
+        </a>
+        <div>
+            <strong>NeonHades2</strong>
+            <p>Independent Hades II walkthrough, builds, and reference.</p>
+        </div>
+    </div>
+    <div class='world-footer-meta' role='group' aria-label='Site verification'>
+        {
+            steamPatch && steamBuildId && (
+                <p>
+                    <span class='world-footer-meta-label'>Verified against</span>
+                    <a
+                        class='world-footer-patch'
+                        href={steamPatch.url}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        aria-label={`${steamPatch.name} (${steamPatch.releasedOn}) (opens in a new tab)`}
+                        data-steam-build={steamBuildId}>
+                        <span>
+                            {steamPatch.name} ({steamPatch.releasedOn})
+                        </span>
+                    </a>
+                </p>
+            )
+        }
+    </div>
+    <a
+        class='world-footer-repository'
+        href='https://github.com/Neonsy/NeonHades2'
+        target='_blank'
+        rel='noopener noreferrer'
+        aria-label='GitHub repository and methodology (opens in a new tab)'>
+        <i class='ph ph-github-logo' aria-hidden='true'></i>
+    </a>
+</footer>

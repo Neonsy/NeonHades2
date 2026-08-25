@@ -181,7 +181,12 @@ function calculateBaseResolution(
   }
   const format = instruction.Format;
   if (format !== undefined && typeof format !== "string") throw new Error("Format must be a string.");
-  if (format === undefined || format === "TotalTargets") {
+  if (
+    format === undefined ||
+    format === "MaxHealth" ||
+    format === "MaxMana" ||
+    format === "TotalTargets"
+  ) {
     if (
       format === "TotalTargets" && instruction.External === true &&
       instruction.BaseType === "ProjectileBase" && instruction.BaseProperty === "NumJumps"
@@ -224,8 +229,17 @@ function calculateBaseResolution(
     model = contextual(model, `(${model.expression} * OlympianRechargeMultiplier)`, "OlympianRechargeMultiplier");
   } else if (format === "FlatHeal") {
     model = contextual(model, `(${model.expression} * HealingMultiplier)`, "HealingMultiplier");
+  } else if (format === "FlatHealBonusOnly") {
+    model = contextual(model, `(${model.expression} * max(HealingMultiplier, 1))`, "HealingMultiplier");
   } else if (format === "PercentHeal") {
     model = contextual(model, `(${model.expression} * HealingMultiplier * 100)`, "HealingMultiplier");
+  } else if (format === "MaxHealthIgnoreCap") {
+    model = contextual(
+      model,
+      `(round((ExpectedMaxHealth + ${model.expression}) * MaxHealthMultiplier, 0) - round(ExpectedMaxHealth * MaxHealthMultiplier, 0))`,
+      "ExpectedMaxHealth",
+      "MaxHealthMultiplier",
+    );
   } else if (format === "UniqueGodPercentDelta") {
     model = contextual(model, `((${model.expression} - 1) * UniqueGodCount * 100)`, "UniqueGodCount");
   } else if (format === "ManaSpendCost") {
@@ -240,7 +254,7 @@ function calculateBaseResolution(
       ? "totalDuration"
       : "1";
     model = resolvedNumber(model, (current) => current / fuse * duration, `((${model.expression} / ${fuseExpression}) * ${durationExpression})`);
-  } else if (format === "SlottedBoon") {
+  } else if (format === "SlottedBoon" || format === "FinalBoss") {
     model = { ...model, terminalString: true };
   } else if (format === "Rarity") {
     if (model.kind === "contextual") throw new Error("Contextual rarity values are unsupported.");
@@ -259,6 +273,8 @@ function calculateBaseResolution(
     model = contextual(model, "TotalDamageTaken", "TotalDamageTaken");
   } else if (format === "TotalHeroTraitValuePercent") {
     model = contextual(model, `(${model.expression} * 100)`);
+  } else if (format === "TotalHeroTraitValue" || format === "ResourceAmount") {
+    model = contextual(model, model.expression);
   } else {
     throw new Error(`Unsupported sample format ${format}.`);
   }
@@ -343,10 +359,12 @@ function boundaryValues(inputId: string, value: RuntimeSampleValue): readonly Fo
     return value.source.variants.map((variant) => variant.selectorValue);
   }
   if (inputId.startsWith("Slotted")) return ["SyntheticBoon"];
+  if (inputId === "FinalBoss") return ["SyntheticBoss"];
   if (inputId === "ClearCastDamageMultiplierOverride") return [1, 1.5];
   if (inputId === "MissingHealth") return [0, 1, 100];
   if (inputId === "TotalDamageTaken") return [0, 1, 1_000];
   if (inputId.startsWith("HeroTraitValue:")) return [0, 0.5, 1];
+  if (inputId.startsWith("ResourceAmount:")) return [0, 1, 100];
   if (/Count|Biomes|LastStands/u.test(inputId)) return [0, 1, 4];
   if (/Multiplier/u.test(inputId)) return [0, 1, 2];
   return [0, 1, 2];

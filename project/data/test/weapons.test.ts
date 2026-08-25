@@ -533,7 +533,7 @@ describe("weapon static source audit", () => {
         directory,
       );
       assert.equal(preflight.complete, true);
-      assert.equal(preflight.exporterVersion, "0.6.6");
+      assert.equal(preflight.exporterVersion, "0.8.0");
     });
   });
 });

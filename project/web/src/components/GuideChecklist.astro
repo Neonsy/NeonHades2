@@ -1,0 +1,54 @@
+---
+import type { GuideChapter } from '../content/guide';
+import { getChapterProgressChecks } from '../content/guide-progress';
+
+type Props = { chapter: GuideChapter; title: string };
+
+const { chapter, title } = Astro.props;
+const checks = getChapterProgressChecks(chapter);
+---
+
+<section class='guide-checklist' data-guide-checklist data-chapter-id={chapter.id} aria-labelledby='progress-title'>
+    <header>
+        <div class='guide-checklist-heading'>
+            <h2 id='progress-title'>{title}</h2>
+            <p class='guide-checklist-count' aria-live='polite'>
+                <strong data-complete-count>0</strong> of {checks.length}
+            </p>
+        </div>
+    </header>
+
+    <div class='progress-storage-warning' data-progress-warning hidden>
+        <p>Your saved guide progress could not be read. It has not been replaced.</p>
+        <button type='button' data-reset-progress>Start a new local checklist</button>
+    </div>
+
+    <ul>
+        {
+            checks.map((check) => (
+                <li>
+                    <label>
+                        <input type='checkbox' data-progress-check={check.id} />
+                        <span class='guide-check-mark' aria-hidden='true'>
+                            <i class='ph ph-check' />
+                        </span>
+                        <span>{check.label}</span>
+                    </label>
+                </li>
+            ))
+        }
+    </ul>
+</section>
+
+<script>
+    import { startGuideChecklist } from '../scripts/guide-checklist-runtime';
+
+    const cleanups = [...document.querySelectorAll<HTMLElement>('[data-guide-checklist]')].map(startGuideChecklist);
+    window.addEventListener(
+        'pagehide',
+        () => {
+            cleanups.forEach((cleanup) => cleanup());
+        },
+        { once: true }
+    );
+</script>

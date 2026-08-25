@@ -1,0 +1,29 @@
+---
+import type { GuideTerm } from '../../content/guide';
+
+type Props = {
+    terms?: GuideTerm[];
+};
+
+const { terms = [] } = Astro.props;
+---
+
+{
+    terms.length > 0 && (
+        <section id='chapter-terms' class='chapter-terms' aria-labelledby='chapter-terms-title'>
+            <h2 id='chapter-terms-title'>Recognize these first</h2>
+            <dl
+                data-balanced-grid
+                data-balanced-grid-layout='justified'
+                data-balanced-grid-min='14rem'
+                data-balanced-grid-max='4'>
+                {terms.map((item) => (
+                    <div>
+                        <dt>{item.term}</dt>
+                        <dd>{item.meaning}</dd>
+                    </div>
+                ))}
+            </dl>
+        </section>
+    )
+}

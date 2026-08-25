@@ -1,0 +1,24 @@
+---
+import { getRecord, getRecordLinkLabel, isReaderFacingRecord, recordHref } from '../lib/publication';
+import { getRecordSubjectArt } from '../lib/subject-art';
+import SubjectArtwork from './SubjectArtwork.astro';
+
+type Props = {
+    reference: { id: string; recordType: string };
+    class?: string;
+    artSize?: 'identity' | 'inline';
+};
+
+const { reference, class: className, artSize = 'inline' } = Astro.props;
+const key = `${reference.recordType}:${reference.id}`;
+const record = getRecord(key);
+if (!record || !isReaderFacingRecord(record)) {
+    throw new Error(`Reader-facing link has no public record: ${key}`);
+}
+const subjectArt = getRecordSubjectArt(record);
+---
+
+<a class:list={['record-link', className]} href={recordHref(record)}>
+    <SubjectArtwork subject={subjectArt} size={artSize} />
+    <span>{getRecordLinkLabel(record)}</span>
+</a>

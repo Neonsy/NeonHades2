@@ -1,0 +1,191 @@
+---
+import { guideChapters, guideMilestones } from '../content/guide';
+import SubjectArtwork from '../components/SubjectArtwork.astro';
+import ContentLayout from '../layouts/ContentLayout.astro';
+import { getPublication, getRecord } from '../lib/publication';
+import { getCollectionSubjectArt, getRecordSubjectArt, requireSubjectArt } from '../lib/subject-art';
+import { getSteamPatch } from '../lib/steam-patches';
+import { serializedSearch } from '../lib/guide-search';
+
+const { steamBuildId } = getPublication().source;
+const steamPatch = getSteamPatch(steamBuildId);
+const buildWeapon = getRecord('mechanics/weapon:WeaponAxe');
+if (!buildWeapon) throw new Error('The home build link requires the Moonstone Axe publication record.');
+const questions = [
+    {
+        art: 'incantations',
+        label: 'Why has this incantation not appeared?',
+        href: '/knowledge/incantations/',
+        type: 'Unlocks',
+    },
+    {
+        art: 'resources',
+        label: 'What should I reserve this material for?',
+        href: '/knowledge/resources/',
+        type: 'Resources',
+    },
+    { art: 'builds', label: 'Which Boons keep this aspect working?', href: '/knowledge/builds/', type: 'Builds' },
+    {
+        art: 'relationships',
+        label: 'What is blocking this relationship?',
+        href: '/knowledge/relationships/',
+        type: 'Relationships',
+    },
+] as const;
+---
+
+<ContentLayout
+    title='NeonHades2'
+    documentTitle={`Hades 2 Guide (${steamPatch.releasedOn.slice(0, 4)}): Post-v1.0 Builds & Walkthrough`}
+    description={`Hades 2 guides for the full release: walkthrough, builds, tier lists and unlocks. Verified against ${steamPatch.name}.`}
+    steamBuildId={steamBuildId}
+    surface='home'
+    mainClass='threshold-world'>
+    <section class='home-hero' aria-labelledby='home-title'>
+        <div class='home-scene' aria-hidden='true'>
+            <img
+                class='home-scene-landscape'
+                src='/art/scenes/the-crossroads-landscape.webp'
+                width='1600'
+                height='900'
+                alt=''
+                loading='eager'
+                decoding='async'
+            />
+            <div class='home-moon'></div>
+            <img
+                class='home-scene-hecate'
+                src='/art/characters/portraits/hecate.webp'
+                width='1600'
+                height='1389'
+                alt=''
+                loading='eager'
+                fetchpriority='high'
+                decoding='async'
+            />
+        </div>
+        <div class='home-hero-copy'>
+            <p class='home-place'>A field guide from the Crossroads</p>
+            <h1 id='home-title'>A little wisdom.<br /><em>For the next night.</em></h1>
+            <p class='home-introduction'>
+                Know what to do next in Hades II. Follow the journey, find your build, or look up the one thing standing
+                in your way.
+            </p>
+            <form
+                class='home-direct-search'
+                action='/knowledge/#search'
+                role='search'
+                aria-label='Search the Hades II guide'>
+                <label class='visually-hidden' for='home-query'>Search the guide</label>
+                <i class='ph ph-magnifying-glass' aria-hidden='true'></i>
+                <input
+                    id='home-query'
+                    name='q'
+                    type='search'
+                    placeholder='A Boon, a weapon, an unanswered question…'
+                    aria-controls='search-results'
+                    autocomplete='off'
+                />
+                <button type='submit' aria-label='Search'><i class='ph ph-arrow-right' aria-hidden='true'></i></button>
+            </form>
+            <div class='home-search-response' hidden>
+                <p id='search-status' class='search-status' aria-live='polite'></p>
+                <ol id='search-results' class='search-results' hidden></ol>
+            </div>
+            <script id='search-data' type='application/json' is:inline set:html={serializedSearch} />
+            <p class='home-source'>
+                <span>Independent post-v1.0 guide</span>
+                <span
+                    >Verified against <a
+                        href={steamPatch.url}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        data-steam-build={steamBuildId}
+                        >{steamPatch.name} ({steamPatch.releasedOn})<span class='visually-hidden'>
+                            (opens in a new tab)</span
+                        ></a
+                    ></span
+                >
+            </p>
+        </div>
+    </section>
+
+    <nav class='home-routes' aria-label='Choose how to use NeonHades2'>
+        <a class='home-route home-route-guide' href='/guide/'>
+            <span class='home-route-symbol' aria-hidden='true'><i class='ph ph-path'></i></span>
+            <div>
+                <span class='home-route-question'>When you need a direction</span><strong
+                    >Follow the game in order</strong
+                >
+                <p>
+                    {guideChapters.length} chapters. {guideMilestones.length} milestones. A clear next step, from the opening
+                    room to the final loose end.
+                </p>
+                <span class='home-route-action'
+                    >Start or continue the A-Z guide <i class='ph ph-arrow-right' aria-hidden='true'></i></span
+                >
+            </div>
+        </a>
+        <a class='home-route home-route-knowledge' href='/knowledge/'>
+            <span class='home-route-symbol' aria-hidden='true'><i class='ph ph-magnifying-glass'></i></span>
+            <div>
+                <span class='home-route-question'>When you have a question</span><strong>Find one exact answer</strong>
+                <p>Boons, unlocks, materials, relationships, and the connections that make a run work.</p>
+                <span class='home-route-action'
+                    >Open the knowledge base <i class='ph ph-arrow-right' aria-hidden='true'></i></span
+                >
+            </div>
+        </a>
+    </nav>
+
+    <section class='home-offerings' aria-labelledby='home-offerings-title'>
+        <header>
+            <p class='home-place'>Before you leave the Crossroads</p><h2 id='home-offerings-title'>
+                Give the next run<br />a fighting chance.
+            </h2><p>
+                A useful plan is more than a list of strong Boons. Start with your weapon, then bring the rest together.
+            </p>
+        </header>
+        <a class='home-offering home-offering-build' href='/knowledge/builds/'>
+            <SubjectArtwork subject={getRecordSubjectArt(buildWeapon)} size='row' sizes='7rem' />
+            <div>
+                <h3>Builds you can actually play</h3><p>
+                    One plan for your aspect: the moves, the loadout, and what to take when your first choice does not
+                    appear.
+                </p><span>Choose an aspect build <i class='ph ph-arrow-right' aria-hidden='true'></i></span>
+            </div>
+        </a>
+        <a class='home-offering home-offering-tiers' href='/knowledge/tier-lists/'>
+            <SubjectArtwork subject={requireSubjectArt('Nova Strike')} size='row' sizes='7rem' />
+            <div>
+                <h3>Strong for what?</h3><p>
+                    Compare choices for your goal, with the reasons and limits beside each rating.
+                </p><span>Compare tier lists <i class='ph ph-arrow-right' aria-hidden='true'></i></span>
+            </div>
+        </a>
+    </section>
+
+    <section class='home-questions' aria-labelledby='home-questions-title'>
+        <header>
+            <h2 id='home-questions-title'>Something holding you up?</h2><p>Start with the decision in front of you.</p>
+        </header>
+        <nav aria-label='Common questions NeonHades2 can answer'>
+            {
+                questions.map((question) => (
+                    <a href={question.href}>
+                        <SubjectArtwork subject={getCollectionSubjectArt(question.art)} size='inline' />
+                        <>
+                            <span>{question.label}</span>
+                            <small>{question.type}</small>
+                        </>
+                        <i class='ph ph-arrow-right' aria-hidden='true' />
+                    </a>
+                ))
+            }
+        </nav>
+    </section>
+</ContentLayout>
+
+<script>
+    import '../scripts/knowledge-search';
+</script>

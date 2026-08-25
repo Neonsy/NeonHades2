@@ -1,0 +1,364 @@
+---
+import { getRecord, getRecordLinkLabel, recordHref, slugify, type PublicationField } from '../lib/publication';
+import { requireSubjectArt } from '../lib/subject-art';
+import ProgressionTable from './ProgressionTable.astro';
+import { progressionTable } from '../lib/progression';
+import {
+    asRecommendations,
+    cleanReaderText,
+    canPresentValue,
+    collectReferences,
+    costGroups,
+    extractEffectMetrics,
+    isObject,
+    isReference,
+    namedDescriptionItems,
+    objectSummary,
+    plainList,
+    rarityScalingRows,
+    readableRules,
+    readerRules,
+    readerFieldLabel,
+    summarizeValue,
+    upgradeGroups,
+} from '../lib/presentation';
+import RatingMark from './RatingMark.astro';
+import RecordLink from './RecordLink.astro';
+import ReaderRuleSet from './ReaderRuleSet.astro';
+import SubjectArtwork from './SubjectArtwork.astro';
+
+type Props = {
+    effectValue?: PublicationField['value'];
+    field: PublicationField;
+};
+
+const { effectValue, field } = Astro.props;
+const value = field.value;
+const recommendations = asRecommendations(value);
+const costs = costGroups(value, field.id);
+const progression = progressionTable(field.id, value, effectValue);
+const metrics = extractEffectMetrics(value);
+const rarityScaling = field.id.endsWith('/rarity-scaling') ? rarityScalingRows(value) : [];
+const references = collectReferences(value);
+const list = plainList(value);
+const rules = readableRules(value);
+const presentedRules = readerRules(value);
+const hasStructuredRules = presentedRules.some((rule) => rule.kind === 'set');
+const namedItems = namedDescriptionItems(value);
+const upgrades = upgradeGroups(value);
+const summary = summarizeValue(value);
+const objectEntries = objectSummary(value);
+const directReference = isReference(value) ? value : undefined;
+const rewardRecords = field.id.endsWith('/rewards')
+    ? Array.isArray(value)
+        ? value.flatMap((item) => {
+              if (typeof item !== 'string') return [];
+              const record = getRecord(`mechanics/run-reward:${item}`);
+              return record ? [record] : [];
+          })
+        : []
+    : [];
+const isEffectField = field.id.includes('effect') || field.id.includes('scaling');
+const canPresent = canPresentValue(value, field.id);
+const leadDescription =
+    isObject(value) && typeof value.description === 'string' ? cleanReaderText(value.description) : '';
+const choiceGroups =
+    isObject(value) && Array.isArray(value.choiceGroups)
+        ? value.choiceGroups
+              .filter((group): group is typeof value.choiceGroups => Array.isArray(group))
+              .map((group) => group.filter(isReference))
+              .filter((group) => group.length > 0)
+        : [];
+const requirementReferences =
+    isObject(value) && Array.isArray(value.references)
+        ? value.references
+              .filter(isReference)
+              .filter(
+                  (reference, index, references) =>
+                      references.findIndex(
+                          (candidate) => candidate.id === reference.id && candidate.recordType === reference.recordType
+                      ) === index
+              )
+        : [];
+const requirementItems =
+    isObject(value) && Array.isArray(value.items)
+        ? value.items.flatMap((item) => {
+              if (
+                  !isObject(item) ||
+                  typeof item.name !== 'string' ||
+                  typeof item.fragment !== 'string' ||
+                  !isReference(item.parent)
+              ) {
+                  return [];
+              }
+              const parent = getRecord(`${item.parent.recordType}:${item.parent.id}`);
+              if (!parent) return [];
+              const name = cleanReaderText(item.name);
+              return [{ name, href: `${recordHref(parent)}#${item.fragment}`, subject: requireSubjectArt(name) }];
+          })
+        : [];
+const requirementNames = requirementReferences
+    .flatMap((reference) => {
+        const record = getRecord(`${reference.recordType}:${reference.id}`);
+        return record ? [getRecordLinkLabel(record)] : [];
+    })
+    .concat(requirementItems.map((item) => item.name));
+const requirementsAreAllBoons =
+    requirementItems.length === 0 &&
+    requirementReferences.length > 0 &&
+    requirementReferences.every((reference) => reference.recordType === 'mechanics/boon');
+const requirementRuleLeads = rules.map((rule) => {
+    const firstReferenceIndex = requirementNames.reduce((earliest, name) => {
+        const index = rule.indexOf(name);
+        return index < 0 ? earliest : Math.min(earliest, index);
+    }, Number.POSITIVE_INFINITY);
+    if (!Number.isFinite(firstReferenceIndex)) return cleanReaderText(rule);
+
+    const lead = rule
+        .slice(0, firstReferenceIndex)
+        .replace(/\s*[:,;]\s*$/u, '')
+        .trim();
+    const readerLead = requirementsAreAllBoons ? lead : lead.replace(/\bboons\b/giu, 'entries');
+    return readerLead === '' || /[.!?]$/u.test(readerLead) ? readerLead : `${readerLead}.`;
+});
+---
+
+{
+    canPresent && (
+        <section
+            class:list={[
+                'record-field',
+                field.id.endsWith('/abilities-upgrades') && 'record-field--familiar-upgrades',
+            ]}>
+            <h2>{readerFieldLabel(field.id)}</h2>
+
+            {typeof value === 'string' || typeof value === 'number' ? (
+                <p class='field-lead'>{typeof value === 'string' ? cleanReaderText(value) : String(value)}</p>
+            ) : directReference ? (
+                <RecordLink reference={directReference} />
+            ) : progression ? (
+                <ProgressionTable progression={progression} />
+            ) : costs.length > 0 ? (
+                <dl class='cost-groups'>
+                    {costs.map((group) => (
+                        <div>
+                            {(costs.length > 1 || group.label !== 'Cost') && <dt>{group.label}</dt>}
+                            <dd>
+                                {group.items.map((item) => (
+                                    <span class='cost-item'>
+                                        <b class='cost-quantity'>{item.amount}</b>
+                                        <RecordLink reference={item.resource} />
+                                    </span>
+                                ))}
+                            </dd>
+                        </div>
+                    ))}
+                </dl>
+            ) : rewardRecords.length > 0 ? (
+                <div class='reference-cloud'>
+                    {rewardRecords.map((record) => (
+                        <RecordLink reference={{ id: record.id, recordType: record.recordType }} />
+                    ))}
+                </div>
+            ) : rarityScaling.length > 0 ? (
+                <dl
+                    class='rarity-scaling-list'
+                    data-balanced-grid
+                    data-balanced-grid-layout='justified'
+                    data-balanced-grid-min='10rem'
+                    data-balanced-grid-max='6'>
+                    {rarityScaling.map((row) => (
+                        <div>
+                            <dt>{row.rarity}</dt>
+                            <dd>{row.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            ) : recommendations.length > 0 ? (
+                <ol class='recommendation-list'>
+                    {recommendations.map((item) => (
+                        <li>
+                            <RatingMark rating={item.rating} />
+                            <div>
+                                <RecordLink reference={item.reference} />
+                                {(item.role || item.slot) && (
+                                    <span class='recommendation-role'>
+                                        {[item.role, item.slot].filter(Boolean).join(' · ')}
+                                    </span>
+                                )}
+                                {item.reason && <p>{item.reason}</p>}
+                                {item.limitation && <small>{item.limitation}</small>}
+                            </div>
+                        </li>
+                    ))}
+                </ol>
+            ) : upgrades.length > 0 ? (
+                <div
+                    class='upgrade-groups'
+                    data-balanced-grid
+                    data-balanced-grid-layout='justified'
+                    data-balanced-grid-items='section'
+                    data-balanced-grid-min='18rem'
+                    data-balanced-grid-max='3'>
+                    {leadDescription && <p class='field-lead'>{leadDescription}</p>}
+                    {upgrades.map((upgrade) => (
+                        <section>
+                            <h3>{upgrade.name}</h3>
+                            <ol>
+                                {upgrade.ranks.map((rank) => (
+                                    <li>
+                                        <strong>Rank {rank.rank}</strong>
+                                        <p>{rank.description}</p>
+                                        {rank.costs.length > 0 && (
+                                            <span>
+                                                Costs{' '}
+                                                {rank.costs.map((cost) => (
+                                                    <>
+                                                        {cost.amount} <RecordLink reference={cost.resource} />
+                                                    </>
+                                                ))}
+                                            </span>
+                                        )}
+                                    </li>
+                                ))}
+                            </ol>
+                        </section>
+                    ))}
+                </div>
+            ) : namedItems.length > 0 ? (
+                <ol class='named-description-list'>
+                    {namedItems.map((item) => (
+                        <li>
+                            <strong id={slugify(item.name)}>{item.name}</strong>
+                            {item.category && <span>{item.category}</span>}
+                            <p>{item.description}</p>
+                        </li>
+                    ))}
+                </ol>
+            ) : leadDescription ? (
+                <p class='field-lead'>{leadDescription}</p>
+            ) : choiceGroups.length > 0 ? (
+                <div class='prerequisite-choice'>
+                    <p class='field-lead'>
+                        {choiceGroups.length === 1
+                            ? 'Choose any 1 of these Boons.'
+                            : `Choose 1 Boon from each group. ${choiceGroups.length} Boons total.`}
+                    </p>
+                    <ol
+                        class:list={[
+                            'prerequisite-groups',
+                            { 'prerequisite-groups-single': choiceGroups.length === 1 },
+                        ]}
+                        data-balanced-grid
+                        data-balanced-grid-min='17rem'
+                        data-balanced-grid-max='4'>
+                        {choiceGroups.map((group, index) => (
+                            <li>
+                                <header>
+                                    <span>
+                                        {choiceGroups.length === 1 ? 'Alternative Boons' : `Group ${index + 1}`}
+                                    </span>
+                                    <strong>Choose 1</strong>
+                                </header>
+                                <div class='reference-cloud'>
+                                    {group.map((reference) => (
+                                        <RecordLink reference={reference} />
+                                    ))}
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            ) : requirementReferences.length > 0 || requirementItems.length > 0 ? (
+                <div class='record-reference-requirement'>
+                    {requirementRuleLeads.filter(Boolean).map((rule) => (
+                        <p class='field-lead'>{rule}</p>
+                    ))}
+                    <div class='reference-cloud'>
+                        {requirementReferences.map((reference) => (
+                            <RecordLink reference={reference} />
+                        ))}
+                        {requirementItems.map((item) => (
+                            <a class='record-link record-link--requirement-item' href={item.href}>
+                                <SubjectArtwork subject={item.subject} size='inline' />
+                                <span>{item.name}</span>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            ) : hasStructuredRules ? (
+                <div class='condition-breakdown'>
+                    {presentedRules.map((rule) =>
+                        rule.kind === 'set' ? <ReaderRuleSet rule={rule} /> : <p class='condition-note'>{rule.text}</p>
+                    )}
+                </div>
+            ) : rules.length > 0 ? (
+                <ul class='plain-list'>
+                    {[...new Set(rules)].map((rule) => (
+                        <li>{rule}</li>
+                    ))}
+                </ul>
+            ) : isEffectField && metrics.length > 0 ? (
+                <dl
+                    class='metric-list'
+                    data-balanced-grid
+                    data-balanced-grid-layout='justified'
+                    data-balanced-grid-min='10rem'
+                    data-balanced-grid-max='6'>
+                    {metrics.map((metric) => (
+                        <div>
+                            <dt>{metric.name}</dt>
+                            <dd>{metric.values.join(' to ')}</dd>
+                        </div>
+                    ))}
+                </dl>
+            ) : list.length > 0 ? (
+                <ul class='plain-list'>
+                    {list.map((item) => (
+                        <li>{typeof item === 'string' ? cleanReaderText(item) : item}</li>
+                    ))}
+                </ul>
+            ) : Array.isArray(value) && references.length > 0 ? (
+                <div class='reference-cloud'>
+                    {references.map((reference) => (
+                        <RecordLink reference={reference} />
+                    ))}
+                </div>
+            ) : isObject(value) && objectEntries.length > 0 ? (
+                <dl
+                    class='fact-list'
+                    data-balanced-grid
+                    data-balanced-grid-layout='justified'
+                    data-balanced-grid-min='14rem'
+                    data-balanced-grid-max='6'>
+                    {objectEntries.map((entry) => (
+                        <div>
+                            <dt>{entry.label}</dt>
+                            <dd>{entry.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            ) : summary ? (
+                <p>{summary}</p>
+            ) : references.length > 0 ? (
+                <div class='reference-cloud'>
+                    {references.map((reference) => (
+                        <RecordLink reference={reference} />
+                    ))}
+                </div>
+            ) : null}
+        </section>
+    )
+}
+
+<style>
+    .condition-breakdown {
+        display: grid;
+        gap: 1rem;
+    }
+    .condition-note {
+        max-width: 68ch;
+        padding-inline-start: 1rem;
+        border-inline-start: 2px solid color-mix(in srgb, var(--divine-primary) 54%, transparent);
+    }
+</style>

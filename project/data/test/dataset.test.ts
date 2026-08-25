@@ -88,7 +88,7 @@ function normalizedDomains(): NormalizedDomains {
       }],
     },
     loadouts: {
-      schema: "neodes2-loadouts-1",
+      schema: "neodes2-loadouts-2",
       source,
       keepsakes: [{
         id: "Keepsake", displayName: "Keepsake", description: "Keepsake description",
@@ -119,10 +119,14 @@ function normalizedDomains(): NormalizedDomains {
         unlockRequirements: null, effects: { Enabled: true }, evidence,
       }],
       automaticWorldUpgradeIds: [],
+      incantationRevealPolicy: {
+        maxNewRevealsPerRun: 3,
+        categories: [{ id: "Critical", oneRevealPassPerRun: true, orderedIncantationIds: ["Incantation"] }],
+      },
       spellTalentConfiguration: {},
     },
     guide: {
-      schema: "neodes2-guide-data-1",
+      schema: "neodes2-guide-data-2",
       source,
       routes: [{ id: "route", regionIds: ["Region"] }],
       regions: [{
@@ -150,6 +154,32 @@ function normalizedDomains(): NormalizedDomains {
       achievements: [{ ...guideRecord("Achievement"), displayName: "Achievement", description: "Achievement description", hidden: false }],
       namedRequirements: [guideRecord("Requirement")],
       runClearMessages: [guideRecord("RunClear")],
+      gatheringTools: [{ id: "Tool", baseToolId: "Tool", level: 1, displayName: "Tool", description: "Tool description", costs: [{ resourceId: "Resource", amount: 1 }], unlockConditions: [], elementYield: { elementId: "Status", essenceTraitId: "StatusEssence", chance: 0.5 } }],
+      fish: [{ id: "Fish", resourceId: "Resource", regionId: "Region", rarity: "common", catchRules: [{ weight: 1, conditions: [] }], sellValue: 1, sellCurrencyId: "Resource" }],
+      cultivation: [{ id: "Cultivation", seedResourceId: "Resource", outputResourceId: "Resource", outputAmount: 1, growTimeMin: 1, growTimeMax: 1, weight: 1, conditions: [], bonusSeedResourceId: null }],
+      marketOffers: [{ id: "Offer", categoryId: "Market", outputResourceId: "Resource", outputAmount: 1, costs: [{ resourceId: "Resource", amount: 1 }], availability: [], refreshOncePerRun: false }],
+      runRewards: [{ id: "Reward", displayName: "Reward", description: "Reward description", effectKind: "resource", amount: 1, resourceId: "Resource", availability: [], selectionSources: [{ storeId: "MetaProgress", kind: "room-door", alternatives: [[]] }] }],
+      openingStates: [{ id: "first-night-opening", roomId: "Room", encounterId: "Encounter", rewardKind: "Boon", godId: "God", boonIds: ["Boon"], forcedCommonRarity: true }],
+      godAppearances: [{ godId: "God", appearanceKind: "boon-pool", initialRequirementId: "Requirement", initialConditions: [], repeatRequirementId: null, repeatConditions: [], forcedRoomIds: ["Room"], secretDoorChance: null, minimumRoomsBetweenAppearances: null }],
+      encounterFriends: [{ id: "Friend", displayName: "Friend", appearances: [{ encounterId: "Encounter", regionId: "Region", appearanceConditions: [] }], maxAppearancesPerBiome: 1, aidIds: ["Aid"] }],
+      encounterAids: [{ id: "Aid", providerId: "Friend", displayName: "Aid", description: "Aid description", availability: [], buildTags: ["attack"] }],
+      encounterAidEffects: [{
+        ...guideRecord("Aid"),
+        data: {
+          providerId: "Friend",
+          trait: {},
+          samples: [{
+            rarity: "Common",
+            endpoint: "fixed",
+            level: 1,
+            context: { mode: "player-independent", elementCounts: [] },
+            result: { status: "ok", values: [] },
+          }],
+        },
+      }],
+      strifeCurses: [{ id: "strife-blessing", traitId: "ErisCurseTrait", displayName: "Blessing of Strife", description: "Enemy damage rises.", baseEnemyDamagePercent: 20, perEncounterEnemyDamagePercent: 5, maximumEncounterAdditions: 16, maximumEnemyDamagePercent: 100, duration: "remainder-of-current-night", criticalHealthSuppression: { requiresNoDeathDefiance: true, maximumHealthFraction: 0.5 }, stages: [{ regionId: "Region", roomId: "Room", maximumCompletedNights: 1, compensation: { resourceId: "Resource", amount: 1 } }] }],
+      surfacePenalties: [{ id: "surface-ward", traitId: "SurfacePenalty", startingDamage: 1, intervalSeconds: 5, damageIncreasePerTick: 1, activationEncounterId: "OpeningGeneratedN", cureIncantationId: "WorldUpgradeSurfacePenaltyCure" }],
+      gardenPlotCount: 1,
     },
   };
 }
@@ -169,6 +199,9 @@ const counts = {
     routes: 1, regions: 1, rooms: 1, encounters: 1, enemies: 1, rewards: 1, resources: 1,
     statusElements: 1, oathConditions: 1, bounties: 1, relationships: 1, prophecies: 1,
     narrative: 1, outros: 1, achievements: 1, namedRequirements: 1,
+    gatheringTools: 1, fish: 1, cultivation: 1, marketOffers: 1, runRewards: 1, openingStates: 1,
+    godAppearances: 1, encounterFriends: 1, encounterAids: 1, encounterAidEffects: 1, strifeCurses: 1,
+    surfacePenalties: 1,
   },
   loadouts: {
     keepsakes: 1, familiars: 1, familiarUpgradeTracks: 1, familiarUpgradeRanks: 1,

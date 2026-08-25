@@ -1,0 +1,97 @@
+---
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import type { PublicationPage, PublicationRecord } from '../../lib/publication';
+import { collectionMetadataDescription } from '../../lib/seo-copy';
+import { buildCollectionViewModel } from '../../lib/collection-view-model';
+import BoonCollection from './BoonCollection.astro';
+import CollectionRuntime from './CollectionRuntime.astro';
+import CollectionToolbar from './CollectionToolbar.astro';
+import RecordIndex from './RecordIndex.astro';
+import ResourceCollection from './ResourceCollection.astro';
+import StoryCollection from './StoryCollection.astro';
+import WeaponCollection from './WeaponCollection.astro';
+
+type Props = { page: PublicationPage; records: PublicationRecord[] };
+const { page, records } = Astro.props;
+const model = buildCollectionViewModel(page, records);
+const { publication, slug, guide, collectionHref } = model;
+---
+
+<ContentLayout
+    title={page.title}
+    description={collectionMetadataDescription(slug)}
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Knowledge', href: '/knowledge/' },
+        { name: page.title, href: collectionHref },
+    ]}
+    surface={`collection collection-${slug}`}>
+    <div class='collection-intro-grid'>
+        <header class='page-hero collection-hero collection-hero-v2'>
+            <div>
+                <h1>{page.title}</h1>
+                <p>{guide.intro}</p>
+            </div>
+        </header>
+
+        <aside class='collection-purpose' aria-label='How to use this collection'>
+            <span class='collection-purpose-label'>Use this collection when</span>
+            <p>{guide.useFor}</p>
+            <details>
+                <summary>
+                    Questions this reference answers
+                    <i class='ph ph-caret-down' aria-hidden='true'></i>
+                </summary>
+                <ul>
+                    {guide.questions.map((question) => <li>{question}</li>)}
+                </ul>
+            </details>
+        </aside>
+    </div>
+
+    {slug !== 'resources' && slug !== 'story' && <CollectionToolbar title={page.title} />}
+
+    {
+        slug === 'story' && (
+            <StoryCollection storyCodexRecords={model.storyCodexRecords} storyDestinations={model.storyDestinations} />
+        )
+    }
+    {slug === 'weapons' && <WeaponCollection weaponRecords={model.weaponRecords} />}
+    {
+        slug === 'resources' && (
+            <ResourceCollection
+                runRewardRecords={model.runRewardRecords}
+                fishRows={model.fishRows}
+                toolRows={model.toolRows}
+                cultivationRows={model.cultivationRows}
+                mysterySeedRows={model.mysterySeedRows}
+                marketSections={model.marketSections}
+                resourceName={model.resourceName}
+                titleCase={model.titleCase}
+            />
+        )
+    }
+    {
+        slug === 'boons' && (
+            <BoonCollection
+                divineGroups={model.divineGroups}
+                sharedBoonRecords={model.sharedBoonRecords}
+                legendaryBoons={model.legendaryBoons}
+                duoBoons={model.duoBoons}
+            />
+        )
+    }
+    {
+        slug !== 'boons' && slug !== 'story' && slug !== 'weapons' && (
+            <RecordIndex
+                indexedRecords={model.indexedRecords}
+                virtualizeIndex={model.virtualizeIndex}
+                slug={model.slug}
+                title={page.title}
+            />
+        )
+    }
+
+    <CollectionRuntime />
+</ContentLayout>

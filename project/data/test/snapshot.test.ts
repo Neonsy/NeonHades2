@@ -4,10 +4,12 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, it } from "node:test";
 
+import { acquisitionContract } from "../src/contract/index.js";
 import {
   assertLocalOutputPath,
   createSourceSnapshot,
   discoverGameInstallation,
+  getRequiredContractSourcePatterns,
   matchesSourcePattern,
   parseSteamAppManifest,
   parseSteamLibraryFolders,
@@ -232,7 +234,7 @@ describe("source snapshot", () => {
           requiredSourcePatterns: fixturePatterns,
           executableVersionReader: testVersionReader,
         }),
-        /Required source file is missing/u,
+        /Required contract source pattern matched no allowlisted files/u,
       );
     });
   });
@@ -244,6 +246,17 @@ describe("source snapshot", () => {
     };
 
     assert.throws(() => validateSourcePolicy(forbiddenPolicy), /Forbidden source file class/u);
+  });
+
+  it("requires recursive rules to select every matching file", () => {
+    assert.throws(() => validateSourcePolicy({
+      schema: "neodes2-source-policy-1",
+      rules: [{ directory: "Content/Game", extension: ".sjson", files: ["One.sjson"], recursive: true }],
+    }), /Recursive source policy rule/u);
+  });
+
+  it("accepts every concrete source pattern in the acquisition contract", () => {
+    assert.doesNotThrow(() => getRequiredContractSourcePatterns(acquisitionContract));
   });
 
   it("rejects mixed executable versions", async () => {

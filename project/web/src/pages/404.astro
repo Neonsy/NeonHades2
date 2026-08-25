@@ -1,0 +1,304 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+import { getPublication } from '../lib/publication';
+
+const publication = getPublication();
+---
+
+<ContentLayout
+    title='Page not found'
+    description='The requested NeonHades2 page could not be found. Return home or search the Hades II guide and reference.'
+    steamBuildId={publication.source.steamBuildId}
+    surface='knowledge not-found'
+    mainClass='not-found-main'
+    robots='noindex,follow'>
+    <section class='not-found' aria-labelledby='not-found-title'>
+        <div class='not-found-signal' aria-hidden='true'>
+            <span class='not-found-digit not-found-digit-left'>4</span>
+            <img src='/art/decor/shades.webp' width='273' height='273' alt='' loading='eager' decoding='async' />
+            <span class='not-found-digit not-found-digit-right'>4</span>
+        </div>
+
+        <div class='not-found-copy'>
+            <h1 id='not-found-title'>This path ends here.</h1>
+            <p>The page may have moved, or the address may be incomplete.</p>
+            <p>Search Knowledge for one exact answer, or return to the start.</p>
+
+            <nav class='not-found-actions' aria-label='Recover from the missing page'>
+                <a class='not-found-primary' href='/knowledge/#search'>
+                    <span>Search Knowledge</span>
+                    <i class='ph ph-magnifying-glass' aria-hidden='true'></i>
+                </a>
+                <a href='/'>
+                    <span>Return home</span>
+                    <i class='ph ph-arrow-right' aria-hidden='true'></i>
+                </a>
+            </nav>
+        </div>
+    </section>
+</ContentLayout>
+
+<style>
+    :global(.surface-not-found) {
+        display: flex;
+        min-height: 100svh;
+        flex-direction: column;
+    }
+
+    :global(.content-main.not-found-main) {
+        display: grid;
+        flex: 1;
+        min-height: 0;
+        align-items: center;
+        padding-block: 0;
+    }
+
+    .not-found {
+        position: relative;
+        isolation: isolate;
+        display: grid;
+        grid-template-columns: minmax(16rem, 0.72fr) minmax(18rem, 1fr);
+        gap: clamp(2.5rem, 7vw, 7rem);
+        align-items: center;
+        width: min(100%, 76rem);
+        margin-inline: auto;
+        padding: clamp(2rem, 5vw, 5rem);
+        overflow: hidden;
+        background: var(--surface-ink);
+        border-block: 1px solid var(--rule);
+    }
+
+    .not-found-signal {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        column-gap: clamp(0.75rem, 2vw, 1.5rem);
+        min-height: 18rem;
+        align-self: stretch;
+        place-items: center;
+    }
+
+    .not-found-signal::before {
+        position: absolute;
+        width: min(100%, 13rem);
+        aspect-ratio: 1;
+        border: 1px solid rgb(99 230 210 / 0.2);
+        border-radius: 50%;
+        box-shadow:
+            0 0 2.5rem rgb(99 230 210 / 0.22),
+            0 0 6rem rgb(99 230 210 / 0.13),
+            inset 0 0 3rem rgb(99 230 210 / 0.1);
+        content: '';
+        transform: translateZ(-1rem);
+    }
+
+    .not-found-digit {
+        position: relative;
+        color: rgb(201 198 193 / 0.28);
+        font-size: clamp(6.5rem, 10vw, 8rem);
+        font-weight: 750;
+        line-height: 0.8;
+        text-shadow: 0 0 1.5rem rgb(99 230 210 / 0.08);
+        transform: translateZ(1rem);
+    }
+
+    .not-found-digit-left {
+        justify-self: end;
+    }
+
+    .not-found-digit-right {
+        justify-self: start;
+    }
+
+    .not-found-signal img {
+        position: relative;
+        z-index: 1;
+        width: clamp(8rem, 13vw, 11rem);
+        height: auto;
+        filter: drop-shadow(0 1.2rem 1.6rem rgb(0 0 0 / 0.48));
+        transform: translateZ(2rem);
+    }
+
+    .not-found-copy {
+        max-width: 42rem;
+    }
+
+    .not-found-copy h1 {
+        max-width: 10ch;
+        margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+        color: var(--paper);
+        font-size: clamp(3.2rem, 7vw, 6rem);
+        letter-spacing: -0.035em;
+        line-height: 0.96;
+        text-wrap: balance;
+    }
+
+    .not-found-copy p {
+        max-width: 35rem;
+        margin: 0;
+        color: var(--paper-soft);
+        font-size: clamp(1.125rem, 1.03rem + 0.34vw, 1.3rem);
+        line-height: 1.6;
+    }
+
+    .not-found-copy p + p {
+        margin-top: 0.35rem;
+    }
+
+    .not-found-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: clamp(2.25rem, 5vw, 3.5rem);
+    }
+
+    .not-found-actions a {
+        display: inline-flex;
+        min-height: 3.25rem;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.8rem 1.15rem;
+        border: 1px solid var(--rule);
+        color: var(--paper);
+        background: var(--surface-ink);
+        font-weight: 700;
+        text-decoration: none;
+        border-radius: var(--control-radius);
+        transition:
+            border-color 180ms ease-out,
+            background-color 180ms ease-out,
+            box-shadow 180ms ease-out,
+            color 180ms ease-out,
+            filter 180ms ease-out,
+            transform 120ms ease-out;
+    }
+
+    .not-found-actions a:hover {
+        border-color: rgb(181 255 242 / 0.9);
+        color: #ffffff;
+        background: #29243f;
+        box-shadow: inset 0 0 0 1px rgb(181 255 242 / 0.28);
+        transform: translateY(-2px);
+    }
+
+    .not-found-actions a:focus-visible {
+        border-color: #ffffff;
+        outline: 0;
+        color: #ffffff;
+        background: #211d34;
+        box-shadow:
+            inset 0 0 0 2px var(--thread-bright),
+            inset 0 0 1rem rgb(99 230 210 / 0.22);
+        filter: drop-shadow(0 0 0.12rem #ffffff) drop-shadow(0 0 0.8rem rgb(99 230 210 / 0.48));
+    }
+
+    .not-found-actions a:active {
+        border-color: var(--projection);
+        color: #ffffff;
+        background: #171525;
+        box-shadow: inset 0 0.25rem 0.6rem rgb(0 0 0 / 0.42);
+        filter: none;
+        transform: translateY(1px);
+    }
+
+    .not-found-actions .not-found-primary {
+        border-color: rgb(99 230 210 / 0.62);
+        color: #07110f;
+        background: var(--thread);
+    }
+
+    .not-found-actions .not-found-primary:hover {
+        border-color: #ffffff;
+        color: #04100e;
+        background: #b5fff2;
+        box-shadow: 0 0.85rem 1.8rem rgb(99 230 210 / 0.24);
+    }
+
+    .not-found-actions .not-found-primary:focus-visible {
+        border-color: #04100e;
+        outline: 0;
+        color: #04100e;
+        background: var(--thread);
+        box-shadow:
+            inset 0 0 0 3px #04100e,
+            inset 0 0 0 5px rgb(255 255 255 / 0.82);
+        filter: drop-shadow(0 0 0.12rem #ffffff) drop-shadow(0 0 0.9rem rgb(99 230 210 / 0.62));
+    }
+
+    .not-found-actions .not-found-primary:active {
+        border-color: #04100e;
+        color: #04100e;
+        background: #42b9ad;
+        box-shadow: inset 0 0.3rem 0.65rem rgb(4 16 14 / 0.32);
+        filter: none;
+    }
+
+    @media (max-width: 760px) {
+        :global(.content-main.not-found-main) {
+            min-height: auto;
+        }
+
+        .not-found {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            padding-block: 2.5rem 3rem;
+        }
+
+        .not-found-signal {
+            min-height: 11rem;
+        }
+
+        .not-found-signal::before {
+            width: 9rem;
+        }
+
+        .not-found-digit {
+            font-size: 5.5rem;
+        }
+
+        .not-found-copy {
+            text-align: center;
+        }
+
+        .not-found-copy h1,
+        .not-found-copy p {
+            margin-inline: auto;
+        }
+
+        .not-found-actions {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 430px) {
+        .not-found {
+            padding-inline: 1.35rem;
+        }
+
+        .not-found-actions {
+            display: grid;
+        }
+
+        .not-found-actions a {
+            width: 100%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .not-found-signal {
+            transform: none;
+            transition: none;
+        }
+
+        .not-found-signal::before {
+            animation: none;
+            opacity: 0.84;
+            transform: none;
+        }
+
+        .not-found-actions a {
+            transition: none;
+        }
+    }
+</style>

@@ -1,45 +1,69 @@
 # NeonHades2 data tooling
 
-This directory contains project-owned acquisition, normalization, and validation code for NeonHades2.
-Game files and game-derived inputs or outputs belong under an ignored `.local` directory and must not be committed.
+This directory contains the acquisition, normalization, validation, verification, and publication code used by NeonHades2.
+It lets a game owner create the complete guide dataset from an installed Steam copy of _Hades II_ without relying on another person's game files or exports.
 
-The acquisition contract maps every requirement in the product plan to an owning record field, source class, normalization rule, validation rule, publication status, spoiler level, and completion requirement.
+## Pick the result you need
 
-The source snapshotter discovers the installed Hades II Steam build, verifies its versions, copies allowlisted Lua and SJSON files, hashes the evidence, and writes an immutable acquisition under `.local/acquisitions/`.
-It does not launch or control the game.
+Follow [Acquire the complete dataset](/project/data/ACQUIRE-DATA.md) to produce `dataset.json` from your own game installation.
+That tutorial covers the source snapshot, the complete raw runtime archive, the private evidence archive, all five normalized domain acquisitions, and the combined dataset.
 
-The runtime pipeline adds a project-owned exporter under `/project/data/mod/neodes2-boon-exporter/`.
-It reads processed game tables and English localization files after a save loads.
-It writes a hashed, finalized runtime report to the mod profile's own data directory.
+Follow [Verify and publish the dataset](/project/data/VERIFY-AND-PUBLISH.md) when you also need independent checks, manual observation evidence, editorial validation, a publication artifact, or a refreshed website snapshot.
 
-The boon importer writes deterministic normalized boons and coverage reports under `.local/boons/`.
-Runtime sample version 2 separates processed trait values from static base-data values.
-Weapon-dependent processed values are recorded as source variants selected by weapon name.
-It records exact formulas and named inputs when player state affects a displayed value.
-Element-scaled values use an explicit one-element context instead of the loaded save.
-Official description references are checked against exported tooltip values and `TraitData` fields.
+## Understand the data levels
 
-The weapon importer writes deterministic normalized weapons, aspects, ranks, Daedalus Hammers, and coverage reports under `.local/weapons/`.
-It checks the runtime identifiers against a static source audit and preserves linked engine weapon identifiers that have no standalone `WeaponData` record.
+| Result                | What it contains                                                               | Default location                                                                             |
+| --------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| Source snapshot       | Every Lua and SJSON game definition plus version and hash evidence             | `.local/acquisitions/`                                                                       |
+| Runtime staging run   | Temporary processed game tables and English localization after a save loads    | The active ReturnOfModding profile                                                           |
+| Raw runtime archive   | Unchanged, hash-listed copy of every finalized mod output                       | `.local/runtime-exports/`                                                                    |
+| Evidence archive      | One shared graph for processed static tables, with unsupported values recorded | `.local/evidence/`                                                                           |
+| Domain acquisition    | Verified and normalized data for one subject group                             | `.local/boons/`, `.local/weapons/`, `.local/arcana/`, `.local/loadouts/`, or `.local/guide/` |
+| Combined dataset      | The complete normalized NeonHades2 data contract                               | `.local/datasets/`                                                                           |
+| Verification artifact | Automated results, the manual observation plan, and accepted manual evidence   | `.local/verification/`                                                                       |
+| Data-ready artifact   | Reproduction proof and the publication allowlist                               | `.local/data-ready/`                                                                         |
+| Editorial artifact    | Authored recommendations and progression content bound to one dataset          | `.local/editorial/`                                                                          |
+| Publication artifact  | Sanitized public records, pages, search terms, relationships, and conditions   | `.local/publication/`                                                                        |
+| Website snapshot      | The committed public input used by normal website builds                       | `/project/web/src/content/publication.json`                                                  |
 
-The Arcana importer writes deterministic normalized Cards, ranks, automatic activation rules, the default layout, reveal adjacency, and Grasp progression under `.local/arcana/`.
-It checks runtime identifiers, layout, and Grasp progression against a static source audit.
-It does not read a player's unlocked Cards, active loadout, or save progress.
-
-The loadout importer writes deterministic keepsakes, Familiars, Familiar upgrades, Hexes, Path of Stars talents, and incantations under `.local/loadouts/`.
-It preserves player-dependent tooltip values as formulas with named inputs instead of reading the loaded save's build.
-
-The guide importer writes routes, regions, rooms, encounters, enemies, resources, status effects, elemental traits, Oath conditions, Testaments, relationships, prophecies, narrative records, ending and postgame outros, achievements, and named requirements under `.local/guide/`.
-It checks the exported achievement set against Steam's local Hades II achievement schema.
+Every completed local artifact directory contains `manifest.json` and `complete.json`.
+Commands reject missing markers, changed hashes, mixed game builds, and incompatible inputs.
+Failed attempts remain local with failure information and never become completed inputs.
 
 ## Requirements
 
-- Node.js 24 or newer
-- pnpm 11 installed globally
+The complete acquisition requires:
 
-## Validate the contract
+- Windows.
+- The current Steam version of _Hades II_ installed locally.
+- Node.js 24 or newer.
+- pnpm 11.
+- [r2modman](https://thunderstore.io/package/ebkr/r2modman/) with a Hades II profile.
+- The current Hell2Modding dependencies listed in `/project/data/mod/neodes2-boon-exporter/manifest.json`.
 
-Run these commands from this directory.
+The source snapshotter uses the Windows executable metadata API and Steam's app manifest.
+The current acquisition does not support the Epic Games edition or another operating system.
+
+## Protect the game and the repository
+
+The source snapshotter only reads Lua, SJSON, version, and executable metadata from the installation and writes to `.local/acquisitions/`.
+The runtime exporter reads processed game tables and localization after a save loads.
+It does not change the loaded save or add gameplay content.
+The evidence exporter refuses player-state and runtime-cache roots such as `GameState`, `CurrentRun`, `PrevRun`, `SessionState`, active screens, and the hero object.
+It also excludes Lua, ReturnOfModding, and ModUtil runtime namespaces; those are tooling internals rather than game definitions.
+Shared node identities are retained across table files, so aliased game data is serialized once rather than repeatedly.
+Functions, userdata, metatables, and unsupported keys are counted as explicit omissions because their defining Lua source is already present in the source snapshot.
+
+The passive observer does not change save state.
+The training harness does change the equipped test loadout.
+Use the training harness only with a backed-up test save.
+
+All `.local` directories are ignored.
+Keep exporter reports, normalized datasets, manual evidence, installed mod configs, and save backups outside Git.
+
+## Validate the tooling
+
+Run these commands from `project/data`:
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -49,311 +73,34 @@ pnpm contract:check
 pnpm build
 ```
 
-The contract check prints the complete product-to-field coverage report.
-It exits with a failure when a requirement is uncovered or a field lacks its required ownership, evidence, normalization, validation, publication, spoiler, or completion metadata.
+`pnpm contract:check` fails when a required product field lacks an owner, evidence class, normalization rule, validation rule, publication class, spoiler level, or completion rule.
 
-## Create a source snapshot
+## Look up a command
 
-Close Hades II and allow Steam to finish any pending update before running the snapshotter.
-
-```powershell
-pnpm snapshot
-```
-
-Steam discovery reads the local Steam registry and `libraryfolders.vdf`.
-If more than one Hades II installation is found, select one app manifest explicitly.
+Most commands expose their accepted options through `--help`.
 
 ```powershell
-pnpm snapshot -- --manifest "C:\path\to\your\SteamLibrary\steamapps\appmanifest_1145350.acf"
+pnpm snapshot -- --help
+pnpm runtime-export:import -- --help
+pnpm evidence:import -- --help
+pnpm dataset:build -- --help
+pnpm verification:build -- --help
+pnpm publication:build -- --help
 ```
 
-The command writes only inside `.local/acquisitions/` by default.
-Each successful run has a deterministic `manifest.json` and a `complete.json` marker.
-Failed and earlier runs are retained rather than overwritten or deleted.
-
-## Audit and prepare the runtime exporter
-
-Create a completed source snapshot first.
-Use its absolute directory in the source audits and exporter preflights.
-
-```powershell
-pnpm weapons:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-pnpm weapons:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-pnpm arcana:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-pnpm arcana:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-pnpm loadouts:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-pnpm loadouts:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-pnpm guide:audit -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --achievement-schema "C:\absolute\Steam\appcache\stats\UserGameStatsSchema_1145350.bin"
-pnpm guide:preflight -- --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --achievement-schema "C:\absolute\Steam\appcache\stats\UserGameStatsSchema_1145350.bin"
-```
-
-Every audit and preflight must report `Complete: true` before runtime collection.
-Commands that write audit artifacts keep them under ignored `.local` directories.
-
-Copy the exporter folder into the active ReturnOfModding profile and rename `config.example.lua` to `config.lua` in that installed copy.
-Fill the config with the acquisition ID, source manifest hash, Steam build ID, executable version, and package version from one completed source snapshot.
-Do not commit the installed config or any exporter output.
-
-Launch Hades II with the same ReturnOfModding profile and load any save.
-Keep the game window focused until the exporter reports completion in `LogOutput.log`.
-
-The exporter runs once after a save loads.
-It does not alter saves or add gameplay content.
-Its output does not depend on save unlock progress.
-
-Each attempt creates a new run directory under `ReturnOfModding/plugins_data/NeonHades2-BoonExporter/runs/`.
-The finalized boon report is `runtime-report.json` in that run directory.
-The finalized weapon report is `weapons/runtime-report.json`.
-The finalized Arcana report is `arcana/runtime-report.json`.
-The finalized loadout report is `loadouts/runtime-report.json`.
-The finalized guide report is `guide/runtime-report.json`.
-Import only reports whose directory also contains matching `manifest.json` and `complete.json` files.
-
-## Import a runtime boon report
-
-After the exporter creates `runtime-report.json` and its `complete.json` marker, run the importer with explicit absolute paths.
-
-```powershell
-pnpm runtime:import -- --report "C:\absolute\profile\path\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-```
-
-The importer requires matching runtime manifest and completion markers.
-It rejects mismatched hashes, build metadata, relationships, malformed values, and incomplete source snapshots.
-It preserves failed runtime samples as coverage issues instead of treating them as verified facts.
-
-## Import a runtime weapon report
-
-Pass the finalized weapon report and the same completed source snapshot to the weapon importer.
-
-```powershell
-pnpm weapons:import -- --report "C:\absolute\profile\path\runs\run-id\weapons\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-```
-
-The command must report complete coverage.
-The generated acquisition remains under `.local/weapons/` and must not be committed.
-
-## Import a runtime Arcana report
-
-Pass the finalized Arcana report and the same completed source snapshot to the Arcana importer.
-
-```powershell
-pnpm arcana:import -- --report "C:\absolute\profile\path\runs\run-id\arcana\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-```
-
-The command must report complete coverage.
-The generated acquisition remains under `.local/arcana/` and must not be committed.
-
-## Import a runtime loadout report
-
-Pass the finalized loadout report and the same completed source snapshot to the loadout importer.
-
-```powershell
-pnpm loadouts:import -- --report "C:\absolute\profile\path\runs\run-id\loadouts\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-```
-
-The command must report complete coverage.
-The generated acquisition remains under `.local/loadouts/` and must not be committed.
-
-## Import a runtime guide report
-
-Pass the finalized guide report, the same completed source snapshot, and Steam's local Hades II achievement schema to the guide importer.
-
-```powershell
-pnpm guide:import -- --report "C:\absolute\profile\path\runs\run-id\guide\runtime-report.json" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --achievement-schema "C:\absolute\Steam\appcache\stats\UserGameStatsSchema_1145350.bin"
-```
-
-The Steam achievement schema is normally stored under the Steam client directory at `appcache/stats/UserGameStatsSchema_1145350.bin` after Steam has cached Hades II metadata.
-The command must report complete coverage.
-The generated acquisition remains under `.local/guide/` and must not be committed.
-
-## Build the combined dataset
-
-Pass one completed acquisition directory for each domain to the dataset builder.
-
-```powershell
-pnpm dataset:build -- --boons "C:\absolute\project\data\.local\boons\completed-run" --weapons "C:\absolute\project\data\.local\weapons\completed-run" --arcana "C:\absolute\project\data\.local\arcana\completed-run" --loadouts "C:\absolute\project\data\.local\loadouts\completed-run" --guide "C:\absolute\project\data\.local\guide\completed-run"
-```
-
-The builder verifies every domain manifest, completion marker, declared file hash, coverage report, source acquisition identifier, exporter version, and game build field.
-It rejects mixed provenance, incomplete coverage, record-count drift, duplicate identifiers, missing required names, dangling resolvable references, invalid costs or ranges, unknown enums, and excluded dialogue presentation data.
-
-Successful builds write `dataset.json`, `validation.json`, `manifest.json`, and `complete.json` under `.local/datasets/`.
-The dataset and acquisition identities depend only on verified content and provenance.
-Repeated builds from the same inputs produce the same identities.
-The timestamp and random directory suffix are not part of either identity.
-
-## Build automated verification evidence
-
-Pass one completed combined dataset and its completed source acquisition to the verification builder.
-
-```powershell
-pnpm verification:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run"
-```
-
-The verifier independently recalculates exported numeric values and resolves the named-requirement graph.
-It rejects calculation or graph issues and writes a content-addressed artifact under `.local/verification/`.
-The artifact includes `observation-plan.json`, which assigns every manual check to a focused session and an exact target set from the combined dataset.
-Its `sourceDatasetAcquisitionId` is the exact combined dataset acquisition, not only the underlying source snapshot.
-
-Phase 5 includes manual checks only for factual or derived fields that require direct observation or spoiler review.
-It excludes editorial fields because Phase 7 validates authored guide records.
-The processed runtime state supplies resolved bulk facts, and the source snapshot binds them to one game build.
-Manual observation remains required for player controls and weapon behavior that the exported data cannot prove.
-Sessions marked `profile2-mutation-permission-required` must not begin until the owner grants separate permission to change the dedicated test copy.
-
-## Record passive game observations
-
-The project-owned observer under `/project/data/mod/neodes2-observer/` records append-only combat event traces after a save loads.
-It reads current room, equipment, trait, health, Magick, weapon, projectile, hit, effect, and control identifiers.
-It does not select equipment, add or remove traits, spawn objects, change progression, or write save state.
-
-Generate a config bound to one completed combined dataset.
-
-```powershell
-pnpm observer:config -- --dataset "C:\absolute\project\data\.local\datasets\completed-run"
-```
-
-The command writes `.local/observer/config.lua` and refuses to overwrite an existing config.
-Copy `/project/data/mod/neodes2-observer/` into the active ReturnOfModding profile, then copy the generated `config.lua` into that installed mod folder.
-Do not commit the installed config or observer output.
-
-Launch Hades II with the same profile and load the dedicated test save.
-Perform only the actions assigned by `observation-plan.json` and permitted by the save policy.
-Each load creates `trace.ndjson` under `ReturnOfModding/plugins_data/NeonHades2-Observer/runs/`.
-Each event is flushed and closed before play continues, so an interrupted game leaves the last complete line readable.
-
-Close Hades II before importing a trace.
-
-```powershell
-pnpm observation:import -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --trace "C:\absolute\profile\path\plugins_data\NeonHades2-Observer\runs\run-id\trace.ndjson"
-```
-
-The importer rejects partial lines, noncontiguous sequences, unsupported fields, oversized input, non-finite values, and trace or dataset identity mismatches.
-It writes the raw trace, a normalized candidate report, a manifest, and a completion marker under `.local/observations/`.
-Candidate coverage points reviewers to relevant events but does not mark a manual check complete.
-Review the observed behavior against the normalized records before adding a passing ledger entry.
-If a game restart splits one observation task across several traces, import each trace separately.
-Reference every report needed to cover the task in its ledger entry.
-
-## Prepare controlled aspect observations
-
-The project-owned training harness under `/project/data/mod/neodes2-training-harness/` applies one dataset-bound weapon and aspect command to a dedicated test save.
-It does not call save, progression, quest, achievement, or map-transition functions.
-It must never be used with a primary save.
-
-Prepare the complete aspect command set from one combined dataset.
-
-```powershell
-pnpm aspect-session:prepare -- --dataset "C:\absolute\project\data\.local\datasets\completed-run"
-```
-
-The command writes a plan, a harness config, 24 aspect commands, a restore command, and hash manifests under `.local/training/`.
-Copy `/project/data/mod/neodes2-training-harness/` into the active ReturnOfModding profile.
-Copy the generated `config.lua` into that installed mod folder.
-Copy one generated aspect command to `ReturnOfModding/plugins_data/NeonHades2-TrainingHarness/command.txt`.
-
-Back up the dedicated test save before launching Hades II.
-Each loaded save writes a new `ready.txt` with a runtime nonce while the harness remains disarmed.
-Confirm from the new game log that the dedicated test profile is active.
-Then create `arm.txt` beside `ready.txt` with the same nonce and dataset acquisition identifier.
-
-```text
-schema=neodes2-training-arm-1
-session_nonce=value-from-ready.txt
-dataset_acquisition_id=value-from-ready.txt
-end=neodes2-training-arm-1
-```
-
-The harness ignores stale arm files from earlier loads.
-After it reports that a command was applied, perform the action sequence in the generated plan while the passive observer records the trace.
-Replace `command.txt` with the next generated command only after the previous result reports `status=ok`.
-If a command reports `status=error`, stop the session and restore the test-save backup before retrying it.
-Apply `commands/restore-original.txt` before closing the final session.
-Close Hades II before importing traces and remove both deployed project mods afterward.
-
-Manual evidence belongs beside its source files under an ignored `.local` directory.
-Each ledger entry names one task and check, lists the covered target identifiers from `observation-plan.json`, records a pass or fail result, and references at least one nonempty evidence file by relative path and lowercase SHA-256 hash.
-The ledger schema is `neodes2-manual-evidence-1` and its `sourceDatasetAcquisitionId` must match the observation plan.
-
-Pass the completed ledger back to the verifier.
-
-```powershell
-pnpm verification:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --source-acquisition "C:\absolute\project\data\.local\acquisitions\completed-run" --manual-evidence "C:\absolute\project\data\.local\manual-verification\ledger.json"
-```
-
-The verifier rejects unknown tasks, checks, or targets, repeated target coverage, paths outside the ledger directory, symbolic-link evidence, empty evidence, changed hashes, and evidence from another dataset.
-One task is complete only when passing entries cover every planned target for every required check.
-Automated verification does not mark Phase 5 complete while any manual task remains pending.
-
-## Pass the data-ready gate
-
-Rebuild the combined dataset from the same five finalized domain acquisitions before running Phase 6.
-The reproduced acquisition identifier, dataset hash, and manifest hash must match the original combined dataset.
-
-Run the gate with the original dataset, the reproduced dataset, and the completed Phase 5 artifact.
-
-```powershell
-pnpm data-ready:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --reproduced-dataset "C:\absolute\project\data\.local\data-ready-reproduction\completed-run" --verification "C:\absolute\project\data\.local\verification\completed-run"
-```
-
-The gate re-reads every hash-bound artifact, validates all product requirements and normalized records, requires every Phase 5 task to pass, and writes a content-addressed completion report under `.local/data-ready/`.
-It also writes `publication-allowlist.json` for Phase 8.
-The allowlist permits only public contract fields and the structural `recordType` and `id` keys.
-It excludes internal evidence, raw source text, raw runtime structures, private save state, and binary assets.
-
-## Author Phase 7 guide content
-
-Project-owned progression stages, aspect evaluations, Familiar and Hex recommendations, and page definitions live in `/project/data/src/editorial/content.ts`.
-The compiler adds build-bound weapon ratings, weapon-to-Boon rankings, complete per-aspect Boon rankings, item-specific general Boon ratings, card-specific Arcana ratings, keepsake priorities, resource policies, search aliases, compatible Hammer rankings, and prerequisite references.
-Aspect guides cover all five core Boon slots and distinguish the aspect's core moves from support slots.
-They include explicit Boon and Arcana packages, same-slot conflicts, rated Familiar and Hex choices, and only those Duo and Legendary targets whose full prerequisite path is represented.
-Each aspect also includes three authored top Hammers with effect-specific reasons and exact Hammer exclusions from the normalized compatibility records.
-Keepsake routes record whether an effect persists, has limited uses, expires on a timer, decays, or depletes.
-Every inactive keepsake has a condition for replacing it at the next keepsake cabinet.
-Conditional reward rules explain when a core Boon, Magick recovery, a Hammer, maximum Life, a Pom, a rare target, or a permanent resource takes priority.
-Progression stages bind the written order to exact Arcana Cards, incantations, aspects, prophecies, Oath conditions, Testaments, achievements, and other factual records.
-Resource policies assign a progression stage to every resource with a known guide use and leave resources without a verified use unprioritized.
-
-Build the editorial artifact from the normalized dataset certified by Phase 6.
-
-```powershell
-pnpm editorial:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --data-ready "C:\absolute\project\data\.local\data-ready\completed-run"
-```
-
-The command validates every editorial reference against the selected dataset.
-It requires all five progression stages to include an ordered action sequence and a complete weapon, aspect, Arcana, keepsake, Familiar, and Hex loadout.
-It also requires an ordered list of exact progression targets for every stage.
-It requires page definitions, every weapon and aspect, every Boon, every Arcana Card, every Familiar, every Hex, every keepsake, and every resource to have the required editorial coverage.
-Every aspect must rank every Boon exactly once and cover Attack, Special, Cast, Sprint, and Magick priorities.
-Every aspect must include valid build interactions, reward decisions, Grasp accounting, and lifecycle-aware keepsake switches.
-Every normalized Hammer exclusion must appear in the affected aspect guide.
-It also rejects missing search aliases, orphan records, duplicate records, incomplete recommendation context, and required pages without editorial content.
-
-The completed artifact is written under `/project/data/.local/editorial/` with a manifest and completion marker.
-It is the Phase 8 input and is replaceable by a new artifact for a later verified game build.
-Delete an obsolete acquisition directory only when no publication build references it.
-
-The repository owns the editorial source and compiler.
-The normalized game dataset, combined editorial artifact, and later publication dataset remain local.
-The artifact contains no raw scripts, runtime structures, saves, dialogue, or binary assets.
-No game launch is required for this phase unless the verified facts contradict an editorial recommendation.
-
-## Build the Phase 8 publication dataset
-
-Phase 8 projects the certified normalized facts and completed editorial artifact into the records used by the website.
-The publication compiler applies the Phase 6 field allowlist to every output field.
-It strips source paths, evidence, presentation data, private state, and asset references.
-
-Run the publication build with the same normalized dataset, data-ready artifact, and editorial artifact.
-
-```powershell
-pnpm publication:build -- --dataset "C:\absolute\project\data\.local\datasets\completed-run" --data-ready "C:\absolute\project\data\.local\data-ready\completed-run" --editorial "C:\absolute\project\data\.local\editorial\completed-run"
-```
-
-The command writes public records, page membership, normalized search terms, forward relationships, reverse relationships, and unresolved game-state conditions under `/project/data/.local/publication/`.
-Each public field retains its allowlist identifier, publication class, and spoiler level.
-Raw game-state requirements remain explicit conditions when they do not resolve to a named public record.
-
-The build rejects mixed input identities, unresolved record references, duplicate public records, forbidden fields, forbidden payload keys, empty pages, incomplete reverse relationships, and records without search terms.
-It writes `publication.json`, `publication-report.json`, `manifest.json`, and `complete.json` only inside the ignored `.local` tree.
-A second build from the same inputs must produce the same acquisition identifier and publication hash.
+The command names follow the artifact order:
+
+1. `snapshot`
+2. `weapons:audit`, `arcana:audit`, `loadouts:audit`, and `guide:audit`
+3. `evidence:preflight`, `weapons:preflight`, `arcana:preflight`, `loadouts:preflight`, and `guide:preflight`
+4. `runtime-export:import`
+5. `evidence:import`
+6. `runtime:import`, `weapons:import`, `arcana:import`, `loadouts:import`, and `guide:import`
+7. `dataset:build`
+8. `verification:build`
+9. `data-ready:build`
+10. `editorial:build`
+11. `publication:build`
+
+Do not skip a failed command.
+Later stages require the exact completed artifacts produced by earlier stages.

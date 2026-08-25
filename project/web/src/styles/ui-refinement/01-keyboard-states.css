@@ -1,0 +1,27 @@
+/* A steady ring identifies keyboard focus without moving the target. */
+:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 2px var(--ink-deep);
+    scroll-margin-block: 7rem 2rem;
+}
+
+:is(button, summary, [role='button']):not(:disabled):active {
+    filter: brightness(0.9);
+}
+
+.guide-checklist input:focus-visible + .guide-check-mark {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 4px;
+}
+
+.world-header :is(.world-wordmark, .world-primary-nav a, .world-search, .world-menu-toggle):focus-visible {
+    color: var(--paper);
+    background: var(--surface-thread);
+}
+
+@media (forced-colors: active) {
+    :focus-visible {
+        outline-color: Highlight;
+    }
+}

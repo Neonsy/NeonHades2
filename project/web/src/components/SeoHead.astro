@@ -1,0 +1,112 @@
+---
+import {
+    absoluteUrl,
+    descriptionForMetadata,
+    safeJsonLd,
+    SITE_KEYWORDS,
+    socialImageFor,
+    type Breadcrumb,
+} from '../lib/seo';
+
+type Props = {
+    title: string;
+    description: string;
+    breadcrumbs: Breadcrumb[];
+    robots: string;
+};
+
+const { title, description, breadcrumbs, robots } = Astro.props;
+if (!Astro.site) throw new Error('Astro.site is required for public metadata.');
+
+const canonicalUrl = absoluteUrl(Astro.url.pathname, Astro.site);
+const siteUrl = absoluteUrl('/', Astro.site);
+const socialImage = socialImageFor();
+const socialImageUrl = absoluteUrl(socialImage.path, Astro.site);
+const metadataDescription = descriptionForMetadata(description);
+const websiteId = `${siteUrl}#website`;
+const webPageId = `${canonicalUrl}#webpage`;
+const structuredData = [
+    ...(Astro.url.pathname === '/'
+        ? [
+              {
+                  '@context': 'https://schema.org',
+                  '@type': 'WebSite',
+                  '@id': websiteId,
+                  url: siteUrl,
+                  name: 'NeonHades2',
+                  alternateName: 'NH2',
+                  description: metadataDescription,
+                  keywords: SITE_KEYWORDS,
+                  inLanguage: 'en',
+              },
+          ]
+        : []),
+    {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        '@id': webPageId,
+        url: canonicalUrl,
+        name: title,
+        description: metadataDescription,
+        keywords: SITE_KEYWORDS,
+        inLanguage: 'en',
+        isPartOf: { '@id': websiteId },
+        primaryImageOfPage: {
+            '@type': 'ImageObject',
+            url: socialImageUrl,
+            contentUrl: socialImageUrl,
+            width: socialImage.width,
+            height: socialImage.height,
+            caption: socialImage.alt,
+        },
+    },
+    ...(breadcrumbs.length >= 2
+        ? [
+              {
+                  '@context': 'https://schema.org',
+                  '@type': 'BreadcrumbList',
+                  itemListElement: breadcrumbs.map((item, index) => ({
+                      '@type': 'ListItem',
+                      position: index + 1,
+                      name: item.name,
+                      item: absoluteUrl(item.href, Astro.site as URL),
+                  })),
+              },
+          ]
+        : []),
+];
+---
+
+<meta charset='utf-8' />
+<meta name='viewport' content='width=device-width' />
+<meta name='generator' content={Astro.generator} />
+<meta name='description' content={metadataDescription} />
+<meta name='keywords' content={SITE_KEYWORDS} />
+<meta name='application-name' content='NeonHades2' />
+<meta name='robots' content={robots} />
+<meta name='theme-color' content='#32b9aa' />
+<link rel='canonical' href={canonicalUrl} />
+<link rel='sitemap' href='/sitemap-index.xml' />
+<link rel='icon' type='image/png' sizes='192x192' href='/icon-192.png' />
+<link rel='icon' type='image/svg+xml' sizes='any' href='/favicon.svg' />
+<link rel='apple-touch-icon' href='/apple-touch-icon.png' />
+<link rel='manifest' href='/site.webmanifest' />
+<meta property='og:type' content='website' />
+<meta property='og:site_name' content='NeonHades2' />
+<meta property='og:locale' content='en_US' />
+<meta property='og:title' content={title} />
+<meta property='og:description' content={metadataDescription} />
+<meta property='og:url' content={canonicalUrl} />
+<meta property='og:image' content={socialImageUrl} />
+<meta property='og:image:secure_url' content={socialImageUrl} />
+<meta property='og:image:type' content='image/webp' />
+<meta property='og:image:width' content={socialImage.width.toString()} />
+<meta property='og:image:height' content={socialImage.height.toString()} />
+<meta property='og:image:alt' content={socialImage.alt} />
+<meta name='twitter:card' content='summary_large_image' />
+<meta name='twitter:title' content={title} />
+<meta name='twitter:description' content={metadataDescription} />
+<meta name='twitter:image' content={socialImageUrl} />
+<meta name='twitter:image:alt' content={socialImage.alt} />
+<script is:inline type='application/ld+json' set:html={safeJsonLd(structuredData)} />
+<title>{title}</title>

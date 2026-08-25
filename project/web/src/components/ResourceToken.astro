@@ -1,0 +1,19 @@
+---
+import { requireSubjectArt } from '../lib/subject-art';
+import SubjectArtwork from './SubjectArtwork.astro';
+
+type Props = {
+    amount?: number | string;
+    href?: string;
+    name: string;
+};
+
+const { amount, href, name } = Astro.props;
+const subject = requireSubjectArt(name);
+const label = amount === undefined ? name : `${amount} ${name}`;
+---
+
+<span class='resource-token'>
+    <SubjectArtwork subject={subject} size='inline' />
+    {href ? <a href={href}>{label}</a> : <span>{label}</span>}
+</span>

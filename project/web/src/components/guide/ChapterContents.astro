@@ -1,0 +1,38 @@
+---
+type ChapterContentItem = {
+    href: string;
+    label: string;
+};
+
+type Props = {
+    items: ChapterContentItem[];
+};
+
+const { items } = Astro.props;
+---
+
+<nav class='chapter-contents chapter-contents--wide' aria-label='In this chapter'>
+    <span>In this chapter</span>
+    <ol>
+        {
+            items.map((item) => (
+                <li>
+                    <a href={item.href}>{item.label}</a>
+                </li>
+            ))
+        }
+    </ol>
+</nav>
+
+<details class='chapter-contents chapter-contents--compact'>
+    <summary>Contents</summary>
+    <ol>
+        {
+            items.map((item) => (
+                <li>
+                    <a href={item.href}>{item.label}</a>
+                </li>
+            ))
+        }
+    </ol>
+</details>

@@ -181,7 +181,7 @@ async function enumerateSourcePaths(
       throw new Error(`Source policy path is not a regular directory: ${rule.directory}`);
     }
 
-    const entries = await readdir(directory, { withFileTypes: true });
+    const entries = await readdir(directory, { withFileTypes: true, recursive: rule.recursive === true });
     const selected =
       rule.files === "all"
         ? entries.filter(
@@ -203,7 +203,13 @@ async function enumerateSourcePaths(
       if (entry.isSymbolicLink()) {
         throw new Error(`Symbolic source files are not allowed: ${rule.directory}/${entry.name}`);
       }
-      const relativePath = `${rule.directory}/${entry.name}`;
+      const parentPath = "parentPath" in entry && typeof entry.parentPath === "string"
+        ? entry.parentPath
+        : "path" in entry && typeof entry.path === "string"
+          ? entry.path
+          : directory;
+      const pathFromRuleDirectory = relative(directory, join(parentPath, entry.name)).split(sep).join("/");
+      const relativePath = `${rule.directory}/${pathFromRuleDirectory}`;
       const key = process.platform === "win32" ? relativePath.toLowerCase() : relativePath;
       if (results.has(key)) {
         throw new Error(`Source policy selected a file more than once: ${relativePath}`);

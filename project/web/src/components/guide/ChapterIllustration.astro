@@ -1,0 +1,70 @@
+---
+import { getRecord, getRecordLinkLabel, isReaderFacingRecord, recordHref } from '../../lib/publication';
+import { getRecordSubjectArt } from '../../lib/subject-art';
+import SubjectArtwork from '../SubjectArtwork.astro';
+import ChapterEmblem from './ChapterEmblem.astro';
+import type { ChapterVisualForm } from '../../content/guide-presentation';
+
+type Props = { chapterId: string; form: ChapterVisualForm };
+const { chapterId, form } = Astro.props;
+const subjects: Record<string, string[]> = {
+    'before-the-first-night': ['mechanics/weapon:WeaponStaffSwing'],
+    'second-night': ['mechanics/resource:PlantFMoly', 'mechanics/resource:MetaCardPointsCommon'],
+    'second-return': ['mechanics/incantation:WorldUpgradeToolsShop', 'mechanics/gathering-tool:ToolPickaxe'],
+    'first-permanent-choices': [
+        'mechanics/arcana-card:HealthRegen',
+        'mechanics/arcana-card:BonusHealth',
+        'mechanics/arcana-card:ChanneledCast',
+    ],
+    'productive-night-loop': ['mechanics/resource:MetaCurrency', 'mechanics/resource:GiftPoints'],
+    'tools-incantations-fated-list': [
+        'mechanics/incantation:WorldUpgradeResourceFinder',
+        'mechanics/incantation:WorldUpgradeQuestLog',
+    ],
+    'guardian-preparation': ['mechanics/arcana-card:LastStand', 'mechanics/arcana-card:BonusHealth'],
+    'first-clear-build': ['mechanics/weapon:WeaponStaffSwing', 'mechanics/boon:ApolloWeaponBoon'],
+    'first-route-clear': ['mechanics/resource:MixerIBoss'],
+    'open-the-surface': ['mechanics/resource:MixerShadow', 'mechanics/resource:PlantChaosThalamus'],
+    'gods-and-field-allies': ['mechanics/god:HeraUpgrade', 'mechanics/god:AresUpgrade'],
+    'weapons-and-aspects': ['mechanics/weapon:WeaponAxe', 'mechanics/weapon:WeaponSuit'],
+    'complete-loadout': ['mechanics/arcana-card:ManaOverTime', 'mechanics/familiar:FrogFamiliar'],
+    'advanced-boon-planning': [
+        'mechanics/arcana-card:StatusVulnerability',
+        'mechanics/incantation:WorldUpgradePinningBoons',
+    ],
+    'advance-both-routes': [
+        'mechanics/incantation:WorldUpgradeTimeStop',
+        'mechanics/incantation:WorldUpgradeStormStop',
+    ],
+    'true-ending': ['world-progression/relationship:NPC_Hecate_01'],
+    'fear-testaments-nightmare': ['mechanics/resource:WeaponPointsRare'],
+    'trials-bounties-ranks': ['mechanics/resource:Mixer5Common'],
+    'relationship-cleanup': ['mechanics/resource:GiftPoints', 'mechanics/resource:SuperGiftPoints'],
+};
+const records = (subjects[chapterId] ?? []).map((key) => {
+    const record = getRecord(key);
+    if (!record || !isReaderFacingRecord(record))
+        throw new Error(`Chapter illustration requires a public record: ${key}`);
+    return record;
+});
+const cards = records.length > 1 && records.every((record) => record.recordType === 'mechanics/arcana-card');
+---
+
+{
+    records.length ? (
+        <figure
+            class:list={['chapter-illustration', cards && 'chapter-illustration--cards']}
+            aria-label='Objects in this chapter'>
+            <div>
+                {records.map((record) => (
+                    <a href={recordHref(record)}>
+                        <SubjectArtwork subject={getRecordSubjectArt(record)} size='hero' />
+                        <span>{getRecordLinkLabel(record)}</span>
+                    </a>
+                ))}
+            </div>
+        </figure>
+    ) : (
+        <ChapterEmblem form={form} />
+    )
+}

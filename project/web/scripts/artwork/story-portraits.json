@@ -1,0 +1,74 @@
+{
+    "portraits": [
+        {
+            "slug": "chronos",
+            "source": ".local/reference/game-assets-full/1080p/ScriptsBase/textures/Portraits/Chronos/Portraits_Chronos_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/chronos.png",
+            "public": "/art/characters/portraits/chronos.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "hades",
+            "source": ".local/reference/game-assets-full/1080p/BiomeI/textures/Portraits/Hades/Portraits_Hades_Restored_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/hades.png",
+            "public": "/art/characters/portraits/hades.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "hecate",
+            "source": ".local/reference/game-assets-full/1080p/Hecate/textures/Portraits/Hecate/Portraits_Hecate_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/hecate.png",
+            "public": "/art/characters/portraits/hecate.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "polyphemus",
+            "source": ".local/reference/game-assets-full/1080p/Polyphemus-package/textures/Portraits/Polyphemus/Portraits_Cyclops_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/polyphemus.png",
+            "public": "/art/characters/portraits/polyphemus.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "prometheus",
+            "source": ".local/reference/game-assets-full/1080p/Prometheus-package/textures/Portraits/Prometheus/Portraits_Prometheus_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/prometheus.png",
+            "public": "/art/characters/portraits/prometheus.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "schelemeus",
+            "source": ".local/reference/game-assets-full/1080p/Skelly-package/textures/Portraits/Skelly/Portraits_Skelly_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/schelemeus.png",
+            "public": "/art/characters/portraits/schelemeus.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "scylla",
+            "source": ".local/reference/game-assets-full/1080p/Scylla-package/textures/Portraits/Scylla/Portraits_Scylla_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/scylla.png",
+            "public": "/art/characters/portraits/scylla.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "selene",
+            "source": ".local/reference/game-assets-full/1080p/Selene/textures/Portraits/Selene/Portraits_Selene_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/selene.png",
+            "public": "/art/characters/portraits/selene.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "zagreus",
+            "source": ".local/reference/game-assets-full/1080p/Zagreus/textures/Portraits/Zagreus/Portraits_ZagreusPresent_Default_01.png",
+            "master": "art-source/raster/game-derived/story-portraits/zagreus.png",
+            "public": "/art/characters/portraits/zagreus.webp",
+            "operation": "lossless source copy and optimized WebP delivery"
+        },
+        {
+            "slug": "typhon",
+            "source": "art-source/raster/codex-derived/characters/enemies/typhon.png",
+            "master": "art-source/raster/game-derived/story-portraits/typhon.png",
+            "public": "/art/characters/portraits/typhon.webp",
+            "operation": "OpenCV foreground segmentation of the game Codex illustration"
+        }
+    ]
+}

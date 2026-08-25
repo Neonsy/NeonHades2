@@ -5,6 +5,7 @@ return function(context)
 	local sorted_keys = context.sorted_keys
 	local sorted_set_values = context.sorted_set_values
 	local bytewise_less = context.bytewise_less
+	local collect_samples = context.collect_samples
 
 	local MAX_DEPTH = 40
 	local MAX_NODES_PER_RECORD = 100000
@@ -43,6 +44,8 @@ return function(context)
 			table.insert(state.omissions, path .. ":unsupported-" .. value_type)
 			return json_null
 		end
+		local meta = getmetatable(value)
+		if meta and meta.__neodes2_json_null then return json_null end
 		if depth > MAX_DEPTH then
 			table.insert(state.omissions, path .. ":depth-limit")
 			return json_null
@@ -68,7 +71,8 @@ return function(context)
 				string_count = string_count + 1
 			end
 		end
-		local is_array = numeric_count > 0 and string_count == 0 and maximum == numeric_count
+		local is_array = (meta and meta.__neodes2_json_array == true)
+			or (numeric_count > 0 and string_count == 0 and maximum == numeric_count)
 		local result = is_array and json_array({}) or {}
 		if is_array then
 			for index = 1, #value do
@@ -118,6 +122,16 @@ return function(context)
 		return nil, nil
 	end
 
+	local function localized_fields_for(data, localization)
+		local output = {}
+		for _, field in ipairs({ "CustomIncompleteString", "CustomCompleteString" }) do
+			local text_id = type(data) == "table" and data[field] or nil
+			local localized = type(text_id) == "string" and localization[text_id] or nil
+			if localized and localized.display_name then output[field] = localized.display_name end
+		end
+		return output
+	end
+
 	local function record(id, data, runtime_path, localization, additions)
 		local copied, omissions = copy_record(data, runtime_path)
 		local localized, text_id = localized_for(id, data, localization)
@@ -125,6 +139,7 @@ return function(context)
 			id = id,
 			displayName = localized and localized.display_name or json_null,
 			description = localized and localized.description or json_null,
+			localizedFields = localized_fields_for(data, localization),
 			data = copied,
 			omissions = omissions,
 			evidence = {
@@ -431,6 +446,57 @@ return function(context)
 		return json_array(output)
 	end
 
+	local function collect_encounter_aid_traits(localization)
+		local providers_by_trait = {}
+		local function remember(provider_id, trait_id)
+			if type(trait_id) ~= "string" or trait_id == "" then
+				error("Encounter aid for " .. provider_id .. " has no trait identifier")
+			end
+			local existing = providers_by_trait[trait_id]
+			if existing ~= nil and existing ~= provider_id then
+				error("Encounter aid " .. trait_id .. " is assigned to multiple providers")
+			end
+			providers_by_trait[trait_id] = provider_id
+		end
+		for _, provider in ipairs({
+			{ id = "Arachne", menu = "ArachneCostumeChoices" },
+			{ id = "Narcissus", menu = "NarcissusBenefitChoices" },
+			{ id = "Echo", menu = "EchoBenefitChoices" },
+			{ id = "Medea", menu = "MedeaCurseChoices" },
+			{ id = "Circe", menu = "CirceBlessingChoices" },
+			{ id = "Icarus", menu = "IcarusBenefitChoices" },
+		}) do
+			local menu = game.PresetEventArgs and game.PresetEventArgs[provider.menu]
+			if type(menu) ~= "table" or type(menu.UpgradeOptions) ~= "table" then
+				error("PresetEventArgs." .. provider.menu .. " is missing")
+			end
+			for _, option in ipairs(menu.UpgradeOptions) do remember(provider.id, option.ItemName) end
+		end
+		for _, provider in ipairs({
+			{ id = "Artemis", unit = "NPC_Artemis_Field_01" },
+			{ id = "Athena", unit = "NPC_Athena_01" },
+			{ id = "Dionysus", unit = "NPC_Dionysus_01" },
+			{ id = "Hades", unit = "NPC_Hades_Field_01" },
+		}) do
+			local unit = game.EnemyData and game.EnemyData[provider.unit]
+			if type(unit) ~= "table" or type(unit.Traits) ~= "table" then
+				error("EnemyData." .. provider.unit .. ".Traits is missing")
+			end
+			for _, trait_id in ipairs(unit.Traits) do remember(provider.id, trait_id) end
+		end
+		local output = {}
+		for _, trait_id in ipairs(sorted_keys(providers_by_trait)) do
+			local trait = game.TraitData and game.TraitData[trait_id]
+			if type(trait) ~= "table" then error("TraitData." .. trait_id .. " is missing") end
+			table.insert(output, record(trait_id, {
+				providerId = providers_by_trait[trait_id],
+				trait = trait,
+				samples = collect_samples(trait_id, trait),
+			}, "TraitData." .. trait_id, localization, { classification = "encounter-aid-effect" }))
+		end
+		return json_array(output)
+	end
+
 	local function create_report(package_version, localization)
 		local routes, regions = collect_regions(localization)
 		local rooms, encounters, enemies = collect_world(localization)
@@ -458,6 +524,7 @@ return function(context)
 			resources = collect_all_records(game.ResourceData, "ResourceData", localization),
 			statusEffects = collect_all_records(game.EffectData, "EffectData", localization, function() return "effect" end),
 			elementalTraits = collect_elemental_traits(localization),
+			encounterAidTraits = collect_encounter_aid_traits(localization),
 			oathConditions = collect_ordered_records(game.MetaUpgradeData, shrine_order, "MetaUpgradeData", localization),
 			bounties = collect_all_records(game.BountyData, "BountyData", localization, classify_bounty),
 			bountyOrder = json_array(bounty_order),
@@ -481,7 +548,7 @@ return function(context)
 				"AchievementData", "BountyData", "ConsumableData", "EffectData", "EncounterData",
 				"EnemyData", "GameData.RunClearMessageData", "GameOutroData", "GameOutroPriorities", "GiftData",
 				"HubRoomData", "LootData",
-				"MetaUpgradeData", "NamedRequirementsData", "NarrativeData", "QuestData", "QuestOrderData",
+				"MetaUpgradeData", "NamedRequirementsData", "NarrativeData", "PresetEventArgs", "QuestData", "QuestOrderData",
 				"ResourceData", "RewardData", "RoomData", "RoomSets", "ScreenData.Shrine.BountyOrder",
 				"ShrineUpgradeOrder", "TraitData",
 			}),

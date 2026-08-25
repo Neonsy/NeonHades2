@@ -1,0 +1,204 @@
+/* Illustrated records read as one row: identity, explanation, then metadata. */
+.record-index > li > .record-index-link--illustrated {
+    align-items: center;
+}
+
+.record-index-copy > span:not(.record-type),
+.relationship-rail span {
+    color: color-mix(in srgb, var(--archive-accent, var(--thread)) 24%, var(--paper-soft));
+}
+
+.record-index-link--divine-overview {
+    grid-template-columns: clamp(17rem, 28vw, 24rem) minmax(0, 1fr) auto !important;
+    gap: clamp(1.5rem, 3vw, 3.5rem) !important;
+    align-items: center !important;
+    min-height: clamp(16rem, 24vw, 20rem) !important;
+    padding-block: 0 !important;
+}
+
+.record-index-link--divine-overview > .subject-art {
+    align-self: stretch;
+    width: 100%;
+    height: 100%;
+    min-height: clamp(16rem, 24vw, 20rem);
+    overflow: hidden;
+}
+
+.record-index-link--divine-overview
+    > .subject-art.subject-art--character.subject-art--row.subject-art--raster
+    .subject-art__raster-core {
+    position: absolute;
+    top: var(--story-art-top, 0);
+    left: var(--story-art-left, 0);
+    width: var(--story-art-width, 100%);
+    height: var(--story-art-height, 100%);
+    max-width: none;
+    padding: 0;
+    object-fit: fill;
+    transform: none;
+}
+
+.record-index-link--divine-overview > .record-index-copy {
+    display: grid;
+    gap: var(--space-3);
+    min-width: 0;
+}
+
+.record-index-link--divine-overview > .record-type {
+    align-self: center;
+}
+
+@media (max-width: 900px) {
+    .record-index > li {
+        min-width: 0;
+    }
+
+    .record-index-link--illustrated {
+        grid-template-columns: 5.25rem minmax(0, 1fr) !important;
+        grid-template-rows: auto auto;
+        gap: 0.85rem 1.25rem !important;
+        min-width: 0;
+    }
+
+    .record-index-link--illustrated > .subject-art {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        width: 5.25rem;
+        height: 6rem;
+    }
+
+    .record-index-link--illustrated > .record-index-copy {
+        display: grid;
+        grid-column: 2;
+        grid-row: 1;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        min-width: 0;
+    }
+
+    .record-index-link--illustrated > .record-type {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
+        max-width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .record-index-link--illustrated > .record-index-copy > *,
+    .tier-entry-record-link > span:last-child {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .record-index-link--divine-overview {
+        grid-template-columns: minmax(8.5rem, 34vw) minmax(0, 1fr) !important;
+        grid-template-rows: auto auto;
+        min-height: clamp(13rem, 46vw, 18rem) !important;
+        padding-block: 0 !important;
+    }
+
+    .record-index-link--divine-overview > .subject-art {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        align-self: stretch;
+        width: 100%;
+        height: 100%;
+        min-height: clamp(13rem, 46vw, 18rem);
+        margin-top: 0;
+    }
+
+    .record-index-link--divine-overview > .record-index-copy {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: end;
+    }
+
+    .record-index-link--divine-overview > .record-type {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: start;
+    }
+}
+
+@media (max-width: 560px) {
+    .record-index-link--divine-overview {
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-rows: 18rem auto auto;
+        gap: 1rem !important;
+        min-height: 0 !important;
+        padding: 0 1.25rem 1.5rem !important;
+    }
+
+    .record-index-link--divine-overview > .subject-art {
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        height: 18rem;
+        min-height: 18rem;
+    }
+
+    .record-index-link--divine-overview > .record-index-copy {
+        grid-column: 1;
+        grid-row: 2;
+        align-self: start;
+    }
+
+    .record-index-link--divine-overview > .record-type {
+        grid-column: 1;
+        grid-row: 3;
+        align-self: start;
+    }
+}
+
+@media (max-width: 350px) {
+    .record-index .record-index-link--illustrated {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .record-index-link--illustrated > .subject-art {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .record-index-link--illustrated > .record-index-copy {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .record-index-link--illustrated > .record-type {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .record-index-link--divine-overview {
+        min-height: 0 !important;
+    }
+
+    .record-index-link--divine-overview > .subject-art {
+        grid-column: 1;
+        grid-row: 1;
+        height: 15rem;
+        min-height: 15rem;
+    }
+
+    .record-index-link--divine-overview > .record-index-copy {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .record-index-link--divine-overview > .record-type {
+        grid-column: 1;
+        grid-row: 3;
+    }
+}
+
+.weapon-family-grid a {
+    border-color: color-mix(in srgb, var(--projection) 48%, transparent);
+    box-shadow: var(--depth-low);
+}
+
+.weapon-family-grid a::after {
+    inset: var(--panel-inset);
+    border-color: color-mix(in srgb, var(--thread) 28%, transparent);
+}

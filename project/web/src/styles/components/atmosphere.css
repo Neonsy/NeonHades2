@@ -1,0 +1,382 @@
+.world-atmosphere {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    isolation: isolate;
+    background: #080a11;
+}
+.world-atmosphere[data-paused] *,
+.world-atmosphere[data-paused] ::before,
+.world-atmosphere[data-paused] ::after {
+    animation-play-state: paused !important;
+}
+body[data-surface='home'] .world-atmosphere {
+    position: fixed;
+}
+.world-atmosphere-color,
+.world-atmosphere-vignette,
+.world-atmosphere-motion,
+.world-atmosphere-rim,
+.world-atmosphere-particles,
+.world-atmosphere [data-world-shader],
+.world-atmosphere canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+.world-atmosphere {
+    --rim-primary: rgb(113 239 219 / 0.62);
+    --rim-secondary: rgb(165 137 255 / 0.46);
+    --particle-primary: #b7fff2;
+    --particle-secondary: #f2bd57;
+}
+.world-atmosphere[data-world-atmosphere='guide'] {
+    --rim-primary: rgb(113 239 219 / 0.68);
+    --rim-secondary: rgb(242 189 87 / 0.54);
+}
+.world-atmosphere[data-world-atmosphere='guide'] .world-atmosphere-color {
+    background:
+        radial-gradient(ellipse at 76% 28%, rgb(113 239 219 / 0.18), transparent 44%),
+        radial-gradient(ellipse at 54% 82%, rgb(140 112 232 / 0.16), transparent 50%),
+        radial-gradient(ellipse at 10% 62%, rgb(242 189 87 / 0.08), transparent 34%),
+        linear-gradient(145deg, #0b1017, #0b0d16 58%, #080912);
+}
+.world-atmosphere[data-world-atmosphere='knowledge'],
+.world-atmosphere[data-world-atmosphere='collection'] {
+    --rim-primary: rgb(165 137 255 / 0.58);
+    --rim-secondary: rgb(99 230 210 / 0.44);
+    --particle-secondary: #a589ff;
+}
+
+.world-atmosphere[data-world-atmosphere='record'] {
+    --rim-primary: rgb(215 91 117 / 0.52);
+    --rim-secondary: rgb(99 230 210 / 0.46);
+    --particle-primary: #f4b2c2;
+    --particle-secondary: #92f5e5;
+}
+.world-atmosphere[data-world-atmosphere='builds'],
+.world-atmosphere[data-world-atmosphere='build-detail'],
+.world-atmosphere[data-world-atmosphere='tiers'] {
+    --rim-primary: rgb(242 189 87 / 0.62);
+    --rim-secondary: rgb(99 230 210 / 0.42);
+    --particle-primary: #ffe2a2;
+    --particle-secondary: #75e8d6;
+}
+.world-atmosphere[data-world-variant$='boons'],
+.world-atmosphere[data-world-variant$='keepsakes'] {
+    --rim-primary: rgb(242 189 87 / 0.62);
+    --rim-secondary: rgb(165 137 255 / 0.46);
+    --particle-primary: #ffe5a8;
+    --particle-secondary: #bba8ff;
+}
+.world-atmosphere[data-world-variant$='characters'],
+.world-atmosphere[data-world-variant$='relationships'],
+.world-atmosphere[data-world-variant$='story'] {
+    --rim-primary: rgb(215 91 117 / 0.58);
+    --rim-secondary: rgb(99 230 210 / 0.42);
+    --particle-primary: #f2a4b8;
+    --particle-secondary: #8ff1df;
+}
+.world-atmosphere[data-world-variant$='weapons'],
+.world-atmosphere[data-world-variant$='aspects'],
+.world-atmosphere[data-world-variant$='tools'] {
+    --rim-primary: rgb(242 189 87 / 0.62);
+    --rim-secondary: rgb(99 230 210 / 0.46);
+}
+.world-atmosphere[data-world-variant$='regions'] {
+    --rim-primary: rgb(116 185 155 / 0.62);
+    --rim-secondary: rgb(165 137 255 / 0.46);
+    --particle-primary: #9df2c8;
+    --particle-secondary: #b7a4ff;
+}
+.world-atmosphere-color {
+    z-index: 0;
+    background:
+        radial-gradient(circle at 78% 18%, rgb(136 104 243 / 0.16), transparent 34%),
+        radial-gradient(circle at 18% 72%, rgb(99 230 210 / 0.13), transparent 36%),
+        linear-gradient(145deg, #0d1018, var(--ink) 52%, #080912);
+}
+.world-atmosphere [data-world-shader] {
+    z-index: 1;
+    opacity: 0.98;
+}
+.world-atmosphere [data-world-shader] canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+.world-atmosphere-rim {
+    z-index: 2;
+    opacity: 0.92;
+    mix-blend-mode: screen;
+    background:
+        radial-gradient(ellipse 76% 68% at 86% 34%, var(--rim-primary), transparent 76%),
+        radial-gradient(ellipse 64% 72% at 10% 70%, var(--rim-secondary), transparent 78%);
+    filter: blur(3.25rem);
+    transform-origin: 76% 48%;
+    animation: world-rim-breathe 8s ease-in-out infinite alternate;
+}
+.world-atmosphere[data-world-atmosphere='guide'] .world-atmosphere-rim {
+    opacity: 0.88;
+    background:
+        radial-gradient(ellipse 78% 70% at 84% 30%, var(--rim-primary), transparent 76%),
+        radial-gradient(ellipse 66% 74% at 9% 68%, var(--rim-secondary), transparent 79%);
+}
+.world-atmosphere[data-world-atmosphere='knowledge'] .world-atmosphere-rim,
+.world-atmosphere[data-world-atmosphere='collection'] .world-atmosphere-rim {
+    background:
+        radial-gradient(ellipse 76% 70% at 84% 38%, var(--rim-primary), transparent 76%),
+        radial-gradient(ellipse 64% 74% at 9% 72%, var(--rim-secondary), transparent 79%);
+}
+.world-atmosphere[data-world-atmosphere='knowledge'] .world-atmosphere-vignette {
+    background:
+        linear-gradient(90deg, rgb(5 6 10 / 0.54), transparent 34%, transparent 78%, rgb(5 6 10 / 0.32)),
+        radial-gradient(ellipse at 66% 48%, transparent 32%, rgb(5 6 10 / 0.48) 116%);
+}
+.world-atmosphere[data-world-atmosphere='record'] .world-atmosphere-rim {
+    background:
+        radial-gradient(ellipse 78% 72% at 86% 58%, var(--rim-primary), transparent 76%),
+        radial-gradient(ellipse 62% 70% at 9% 30%, var(--rim-secondary), transparent 79%);
+}
+.world-atmosphere[data-world-atmosphere='builds'] .world-atmosphere-rim,
+.world-atmosphere[data-world-atmosphere='build-detail'] .world-atmosphere-rim {
+    background:
+        radial-gradient(ellipse 78% 72% at 86% 58%, var(--rim-primary), transparent 76%),
+        radial-gradient(ellipse 64% 70% at 9% 30%, var(--rim-secondary), transparent 79%);
+}
+.world-atmosphere[data-world-atmosphere='tiers'] .world-atmosphere-rim {
+    background:
+        radial-gradient(ellipse 76% 72% at 84% 42%, var(--rim-primary), transparent 76%),
+        radial-gradient(ellipse 64% 74% at 9% 70%, var(--rim-secondary), transparent 79%);
+}
+.world-atmosphere-particles {
+    z-index: 3;
+    overflow: hidden;
+    opacity: 0.84;
+}
+.world-atmosphere-particles i {
+    position: absolute;
+    left: var(--particle-x);
+    top: var(--particle-y);
+    display: block;
+    width: calc(0.14rem * var(--particle-scale));
+    height: calc(0.86rem * var(--particle-scale));
+    border-radius: 999px;
+    background: var(--particle-primary);
+    box-shadow:
+        0 0 0.28rem var(--particle-primary),
+        0 0 0.8rem var(--particle-secondary);
+    opacity: 0;
+    transform: rotate(35deg);
+    animation: world-streak-shoot 4.8s var(--particle-delay) ease-in-out infinite;
+}
+.world-atmosphere-particles i:nth-child(even) {
+    background: var(--particle-secondary);
+    box-shadow:
+        0 0 0.24rem var(--particle-secondary),
+        0 0 0.72rem var(--particle-primary);
+}
+.world-atmosphere-motion {
+    z-index: 2;
+    opacity: 0.58;
+    overflow: hidden;
+}
+.world-atmosphere-motion::before,
+.world-atmosphere-motion::after {
+    position: absolute;
+    inset: -8%;
+    content: '';
+    background:
+        radial-gradient(
+            circle at 11% 19%,
+            color-mix(in srgb, var(--particle-primary) 42%, transparent) 0 0.09rem,
+            transparent 0.17rem
+        ),
+        radial-gradient(
+            circle at 73% 31%,
+            color-mix(in srgb, var(--particle-secondary) 40%, transparent) 0 0.08rem,
+            transparent 0.16rem
+        ),
+        radial-gradient(
+            circle at 43% 79%,
+            color-mix(in srgb, var(--particle-primary) 36%, transparent) 0 0.1rem,
+            transparent 0.18rem
+        ),
+        radial-gradient(
+            circle at 87% 63%,
+            color-mix(in srgb, var(--particle-secondary) 34%, transparent) 0 0.07rem,
+            transparent 0.15rem
+        ),
+        radial-gradient(
+            circle at 29% 47%,
+            color-mix(in srgb, var(--particle-primary) 32%, transparent) 0 0.08rem,
+            transparent 0.16rem
+        ),
+        radial-gradient(
+            circle at 61% 13%,
+            color-mix(in srgb, var(--particle-secondary) 30%, transparent) 0 0.09rem,
+            transparent 0.17rem
+        ),
+        radial-gradient(
+            circle at 19% 71%,
+            color-mix(in srgb, var(--particle-secondary) 28%, transparent) 0 0.07rem,
+            transparent 0.15rem
+        ),
+        radial-gradient(
+            circle at 91% 23%,
+            color-mix(in srgb, var(--particle-primary) 28%, transparent) 0 0.08rem,
+            transparent 0.16rem
+        );
+    background-size:
+        12rem 10rem,
+        16rem 13rem,
+        19rem 16rem,
+        14rem 17rem,
+        22rem 18rem,
+        17rem 21rem,
+        25rem 20rem,
+        20rem 15rem;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: world-motes-drift 18s linear infinite;
+}
+.world-atmosphere-motion::after {
+    animation-delay: -9s;
+}
+.world-atmosphere-mist {
+    position: absolute;
+    z-index: 2;
+    inset: -8%;
+    opacity: 0.56;
+    background:
+        radial-gradient(ellipse at 18% 42%, rgb(69 164 155 / 0.28), transparent 36%),
+        radial-gradient(ellipse at 64% 58%, rgb(109 84 184 / 0.26), transparent 40%),
+        radial-gradient(ellipse at 92% 30%, rgb(219 169 79 / 0.15), transparent 30%);
+    filter: blur(2.25rem);
+    transform: scale(1.14) translate3d(-2%, 0, 0);
+    animation: world-guide-mist-drift 22s ease-in-out infinite alternate;
+}
+.world-atmosphere-vignette {
+    z-index: 3;
+    background:
+        linear-gradient(90deg, rgb(5 6 10 / 0.54) 0%, rgb(5 6 10 / 0.24) 34%, transparent 62%, rgb(5 6 10 / 0.28) 100%),
+        radial-gradient(ellipse at center, transparent 38%, rgb(5 6 10 / 0.5) 112%);
+    background-color: rgb(7 13 14 / 0.24);
+}
+.world-atmosphere[data-world-atmosphere='guide'] .world-atmosphere-vignette {
+    background:
+        linear-gradient(90deg, rgb(5 6 10 / 0.5), transparent 36%, transparent 78%, rgb(5 6 10 / 0.26)),
+        radial-gradient(ellipse at 65% 48%, transparent 28%, rgb(5 6 10 / 0.46) 118%);
+    background-color: rgb(7 13 14 / 0.24);
+}
+@keyframes world-motes-drift {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0);
+    }
+    25%,
+    50% {
+        opacity: 1;
+    }
+    50% {
+        transform: translate3d(1.3rem, -2.5rem, 0);
+    }
+    75%,
+    100% {
+        opacity: 0;
+    }
+    100% {
+        transform: translate3d(2.6rem, -5rem, 0);
+    }
+}
+
+@keyframes world-guide-mist-drift {
+    from {
+        opacity: 0.46;
+        transform: scale(1.12) translate3d(-3%, 1%, 0);
+    }
+    to {
+        opacity: 0.72;
+        transform: scale(1.2) translate3d(4%, -2%, 0);
+    }
+}
+@keyframes world-rim-breathe {
+    from {
+        opacity: 0.58;
+        transform: scale(0.995);
+    }
+    to {
+        opacity: 0.86;
+        transform: scale(1.018);
+    }
+}
+@keyframes world-streak-shoot {
+    0% {
+        opacity: 0;
+        translate: 0 0;
+    }
+    18% {
+        opacity: 0.94;
+    }
+    66% {
+        opacity: 0.2;
+        translate: 3.4rem -4.6rem;
+    }
+    76% {
+        opacity: 0;
+        translate: 3.9rem -5.3rem;
+    }
+    77%,
+    100% {
+        opacity: 0;
+        translate: 0 0;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .world-atmosphere-motion::before,
+    .world-atmosphere-motion::after,
+    .world-atmosphere-mist,
+    .world-atmosphere-rim,
+    .world-atmosphere-particles i {
+        animation: none;
+    }
+    .world-atmosphere-rim {
+        opacity: 0.68;
+    }
+    .world-atmosphere-particles i {
+        opacity: 0.28;
+    }
+}
+@media (max-width: 900px) {
+    .threshold-world::before,
+    .world-atmosphere-motion,
+    .world-atmosphere-mist,
+    .world-atmosphere-particles,
+    .world-atmosphere [data-world-shader] {
+        display: none;
+    }
+
+    .world-atmosphere-rim {
+        animation: none;
+        transform: none;
+    }
+
+    .world-atmosphere-rim,
+    .world-atmosphere-particles {
+        mask-image: linear-gradient(180deg, #000 0 30svh, rgb(0 0 0 / 0.34) 52svh, transparent 76svh);
+    }
+    .world-atmosphere-rim {
+        opacity: 0.56;
+    }
+    .world-atmosphere-particles {
+        opacity: 0.5;
+    }
+}
+@media (max-width: 760px) {
+    .world-atmosphere-rim {
+        animation: none;
+        transform: none;
+    }
+}

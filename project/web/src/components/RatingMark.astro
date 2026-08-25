@@ -1,0 +1,18 @@
+---
+type Props = {
+    rating?: string;
+    label?: string;
+};
+
+const { rating = '', label } = Astro.props;
+const isFallback = rating === 'fallback';
+const accessibleLabel = label ?? `Rating ${rating}`;
+---
+
+{
+    rating && (
+        <span class:list={['rating-mark', `rating-${rating.toLowerCase()}`]} aria-label={accessibleLabel}>
+            {isFallback ? <i class='ph ph-arrow-counter-clockwise' aria-hidden='true' /> : <span>{rating}</span>}
+        </span>
+    )
+}

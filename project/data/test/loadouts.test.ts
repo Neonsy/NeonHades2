@@ -82,6 +82,25 @@ ${hexes.map((hex) => `  ${hex.id} = { TraitName = "${hex.traitId}", Talents = { 
 GameData.WorldUpgradeAutomaticUnlocks = {}
 `,
   );
+  await writeFile(
+    join(scripts, "GhostAdminData.lua"),
+    "ScreenData.GhostAdmin = { AllowedRevealsPerRun = 3 }\n",
+  );
+  await writeFile(
+    join(scripts, "GhostAdminData_Items.lua"),
+    `ScreenData.GhostAdmin.ItemCategories = {
+  {
+    Name = "WorldUpgradeScreen_Critical",
+    OneRevealPerRun = true,
+    "${incantationId}",
+  },
+}
+`,
+  );
+  await writeFile(
+    join(scripts, "GhostAdminLogic.lua"),
+    "local maxItemsToReveal = screen.AllowedRevealsPerRun\nreturn category.OneRevealPerRun\n",
+  );
 
   const localization = [
     ...keepsakes.map((id) => localized(id)),
@@ -114,6 +133,14 @@ describe("loadout source audit", () => {
       assert.equal(audit.complete, true);
       assert.deepEqual(audit.extractionFormats, ["DamageOverTime", "Percent", "SlottedBoon"]);
       assert.equal(audit.extractionFormats.includes("UnsupportedCommentedFormat"), false);
+      assert.deepEqual(audit.incantationRevealPolicy, {
+        maxNewRevealsPerRun: 3,
+        categories: [{
+          id: "WorldUpgradeScreen_Critical",
+          oneRevealPassPerRun: true,
+          orderedIncantationIds: ["WorldUpgradeSynthetic"],
+        }],
+      });
     } finally {
       await rm(directory, { recursive: true, force: true });
     }

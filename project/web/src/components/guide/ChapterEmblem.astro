@@ -1,0 +1,148 @@
+---
+import type { ChapterVisualForm } from '../../content/guide-presentation';
+
+type Props = { form: ChapterVisualForm };
+
+const { form } = Astro.props;
+---
+
+<div class:list={['chapter-emblem', `chapter-emblem--${form}`]} aria-hidden='true'>
+    <svg viewBox='0 0 360 360' role='presentation'>
+        <path class='emblem-shadow' d='M180 18 285 51 340 145 322 272 230 341 103 324 21 235 32 112 126 32Z'></path>
+        <path class='emblem-slab' d='M180 25 278 57 331 148 313 265 226 330 110 315 31 232 42 118 130 42Z'></path>
+        <path class='emblem-rim' d='M179 50 263 76 306 154 291 251 216 302 123 290 57 220 66 132 141 64Z'></path>
+        <circle class='emblem-boundary' cx='180' cy='180' r='116'></circle>
+        <g class='emblem-carving'>
+            <path d='M180 36v24M180 300v24M37 180h24M299 180h24'></path>
+            <path d='m78 78 18 18M264 264l18 18M282 78l-18 18M96 264l-18 18'></path>
+            <path
+                d='M135 48 145 63 126 66ZM225 48 234 66 215 63ZM312 137 297 147 294 128ZM312 223 294 232 297 213ZM225 312 215 297 234 294ZM135 312 126 294 145 297ZM48 223 63 213 66 232ZM48 137 66 128 63 147Z'
+            ></path>
+        </g>
+        {
+            form === 'night' && (
+                <>
+                    <path class='emblem-primary' d='M226 86A112 112 0 1 0 250 262A88 88 0 1 1 226 86Z' />
+                    <path class='emblem-path' d='M72 235C132 181 211 213 285 126' />
+                    <circle class='emblem-node' cx='285' cy='126' r='8' />
+                </>
+            )
+        }
+        {
+            form === 'altar' && (
+                <>
+                    <path class='emblem-grid' d='M92 92H268V268H92ZM92 151H268M92 209H268M151 92V268M209 92V268' />
+                    <path class='emblem-primary' d='M180 118L242 180L180 242L118 180Z' />
+                    <circle class='emblem-node' cx='180' cy='180' r='11' />
+                </>
+            )
+        }
+        {
+            form === 'workshop' && (
+                <>
+                    <path class='emblem-grid' d='M86 240L151 175M209 151L274 86M106 86L274 254' />
+                    <path
+                        class='emblem-primary'
+                        d='M135 112L170 147L145 172L110 137ZM190 189L250 249L222 277L162 217Z'
+                    />
+                    <circle class='emblem-node' cx='180' cy='180' r='13' />
+                </>
+            )
+        }
+        {
+            form === 'route' && (
+                <>
+                    <path
+                        class='emblem-path'
+                        d='M180 286V218C180 170 110 177 110 124V78M180 218C180 170 250 177 250 124V78'
+                    />
+                    <circle class='emblem-node' cx='110' cy='78' r='8' />
+                    <circle class='emblem-node' cx='250' cy='78' r='8' />
+                    <path class='emblem-primary' d='M180 258L201 279L180 300L159 279Z' />
+                </>
+            )
+        }
+        {
+            form === 'constellation' && (
+                <>
+                    <path class='emblem-path' d='M83 223L132 116L208 151L279 91L254 249L158 271Z' />
+                    {[
+                        ['83', '223'],
+                        ['132', '116'],
+                        ['208', '151'],
+                        ['279', '91'],
+                        ['254', '249'],
+                        ['158', '271'],
+                    ].map(([cx, cy]) => (
+                        <circle class='emblem-node' cx={cx} cy={cy} r='7' />
+                    ))}
+                    <path class='emblem-primary' d='M180 143L217 180L180 217L143 180Z' />
+                </>
+            )
+        }
+        {
+            form === 'armory' && (
+                <>
+                    <path class='emblem-primary' d='M180 66L215 161L180 294L145 161Z' />
+                    <path class='emblem-grid' d='M102 126L180 180L258 126M102 234L180 180L258 234' />
+                    <circle class='emblem-node' cx='180' cy='180' r='12' />
+                </>
+            )
+        }
+        {
+            form === 'story' && (
+                <>
+                    <path class='emblem-grid' d='M74 118H137V242H74M286 118H223V242H286' />
+                    <path class='emblem-primary' d='M180 84V276M139 126L180 84L221 126M139 234L180 276L221 234' />
+                    <circle class='emblem-node' cx='180' cy='180' r='10' />
+                </>
+            )
+        }
+        {
+            form === 'oath' && (
+                <>
+                    <circle class='emblem-grid' cx='180' cy='180' r='98' />
+                    <circle class='emblem-path' cx='180' cy='180' r='61' />
+                    <path
+                        class='emblem-primary'
+                        d='M180 56V112M180 248V304M56 180H112M248 180H304M180 134L226 226H134Z'
+                    />
+                </>
+            )
+        }
+        {
+            form === 'bond' && (
+                <>
+                    <path
+                        class='emblem-primary'
+                        d='M180 279C91 222 84 152 126 118C151 98 175 110 180 136C185 110 209 98 234 118C276 152 269 222 180 279Z'
+                    />
+                    <path class='emblem-path' d='M72 99L126 118M288 99L234 118M180 58V136' />
+                    <circle class='emblem-node' cx='72' cy='99' r='7' />
+                    <circle class='emblem-node' cx='288' cy='99' r='7' />
+                </>
+            )
+        }
+        {
+            form === 'prophecy' && (
+                <>
+                    <path
+                        class='emblem-grid'
+                        d='M87 101H216V252H87ZM144 77H273V228H216M112 138H191M112 175H191M112 212H169'
+                    />
+                    <path class='emblem-primary' d='M243 249C206 215 211 170 257 139C250 180 276 205 243 249Z' />
+                </>
+            )
+        }
+        {
+            form === 'ledger' && (
+                <>
+                    <path class='emblem-grid' d='M92 94H268V266H92ZM124 137H236M124 180H236M124 223H210' />
+                    <path class='emblem-primary' d='M217 227L240 250L285 198' />
+                </>
+            )
+        }
+        <path class='emblem-sheen' d='M88 122C124 66 210 43 270 91'></path>
+        <path class='emblem-foot' d='M113 307 180 326 247 307 226 342H134Z'></path>
+    </svg>
+</div>

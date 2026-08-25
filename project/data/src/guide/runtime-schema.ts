@@ -1,4 +1,5 @@
-import type { JsonObject, JsonValue } from "../boons/runtime-schema.js";
+import type { JsonObject, JsonValue, RuntimeBoonSample } from "../boons/runtime-schema.js";
+import { validateRuntimeTraitSample } from "../boons/runtime-schema.js";
 
 export interface RuntimeGuideGame {
   readonly steamBuildId: string;
@@ -17,6 +18,7 @@ export interface RuntimeGuideRecord {
   readonly id: string;
   readonly displayName: string | null;
   readonly description: string | null;
+  readonly localizedFields?: Readonly<Record<string, string>>;
   readonly data: JsonValue;
   readonly omissions: readonly string[];
   readonly evidence: RuntimeGuideEvidence;
@@ -74,6 +76,7 @@ export interface RuntimeGuideReport {
   readonly resources: readonly RuntimeGuideRecord[];
   readonly statusEffects: readonly RuntimeGuideRecord[];
   readonly elementalTraits: readonly RuntimeGuideRecord[];
+  readonly encounterAidTraits: readonly RuntimeGuideRecord[];
   readonly oathConditions: readonly RuntimeGuideRecord[];
   readonly bounties: readonly RuntimeGuideRecord[];
   readonly bountyOrder: readonly string[];
@@ -103,6 +106,11 @@ function stringValue(value: unknown, path: string): string {
 function nullableString(value: unknown, path: string): string | null {
   if (value === null || value === "") return null;
   return stringValue(value, path);
+}
+
+function stringRecord(value: unknown, path: string): Readonly<Record<string, string>> {
+  const input = record(value, path);
+  return Object.fromEntries(Object.entries(input).map(([key, entry]) => [key, stringValue(entry, `${path}.${key}`)]));
 }
 
 function numberValue(value: unknown, path: string): number {
@@ -177,10 +185,14 @@ function guideRecord(value: unknown, path: string): RuntimeGuideRecord {
   const classification =
     input.classification === undefined ? undefined : nullableString(input.classification, `${path}.classification`);
   const order = input.order === undefined ? undefined : numberValue(input.order, `${path}.order`);
+  const localizedFields = input.localizedFields === undefined
+    ? undefined
+    : stringRecord(input.localizedFields, `${path}.localizedFields`);
   return {
     id: stringValue(input.id, `${path}.id`),
     displayName: nullableString(input.displayName, `${path}.displayName`),
     description: nullableString(input.description, `${path}.description`),
+    ...(localizedFields === undefined ? {} : { localizedFields }),
     data,
     omissions: strings(input.omissions, `${path}.omissions`),
     evidence: {
@@ -197,6 +209,28 @@ function guideRecords(value: unknown, path: string): readonly RuntimeGuideRecord
   const output = value.map((entry, index) => guideRecord(entry, `${path}[${index}]`));
   uniqueIds(output, path);
   return output;
+}
+
+function encounterAidTraitRecords(value: unknown, path: string): readonly RuntimeGuideRecord[] {
+  const output = guideRecords(value, path);
+  return output.map((entry, index) => {
+    const entryPath = `${path}[${index}]`;
+    const data = record(entry.data, `${entryPath}.data`);
+    stringValue(data.providerId, `${entryPath}.data.providerId`);
+    record(data.trait, `${entryPath}.data.trait`);
+    if (!Array.isArray(data.samples) || data.samples.length === 0) {
+      throw new Error(`${entryPath}.data.samples must be a nonempty array.`);
+    }
+    const samples: readonly RuntimeBoonSample[] = data.samples.map((sample, sampleIndex) =>
+      validateRuntimeTraitSample(sample, `${entryPath}.data.samples[${sampleIndex}]`));
+    const sampleKeys = samples.map(
+      (sample) => `${sample.rarity}\u0000${sample.endpoint}\u0000${sample.level}`,
+    );
+    if (new Set(sampleKeys).size !== sampleKeys.length) {
+      throw new Error(`${entryPath}.data.samples must not repeat a rarity, endpoint, and level.`);
+    }
+    return entry;
+  });
 }
 
 function specializedRecords<T extends RuntimeGuideRecord>(
@@ -317,6 +351,9 @@ export function validateRuntimeGuideReport(value: unknown): RuntimeGuideReport {
     resources: guideRecords(input.resources, "report.resources"),
     statusEffects: guideRecords(input.statusEffects, "report.statusEffects"),
     elementalTraits: guideRecords(input.elementalTraits, "report.elementalTraits"),
+    encounterAidTraits: input.encounterAidTraits === undefined
+      ? []
+      : encounterAidTraitRecords(input.encounterAidTraits, "report.encounterAidTraits"),
     oathConditions: guideRecords(input.oathConditions, "report.oathConditions"),
     bounties: guideRecords(input.bounties, "report.bounties"),
     bountyOrder: strings(input.bountyOrder, "report.bountyOrder"),

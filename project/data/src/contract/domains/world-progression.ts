@@ -1,4 +1,4 @@
-import { derived, fact } from "../field.js";
+import { derived, editorial, fact } from "../field.js";
 import type { DomainContract } from "../types.js";
 
 const luaRuntime = ["lua-source", "runtime-table"] as const;
@@ -108,6 +108,49 @@ export const worldProgressionDomain = {
       ],
     },
     {
+      id: "opening-state",
+      description: "The fixed first-night room, encounter, god, and boon choices.",
+      stableId: "opening state identifier",
+      sourcePatterns: ["Content/Scripts/RoomDataF.lua"],
+      fields: [
+        fact({ id: "room-encounter", description: "Fixed opening room and encounter.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/RoomDataF.lua"], normalization: "references", validations: ["required", "references-exist"], requirementIds: ["progression.stage-structure", "progression.combat-basics"] }),
+        fact({ id: "forced-boon-choice", description: "God, exact boon pool, and forced rarity for the first reward.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/RoomDataF.lua"], normalization: "ordered-values", validations: ["required", "references-exist"], requirementIds: ["progression.stage-structure", "progression.boons"] }),
+      ],
+    },
+    {
+      id: "encounter-friend",
+      description: "A friendly or allied encounter, every region where it appears, and any aid it offers.",
+      stableId: "character identifier",
+      sourcePatterns: ["Content/Scripts/EncounterData*.lua", "Content/Scripts/RoomData*.lua", "Content/Scripts/NPCData*.lua"],
+      fields: [
+        fact({ id: "name", description: "Player-facing character name.", sourceClasses: ["localization-sjson", "lua-source"], sourcePatterns: ["Content/Game/Text/en/*.sjson", "Content/Scripts/NPCData.lua"], normalization: "localized-text", validations: ["required"], requirementIds: ["reference.world"] }),
+        fact({ id: "appearance", description: "Regions, encounter variants, frequency limit, and player-facing appearance conditions.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/EncounterData*.lua", "Content/Scripts/RoomData*.lua"], normalization: "requirement-expression", validations: ["required", "references-exist", "requirement-resolves"], requirementIds: ["reference.world", "progression.routes"] }),
+        fact({ id: "aid", description: "Benefits this encounter can offer.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/NPCData*.lua"], normalization: "references", cardinality: "zero-or-more", validations: ["references-exist"], requirementIds: ["reference.world", "progression.beginner-builds"] }),
+      ],
+    },
+    {
+      id: "strife-curse",
+      description: "The deterministic early-night Blessing of Strife schedule, scaling, safety suppression, and compensation.",
+      stableId: "Strife curse identifier",
+      sourcePatterns: ["Content/Scripts/TraitData.lua", "Content/Scripts/RoomDataG.lua", "Content/Scripts/RoomDataH.lua", "Content/Scripts/RoomDataI.lua", "Content/Scripts/RequirementsData.lua"],
+      fields: [
+        fact({ id: "name-description", description: "Official English curse name and description.", sourceClasses: localized, sourcePatterns: ["Content/Game/Text/en/TraitText.en.sjson"], normalization: "localized-text", validations: ["required", "localized"], requirementIds: ["progression.stage-structure", "reference.world"] }),
+        fact({ id: "effect", description: "Initial enemy damage increase, per-encounter growth, cap, and duration.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/TraitData.lua", "Content/Scripts/ShrineLogic.lua"], normalization: "ordered-values", validations: ["required", "nonnegative"], requirementIds: ["progression.combat-basics", "reference.world"] }),
+        fact({ id: "appearance", description: "Completed-night thresholds, region sequence, safety suppression, and compensation rewards.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/RoomDataG.lua", "Content/Scripts/RoomDataH.lua", "Content/Scripts/RoomDataI.lua", "Content/Scripts/RequirementsData.lua"], normalization: "ordered-values", validations: ["required", "references-exist", "requirement-resolves"], requirementIds: ["progression.stage-structure", "progression.resources", "reference.world"] }),
+      ],
+    },
+    {
+      id: "surface-penalty",
+      description: "The escalating Surface health penalty and the incantation that permanently removes it.",
+      stableId: "surface penalty identifier",
+      sourcePatterns: ["Content/Scripts/EncounterData_Opening.lua", "Content/Scripts/TraitData.lua"],
+      fields: [
+        fact({ id: "effect", description: "Starting self-damage, tick interval, and escalation per tick.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/TraitData.lua"], normalization: "ordered-values", validations: ["required", "nonnegative"], requirementIds: ["progression.combat-basics", "reference.world"] }),
+        fact({ id: "activation", description: "Surface-opening encounter and uncured-state condition that applies the penalty.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/EncounterData_Opening.lua"], normalization: "requirement-expression", validations: ["required", "references-exist", "requirement-resolves"], requirementIds: ["progression.routes", "reference.world"] }),
+        fact({ id: "removal", description: "Incantation that permanently removes the penalty.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/WorldUpgradeData.lua"], normalization: "reference", validations: ["required", "reference-exists"], requirementIds: ["progression.incantations", "reference.world"] }),
+      ],
+    },
+    {
       id: "enemy",
       description: "An enemy, miniboss, or Guardian and its encounter-facing mechanics.",
       stableId: "enemy unit identifier",
@@ -161,6 +204,11 @@ export const worldProgressionDomain = {
           sourcePatterns: ["Content/Game/Text/en/_ShrineData*.sjson"],
           normalization: "localized-text",
           validations: ["required", "localized"],
+          requirementIds: ["reference.oath", "progression.oath"],
+        }),
+        editorial({
+          id: "description",
+          description: "Reader-facing explanation of the condition and its rank values.",
           requirementIds: ["reference.oath", "progression.oath"],
         }),
         fact({
@@ -239,7 +287,7 @@ export const worldProgressionDomain = {
         }),
         fact({
           id: "gift-track",
-          description: "Gift values, locks, unlock conditions, and relationship thresholds.",
+          description: "Gift values, first-gift and Bond Forged requirements, locks, and relationship thresholds.",
           sourceClasses: luaRuntime,
           sourcePatterns: ["Content/Scripts/KeepsakeData.lua", "Processed GiftData"],
           normalization: "ordered-values",
@@ -274,7 +322,7 @@ export const worldProgressionDomain = {
           normalization: "localized-text",
           validations: ["required", "localized"],
           spoilerLevel: "ending",
-          requirementIds: ["reference.prophecies"],
+          requirementIds: ["reference.prophecies", "reference.prophecy-solutions"],
         }),
         fact({
           id: "unlock-requirements",
@@ -285,7 +333,7 @@ export const worldProgressionDomain = {
           cardinality: "zero-or-one",
           validations: ["requirement-resolves", "runtime-source-agree"],
           spoilerLevel: "ending",
-          requirementIds: ["reference.prophecies", "progression.prophecies"],
+          requirementIds: ["reference.prophecies", "reference.prophecy-solutions", "progression.prophecies"],
         }),
         fact({
           id: "objectives",
@@ -295,7 +343,7 @@ export const worldProgressionDomain = {
           normalization: "requirement-expression",
           validations: ["required", "requirement-resolves", "runtime-source-agree"],
           spoilerLevel: "ending",
-          requirementIds: ["reference.prophecies", "progression.prophecies"],
+          requirementIds: ["reference.prophecies", "reference.prophecy-solutions", "progression.prophecies"],
         }),
         fact({
           id: "rewards",
@@ -306,7 +354,7 @@ export const worldProgressionDomain = {
           cardinality: "zero-or-more",
           validations: ["references-exist", "runtime-source-agree"],
           spoilerLevel: "ending",
-          requirementIds: ["reference.prophecies"],
+          requirementIds: ["reference.prophecies", "reference.prophecy-solutions"],
         }),
       ],
     },

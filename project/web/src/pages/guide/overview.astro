@@ -1,0 +1,638 @@
+---
+import RecordLink from '../../components/RecordLink.astro';
+import { guideChapters } from '../../content/guide';
+import { guideFacts } from '../../content/guide-facts';
+import { getChapterProgressChecks } from '../../content/guide-progress';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import { getPublication } from '../../lib/publication';
+
+const publication = getPublication();
+
+type OverviewStep =
+    | { text: string; icon: string; note: string }
+    | { reference: { recordType: string; id: string }; note: string }
+    | { references: Array<{ recordType: string; id: string }>; note: string };
+
+type OverviewPhase = {
+    id: string;
+    number: string;
+    icon: string;
+    title: string;
+    chapterIds: string[];
+    startIf: string;
+    summary: string;
+    lanes: Array<{ title: string; steps: OverviewStep[] }>;
+    defer?: string;
+    advance: string;
+};
+
+const phases: OverviewPhase[] = [
+    {
+        id: 'begin',
+        number: '01',
+        icon: 'ph-moon-stars',
+        title: 'Begin well',
+        chapterIds: ['before-the-first-night', 'the-first-night'],
+        startIf: "Your save opens in the first Erebus room with the Witch's Staff already equipped.",
+        summary: 'Learn one safe exchange, take the fixed Apollo offer, and bring home one permanent target.',
+        lanes: [
+            {
+                title: 'Survive the opening',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/weapon', id: 'WeaponStaffSwing' },
+                        note: 'Cast to hold ordinary enemies, Attack twice, then Sprint out.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/boon', id: 'ApolloWeaponBoon' },
+                        note: 'Choose Nova Strike from the fixed Apollo offer.',
+                    },
+                ],
+            },
+            {
+                title: 'Read the next door',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/resource', id: 'MetaCardPointsCommon' },
+                        note: 'Choose Ashes when Life is comfortable. They reveal permanent Arcana Cards.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/run-reward', id: 'MaxHealthDrop' },
+                        note: 'Choose a Centaur Heart when ordinary rooms are already draining Life.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/resource', id: 'PlantFMoly' },
+                        note: 'Collect one Moly by hand when it appears. Plants do not need a gathering tool.',
+                    },
+                ],
+            },
+        ],
+        defer: 'Do not restart for a perfect reward. Ending the night still opens the Crossroads and advances the save.',
+        advance: 'The first night has ended and Melinoë has reached the Crossroads.',
+    },
+    {
+        id: 'foundation',
+        number: '02',
+        icon: 'ph-hammer',
+        title: 'Build the foundation',
+        chapterIds: [
+            'first-return',
+            'second-night',
+            'second-return',
+            'first-permanent-choices',
+            'tools-incantations-fated-list',
+        ],
+        startIf: 'The first night has ended and this is your first visit to the Crossroads.',
+        summary:
+            'Use the first return without the Cauldron, fund the second night, then open recipes and gathering tools on the second return.',
+        lanes: [
+            {
+                title: 'First return',
+                steps: [
+                    {
+                        text: 'Marked conversations → Altar → Silver Pool',
+                        icon: 'ph-chats-circle',
+                        note: 'Use the open systems. The Cauldron is still being purified during this visit.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/arcana-card', id: 'ChanneledCast' },
+                        note: 'Activate The Sorceress when 1 Ash is available.',
+                    },
+                    {
+                        text: 'Begin the second night',
+                        icon: 'ph-moon-stars',
+                        note: 'Leaving this hub visit records the first run. The Cauldron opens on the following return.',
+                    },
+                ],
+            },
+            {
+                title: 'Second night and return',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/resource', id: 'PlantFMoly' },
+                        note: "Collect 1 Moly by hand for Night's Craftwork. Moly is not a reward-door choice.",
+                    },
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeToolsShop' },
+                        note: "On the second return, use the Cauldron and brew Night's Craftwork when the queue reveals it.",
+                    },
+                    {
+                        reference: { recordType: 'mechanics/gathering-tool', id: 'ToolPickaxe' },
+                        note: 'After the Incantation opens the tool tab, buy the Crescent Pick for 1 Ash.',
+                    },
+                ],
+            },
+            {
+                title: 'Permanent foundation',
+                steps: [
+                    {
+                        references: [
+                            { recordType: 'mechanics/gathering-tool', id: 'ToolPickaxe' },
+                            { recordType: 'mechanics/gathering-tool', id: 'ToolExorcismBook' },
+                        ],
+                        note: 'Mine Silver, then buy the Tablet of Peace to gather Psyche from Lost Shades.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/arcana-card', id: 'BonusHealth' },
+                        note: 'Reveal toward Persistence and Death, raising Grasp only for the planned active board.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeQuestLog' },
+                        note: 'Begin the Fated List chain. Later conversations continue it.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeMarket' },
+                        note: 'Open the Broker when its planned exchange solves a real shortage.',
+                    },
+                ],
+            },
+        ],
+        defer: 'Do not wait for the Cauldron on the first return. After it opens, do not assume an absent Incantation needs more materials. Another reveal pass, event, or conversation may be required.',
+        advance:
+            'The Cauldron and gathering tools are available, the next Arcana path is funded, and every desired recipe has a known cost or reveal condition.',
+    },
+    {
+        id: 'clear',
+        number: '03',
+        icon: 'ph-shield-check',
+        title: 'Earn the first clear',
+        chapterIds: ['first-clear-build', 'productive-night-loop', 'guardian-preparation', 'first-route-clear'],
+        startIf: 'Ordinary rooms are manageable, but no route has been cleared yet.',
+        summary:
+            'Use one complete Staff plan, learn the early god gates, and repair the one encounter that ends the run.',
+        lanes: [
+            {
+                title: 'Stable Staff build',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/boon', id: 'ApolloSpecialBoon' },
+                        note: 'Use Special and Omega Special as the main damage line.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/boon', id: 'ApolloManaBoon' },
+                        note: 'Add Lucid Gain when repeated Omega Special drains Magick.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/keepsake', id: 'ForceApolloBoonKeepsake' },
+                        note: guideFacts.harmonicPhoton.shortSwitch,
+                    },
+                ],
+            },
+            {
+                title: 'Open the early god pool',
+                steps: [
+                    {
+                        references: [
+                            { recordType: 'mechanics/god', id: 'ApolloUpgrade' },
+                            { recordType: 'mechanics/god', id: 'DemeterUpgrade' },
+                            { recordType: 'mechanics/god', id: 'PoseidonUpgrade' },
+                        ],
+                        note: 'Apollo opens first. Demeter and Poseidon can follow him.',
+                    },
+                    {
+                        references: [
+                            { recordType: 'mechanics/god', id: 'HestiaUpgrade' },
+                            { recordType: 'mechanics/god', id: 'AphroditeUpgrade' },
+                        ],
+                        note: 'Hestia requires Demeter and Poseidon. Aphrodite requires all three.',
+                    },
+                    {
+                        reference: { recordType: 'world-progression/encounter-friend', id: 'Nemesis' },
+                        note: 'When Nemesis reaches the exits, choose promptly: she can take a door before you do.',
+                    },
+                ],
+            },
+            {
+                title: 'Repair, do not restart',
+                steps: [
+                    {
+                        text: 'Name the run-ending encounter',
+                        icon: 'ph-crosshair',
+                        note: 'Change one cause: Life, Magick, damage uptime, or unfamiliar attacks.',
+                    },
+                    {
+                        text: 'Keep useful failed nights',
+                        icon: 'ph-arrow-counter-clockwise',
+                        note: 'Resources, conversations, Keepsake use, and new objectives still advance.',
+                    },
+                    {
+                        text: 'Process the first clear',
+                        icon: 'ph-checks',
+                        note: 'Talk, inspect new recipes and objectives, then choose the next route deliberately.',
+                    },
+                ],
+            },
+        ],
+        defer: 'Do not replace the whole build after one guardian loss. Preserve the learned sequence and repair one cause.',
+        advance: 'One route is cleared and its new conversations, recipes, and objectives have been checked.',
+    },
+    {
+        id: 'open-game',
+        number: '04',
+        icon: 'ph-arrows-down-up',
+        title: 'Open the whole game',
+        chapterIds: [
+            'open-the-surface',
+            'gods-and-field-allies',
+            'weapons-and-aspects',
+            'complete-loadout',
+            'advanced-boon-planning',
+        ],
+        startIf: 'One route is cleared and the save is opening the second route and later permanent systems.',
+        summary: 'Open both routes, finish the god roster, and turn one aspect into a complete loadout.',
+        lanes: [
+            {
+                title: 'Second route',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeAltRunDoor' },
+                        note: 'Treat early Surface visits as scouting and material collection.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeSurfacePenaltyCure' },
+                        note: 'Cure the ward before judging ordinary Surface endurance.',
+                    },
+                    {
+                        text: 'Alternate for a named requirement',
+                        icon: 'ph-path',
+                        note: 'Let the next recipe, material, conversation, or story gate choose the route.',
+                    },
+                ],
+            },
+            {
+                title: 'Later gods',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/god', id: 'ZeusUpgrade' },
+                        note: 'Zeus becomes eligible after three completed nights when his weather gate allows it.',
+                    },
+                    {
+                        references: [
+                            { recordType: 'mechanics/god', id: 'HephaestusUpgrade' },
+                            { recordType: 'mechanics/god', id: 'HermesUpgrade' },
+                        ],
+                        note: 'Both follow Zeus through separate gates. They are not a strict pairwise order.',
+                    },
+                    {
+                        references: [
+                            { recordType: 'mechanics/god', id: 'HeraUpgrade' },
+                            { recordType: 'mechanics/god', id: 'AresUpgrade' },
+                        ],
+                        note: 'Hera and Ares enter through later Surface progress.',
+                    },
+                ],
+            },
+            {
+                title: 'Complete one aspect',
+                steps: [
+                    {
+                        text: 'Weapon move → Boons → Arcana',
+                        icon: 'ph-sword',
+                        note: 'Start with the move the aspect changes, then support that move.',
+                    },
+                    {
+                        text: 'Hammers → Keepsakes → Familiar → Hex',
+                        icon: 'ph-cards',
+                        note: 'Give every layer a job and every Keepsake switch a condition.',
+                    },
+                    {
+                        reference: { recordType: 'editorial/aspect-guide', id: 'BaseStaffAspect' },
+                        note: 'Build one reliable aspect before spreading rare Nightmare across alternatives.',
+                    },
+                ],
+            },
+        ],
+        advance:
+            'Both routes and every permanent combat layer are available, and one complete build survives a missed ideal Boon.',
+    },
+    {
+        id: 'story',
+        number: '05',
+        icon: 'ph-crown',
+        title: 'Finish the story',
+        chapterIds: ['advance-both-routes', 'true-ending', 'rescue-the-fates'],
+        startIf: 'Both routes are open and the save now points to separate story requirements on each route.',
+        summary: 'Follow the visible Underworld and Surface requirements, then the credits and epilogue chains.',
+        lanes: [
+            {
+                title: 'Two route keys',
+                steps: [
+                    {
+                        text: 'Advance the Underworld requirement',
+                        icon: 'ph-arrow-down',
+                        note: 'Repeat only when its current conversation or route objective calls for another clear.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeStormStop' },
+                        note: 'Resolve the Surface blocker through its exact Incantation requirements.',
+                    },
+                ],
+            },
+            {
+                title: 'Story follow-through',
+                steps: [
+                    {
+                        text: 'Process every return conversation',
+                        icon: 'ph-chats-circle',
+                        note: 'A missing scene can depend on another route event, relationship, or conversation.',
+                    },
+                    {
+                        reference: { recordType: 'world-progression/achievement', id: 'AchTrueEnding' },
+                        note: 'Follow the newly revealed requirements through the credits.',
+                    },
+                    {
+                        reference: { recordType: 'world-progression/achievement', id: 'AchEpilogue' },
+                        note: 'After the credits, follow the Fates chain until its epilogue is complete.',
+                    },
+                ],
+            },
+        ],
+        defer: 'Do not convert an absent story scene into a guessed run count. Check its linked route, conversation, relationship, and prophecy gates.',
+        advance: 'The credits and Fates epilogue have both played.',
+    },
+    {
+        id: 'complete',
+        number: '06',
+        icon: 'ph-checks',
+        title: 'Finish every remaining objective',
+        chapterIds: [
+            'fear-testaments-nightmare',
+            'trials-bounties-ranks',
+            'relationship-cleanup',
+            'fated-list-cleanup',
+            'exhaustive-completion',
+        ],
+        startIf:
+            'The credits and epilogue are complete and the remaining work is finite challenge or collection cleanup.',
+        summary: 'Run independent cleanup tracks in parallel instead of pretending they form one strict sequence.',
+        lanes: [
+            {
+                title: 'Challenges',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeMetaRewardStands' },
+                        note: 'Read the Testament before selecting Fear and reserve Nightmare for the planned aspect.',
+                    },
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeBountyBoard' },
+                        note: 'Finish fixed Chaos Trials before treating random trials as required completion.',
+                    },
+                ],
+            },
+            {
+                title: 'Relationships and lists',
+                steps: [
+                    {
+                        reference: { recordType: 'mechanics/incantation', id: 'WorldUpgradeRelationshipBar' },
+                        note: 'Carry only the next gift a relationship can currently accept.',
+                    },
+                    {
+                        text: 'Batch Fated List entries',
+                        icon: 'ph-list-checks',
+                        note: 'Group Boons, Hammers, systems, routes, and story entries into useful nights.',
+                    },
+                ],
+            },
+            {
+                title: 'Finite collections',
+                steps: [
+                    {
+                        text: 'Finish fixed endpoints first',
+                        icon: 'ph-trophy',
+                        note: 'Check achievements, records, weapons, aspects, fish, plants, enemies, and encounters.',
+                    },
+                    {
+                        text: 'Name the optional remainder',
+                        icon: 'ph-infinity',
+                        note: 'Separate repeatable prestige and resource sinks from unfinished finite progress.',
+                    },
+                ],
+            },
+        ],
+        advance:
+            'Every finite objective is complete or shows one exact unmet requirement. Everything else is explicitly optional or repeatable.',
+    },
+];
+
+const chapterById = new Map(guideChapters.map((chapter, index) => [chapter.id, { chapter, index }]));
+const phaseChapterIds = phases.flatMap((phase) => phase.chapterIds);
+if (phaseChapterIds.length !== guideChapters.length || new Set(phaseChapterIds).size !== guideChapters.length) {
+    throw new Error('Fast-track phases must include every guide chapter exactly once.');
+}
+for (const id of phaseChapterIds) {
+    if (!chapterById.has(id)) throw new Error(`Fast-track phase references a missing guide chapter: ${id}`);
+}
+const progressStages = phases.map((phase) => ({
+    id: phase.id,
+    title: phase.title,
+    summary: phase.summary,
+    checkIds: phase.chapterIds.flatMap((id) => {
+        const resolved = chapterById.get(id);
+        return resolved ? getChapterProgressChecks(resolved.chapter).map((check) => check.id) : [];
+    }),
+}));
+---
+
+<ContentLayout
+    title='The Hades II progression fast track'
+    documentTitle='Hades II Progression Guide: What to Do Next'
+    description='Find the Hades II guide stage that matches your save, then scan the next actions, unlock conditions, and detailed chapters without replaying earlier steps.'
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'A-Z guide', href: '/guide/' },
+        { name: 'Fast track', href: '/guide/overview/' },
+    ]}
+    surface='guide guide-overview'>
+    <header class='overview-threshold'>
+        <a class='back-link' href='/guide/'>
+            <i class='ph ph-arrow-left' aria-hidden='true'></i>
+            <span>Detailed A-Z guide</span>
+        </a>
+        <aside class='overview-current-stage' data-overview-progress data-stages={JSON.stringify(progressStages)}>
+            <span>Saved guide progress</span>
+            <strong data-overview-stage>Start with Begin well</strong>
+            <p data-overview-stage-copy>
+                This guide cannot read your save. Start with the first stage whose condition matches it.
+            </p>
+            <a href='#begin' data-overview-stage-link>Open Begin well</a>
+        </aside>
+        <div class='overview-threshold-copy'>
+            <h1>The whole route at a glance</h1>
+            <p>
+                Start at the first card whose condition matches your save. Each card shows what matters now, what can
+                wait, and every detailed chapter in that stage.
+            </p>
+        </div>
+    </header>
+
+    <section class='overview-route' aria-labelledby='overview-route-title'>
+        <header>
+            <div>
+                <span class='overview-kicker'>Six observable stages</span>
+                <h2 id='overview-route-title'>Fast-track without skipping an unlock</h2>
+            </div>
+            <p>
+                Better-than-expected progress does not require replaying the guide from the top. Match the state of your
+                save, scan that stage, and open only the chapter that answers the current blocker.
+            </p>
+        </header>
+
+        <div class='overview-stage-list'>
+            {
+                phases.map((phase) => {
+                    const resolvedChapters = phase.chapterIds.map((id) => {
+                        const resolved = chapterById.get(id);
+                        if (!resolved) throw new Error(`Fast-track phase references a missing guide chapter: ${id}`);
+                        return resolved;
+                    });
+                    const firstResolvedChapter = resolvedChapters[0];
+                    const lastResolvedChapter = resolvedChapters.at(-1);
+                    if (!firstResolvedChapter || !lastResolvedChapter) {
+                        throw new Error(`Fast-track phase has no chapters: ${phase.id}`);
+                    }
+                    const first = firstResolvedChapter.index + 1;
+                    const last = lastResolvedChapter.index + 1;
+                    return (
+                        <article id={phase.id} class='overview-stage' style={`--lane-count: ${phase.lanes.length}`}>
+                            <header>
+                                <span class='overview-stage-number'>{phase.number}</span>
+                                <i class={`ph ${phase.icon}`} aria-hidden='true' />
+                                <div>
+                                    <span>{first === last ? `Chapter ${first}` : `Chapters ${first}–${last}`}</span>
+                                    <h3>{phase.title}</h3>
+                                    <p>{phase.summary}</p>
+                                </div>
+                            </header>
+
+                            <div
+                                class='overview-stage-priority'
+                                data-balanced-grid
+                                data-balanced-grid-layout='justified'
+                                data-balanced-grid-min='14rem'
+                                data-balanced-grid-max='3'>
+                                <section aria-label={`${phase.title}: start condition`}>
+                                    <span>Start here if</span>
+                                    <p>{phase.startIf}</p>
+                                </section>
+                                <section aria-label={`${phase.title}: move on when`}>
+                                    <span>Move on when</span>
+                                    <p>{phase.advance}</p>
+                                </section>
+                                {phase.defer && (
+                                    <section aria-label={`${phase.title}: deferred work`}>
+                                        <span>Wait on</span>
+                                        <p>{phase.defer}</p>
+                                    </section>
+                                )}
+                            </div>
+
+                            <div class='overview-stage-lanes'>
+                                {phase.lanes.map((lane) => (
+                                    <section class='overview-stage-lane'>
+                                        <h4>{lane.title}</h4>
+                                        <ol>
+                                            {lane.steps.map((step) => (
+                                                <li>
+                                                    {'references' in step ? (
+                                                        <div class='overview-reference-group gap-2 flex w-full flex-wrap items-center'>
+                                                            {step.references.map((reference, index) => (
+                                                                <>
+                                                                    {index > 0 && (
+                                                                        <i
+                                                                            class='ph ph-arrow-right overview-reference-separator'
+                                                                            aria-hidden='true'
+                                                                        />
+                                                                    )}
+                                                                    <RecordLink reference={reference} />
+                                                                </>
+                                                            ))}
+                                                        </div>
+                                                    ) : 'reference' in step ? (
+                                                        <RecordLink reference={step.reference} />
+                                                    ) : (
+                                                        <strong class='overview-step-label'>
+                                                            <span class='overview-step-icon' aria-hidden='true'>
+                                                                <i class={`ph ${step.icon}`} />
+                                                            </span>
+                                                            <span>{step.text}</span>
+                                                        </strong>
+                                                    )}
+                                                    <span>{step.note}</span>
+                                                </li>
+                                            ))}
+                                        </ol>
+                                    </section>
+                                ))}
+                            </div>
+
+                            <footer>
+                                <span>Detailed chapters</span>
+                                <nav
+                                    aria-label={`${phase.title} chapters`}
+                                    data-balanced-grid
+                                    data-balanced-grid-layout='justified'
+                                    data-balanced-grid-min='18rem'
+                                    data-balanced-grid-max='4'>
+                                    {resolvedChapters.map(({ chapter, index }) => (
+                                        <a href={`/guide/${chapter.id}/`}>
+                                            <small>{String(index + 1).padStart(2, '0')}</small>
+                                            <span>{chapter.title}</span>
+                                            <i class='ph ph-arrow-right' aria-hidden='true' />
+                                        </a>
+                                    ))}
+                                </nav>
+                            </footer>
+                        </article>
+                    );
+                })
+            }
+        </div>
+    </section>
+
+    <nav class='overview-next' aria-label='Continue from the fast track'>
+        <a href='/guide/'><strong>Detailed route</strong><span>Open all {guideChapters.length} chapters</span></a>
+        <a href='/knowledge/'><strong>Exact answer</strong><span>Search unlocks, costs, and gates</span></a>
+        <a href='/knowledge/builds/'><strong>Complete builds</strong><span>Choose an aspect-specific loadout</span></a>
+    </nav>
+
+    <script>
+        import { $guideProgress, readGuideProgress } from '../../lib/guide-progress-store';
+
+        type ProgressStage = {
+            id: string;
+            title: string;
+            summary: string;
+            checkIds: string[];
+        };
+
+        const progressRoot = document.querySelector<HTMLElement>('[data-overview-progress]');
+        const stageLabel = progressRoot?.querySelector<HTMLElement>('[data-overview-stage]');
+        const stageCopy = progressRoot?.querySelector<HTMLElement>('[data-overview-stage-copy]');
+        const stageLink = progressRoot?.querySelector<HTMLAnchorElement>('[data-overview-stage-link]');
+        const stages = JSON.parse(progressRoot?.dataset.stages ?? '[]') as ProgressStage[];
+
+        function renderSavedStage(): void {
+            const progress = readGuideProgress();
+            if (!progress || stages.length === 0) return;
+
+            const nextStage = stages.find((stage) => stage.checkIds.some((id) => !progress.completedChecks[id]));
+            const completedCount = stages
+                .flatMap((stage) => stage.checkIds)
+                .filter((id) => progress.completedChecks[id]).length;
+            const stage = nextStage ?? stages.at(-1);
+            if (!stage || !stageLabel || !stageCopy || !stageLink) return;
+
+            stageLabel.textContent = nextStage
+                ? `${completedCount > 0 ? 'Continue' : 'Start'} with ${stage.title}`
+                : `${stage.title} is complete`;
+            stageCopy.textContent = nextStage
+                ? `${completedCount > 0 ? 'Your saved checklist points here.' : 'No saved checklist yet.'} ${stage.summary}`
+                : 'Every saved checklist item is complete. Review any optional or repeatable goals you still want.';
+            stageLink.href = `#${stage.id}`;
+            stageLink.textContent = nextStage ? `Open ${stage.title}` : 'Review final objectives';
+        }
+
+        $guideProgress.subscribe(renderSavedStage);
+    </script>
+</ContentLayout>

@@ -1,0 +1,68 @@
+@media (max-width: 900px) {
+    .record-hero,
+    .record-hero--illustrated,
+    .record-hero--character-art,
+    .record-hero--without-quick-facts,
+    .record-hero--character-art.record-hero--without-quick-facts,
+    .record-hero--region {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+    .record-hero--illustrated > .record-title-block,
+    .record-hero--illustrated.record-hero--character-art > .record-title-block,
+    .record-hero--region > .record-title-block {
+        grid-column: 1;
+        grid-row: 2;
+    }
+    .record-hero--illustrated > .subject-art,
+    .record-hero--character-art > .subject-art,
+    .record-hero--raster-art > .subject-art--raster,
+    .record-hero--region > .region-map {
+        grid-column: 1;
+        grid-row: 3;
+        width: min(100%, 26rem);
+        justify-self: center;
+    }
+    .record-hero--illustrated > .subject-art {
+        height: min(72vw, 22rem);
+    }
+    .record-hero--illustrated > .record-quick-facts,
+    .record-hero--illustrated.record-hero--character-art > .record-quick-facts,
+    .record-hero--region > .record-quick-facts {
+        grid-column: 1;
+        grid-row: 4;
+    }
+    .record-hero--familiar > .familiar-role-grid {
+        grid-column: 1;
+        grid-row: 4;
+    }
+    .record-hero--familiar > .record-quick-facts {
+        grid-row: 5;
+    }
+    .record-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .relationship-rail {
+        position: relative;
+        top: auto;
+    }
+    .record-quick-facts {
+        min-height: 0;
+    }
+}
+@media (max-width: 620px) {
+    .boon-pool-group {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .boon-pool-group > header {
+        justify-content: start;
+        gap: 1rem;
+    }
+    .record-hero--illustrated .record-title-block h1 {
+        font-size: clamp(2.5rem, 9vw, 3.5rem);
+    }
+    .region-map figcaption {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.35rem;
+    }
+}

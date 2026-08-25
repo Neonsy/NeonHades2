@@ -1,0 +1,58 @@
+---
+import SubjectArtwork from '../SubjectArtwork.astro';
+import { getRecordName, recordHref, type PublicationRecord } from '../../lib/publication';
+import type { CollectionViewModel } from '../../lib/collection-view-model';
+
+type Props = Pick<CollectionViewModel, 'storyCodexRecords' | 'storyDestinations'>;
+const { storyCodexRecords, storyDestinations } = Astro.props;
+---
+
+<nav
+    class='story-destinations'
+    aria-label='Choose a story objective'
+    data-balanced-grid
+    data-balanced-grid-min='11rem'
+    data-balanced-grid-max='5'>
+    {
+        storyDestinations.map((destination) => (
+            <a href={destination.href}>
+                <i class={`ph ${destination.icon}`} aria-hidden='true' />
+                <span>
+                    <strong>{destination.title}</strong>
+                    <span>{destination.detail}</span>
+                </span>
+                <i class='ph ph-arrow-right' aria-hidden='true' />
+            </a>
+        ))
+    }
+</nav>
+
+<section class='story-codex' aria-labelledby='story-codex-title'>
+    <header>
+        <p class='eyebrow'>Ending record</p>
+        <h2 id='story-codex-title'>Figures tracked by the final story milestones</h2>
+        <p>
+            These portraits identify the people and creatures connected to ending-level records. They are a visual
+            index, not a checklist of required meetings. Use the objective links above for the exact route and
+            conditions.
+        </p>
+    </header>
+    <ul class='story-codex-grid' data-balanced-grid data-balanced-grid-min='18rem' data-balanced-grid-max='4'>
+        {
+            storyCodexRecords.map(({ record, detailRecord, subjectArt }) => (
+                <li>
+                    <a href={recordHref(detailRecord as PublicationRecord)} data-story-card>
+                        <SubjectArtwork subject={subjectArt} size='stage' />
+                        <span class='story-codex-card__label'>
+                            <strong>{getRecordName(record)}</strong>
+                            <span>
+                                Open related record
+                                <i class='ph ph-arrow-right' aria-hidden='true' />
+                            </span>
+                        </span>
+                    </a>
+                </li>
+            ))
+        }
+    </ul>
+</section>

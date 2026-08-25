@@ -1,0 +1,33 @@
+/* Shared control geometry; keyboard states live in 01-keyboard-states.css. */
+:where(button, input, select, textarea, summary) {
+    border-color: var(--rule-medium);
+}
+
+:where(button, select, input:not([type='checkbox'], [type='radio']), .world-search, .back-link) {
+    min-height: var(--control-height);
+}
+
+:where(button, select, input:not([type='checkbox'], [type='radio'])) {
+    border-radius: var(--control-radius);
+}
+
+kbd {
+    border-color: var(--rule-medium);
+    border-radius: var(--control-inner-radius);
+    background: color-mix(in srgb, var(--projection) 10%, var(--ink-deep));
+    color: var(--paper-soft);
+}
+
+.back-link {
+    gap: var(--space-3);
+    padding-inline: var(--space-1);
+}
+
+.back-link__label {
+    text-decoration-thickness: 0.09em;
+    text-underline-offset: 0.28em;
+}
+
+.content-main {
+    padding-block: clamp(2.5rem, 4vw, 4rem) var(--section-space);
+}

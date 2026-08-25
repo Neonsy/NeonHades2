@@ -1,0 +1,61 @@
+---
+import type { ReaderSection } from '../lib/presentation';
+import RecordLink from './RecordLink.astro';
+
+type Props = {
+    sections: ReaderSection[];
+};
+
+const { sections } = Astro.props;
+---
+
+{
+    sections.map((section) => (
+        <section class='record-field record-field-derived'>
+            <h2>{section.heading}</h2>
+            {section.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+            ))}
+            {section.orderedSteps && section.orderedSteps.length > 0 && (
+                <ol class='reader-steps'>
+                    {section.orderedSteps.map((step) => (
+                        <li>{step}</li>
+                    ))}
+                </ol>
+            )}
+            {section.facts.length > 0 && (
+                <dl class='reader-facts'>
+                    {section.facts.map((fact) => (
+                        <div>
+                            <dt>{fact.label}</dt>
+                            <dd>{fact.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            )}
+            {section.referenceGroups && section.referenceGroups.length > 0 ? (
+                <ul class='boon-pool-groups' aria-label={`${section.heading} groups`}>
+                    {section.referenceGroups.map((group) => (
+                        <li class={`boon-pool-group boon-pool-group--${group.key}`} data-boon-group={group.key}>
+                            <header>
+                                <h3>{group.heading}</h3>
+                                <span aria-label={`${group.references.length} Boons`}>{group.references.length}</span>
+                            </header>
+                            <div class='reference-cloud'>
+                                {group.references.map((reference) => (
+                                    <RecordLink reference={reference} />
+                                ))}
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            ) : section.references.length > 0 ? (
+                <div class='reference-cloud'>
+                    {section.references.map((reference) => (
+                        <RecordLink reference={reference} />
+                    ))}
+                </div>
+            ) : null}
+        </section>
+    ))
+}

@@ -1,0 +1,125 @@
+---
+import type { SubjectArt } from '../lib/subject-art';
+import assetMetadata from '../content/public-asset-metadata.json';
+import responsiveAssetMetadata from '../content/responsive-art-metadata.json';
+
+type Props = {
+    subject: SubjectArt;
+    size?: 'hero' | 'identity' | 'inline' | 'row' | 'stage';
+    feather?: boolean;
+    sizes?: string;
+};
+
+type RasterMetadata = {
+    width: number;
+    height: number;
+    visibleAlpha?: { x: number; y: number; width: number; height: number };
+};
+type ResponsiveMetadata = {
+    variants: Array<{ source: string; width: number }>;
+};
+
+const { subject, size = 'row', feather = false, sizes } = Astro.props;
+const viewBox = subject.kind === 'character' ? '0 0 320 420' : '0 0 160 160';
+const prominent = size === 'hero';
+const sourcePath = subject.source.split('?')[0];
+const rasterMetadata =
+    subject.format === 'raster'
+        ? ((assetMetadata[sourcePath as keyof typeof assetMetadata] as RasterMetadata | undefined) ??
+          (() => {
+              throw new Error(`Published raster artwork has no intrinsic metadata: ${sourcePath}`);
+          })())
+        : null;
+const overlayMetadata = subject.overlaySource
+    ? ((assetMetadata[subject.overlaySource as keyof typeof assetMetadata] as RasterMetadata | undefined) ??
+      (() => {
+          throw new Error(`Published raster overlay has no intrinsic metadata: ${subject.overlaySource}`);
+      })())
+    : null;
+const rasterPresentation =
+    subject.format === 'raster' && subject.source.includes('/characters/portraits/')
+        ? 'subject-art--portrait-plate'
+        : subject.format === 'raster' && subject.source.includes('/characters/')
+          ? 'subject-art--character-cutout'
+          : undefined;
+const responsiveSizes: Record<NonNullable<Props['size']>, string> = {
+    hero: '(max-width: 760px) min(calc(100vw - 2.4rem), 24rem), (max-width: 1200px) 45vw, 32rem',
+    identity: '4.25rem',
+    inline: '2.35rem',
+    row: '(max-width: 760px) 4.75rem, 11rem',
+    stage: '(max-width: 760px) calc(100vw - 2.8rem), (max-width: 1200px) 45vw, 28rem',
+};
+const srcsetFor = (source: string, metadata: RasterMetadata | null): string | undefined => {
+    if (!metadata) return undefined;
+    const responsive = responsiveAssetMetadata[source as keyof typeof responsiveAssetMetadata] as
+        ResponsiveMetadata | undefined;
+    if (!responsive) return undefined;
+    return [...responsive.variants, { source, width: metadata.width }]
+        .map((candidate) => `${candidate.source} ${candidate.width}w`)
+        .join(', ');
+};
+const rasterSrcset = srcsetFor(sourcePath, rasterMetadata);
+const overlaySrcset = subject.overlaySource ? srcsetFor(subject.overlaySource, overlayMetadata) : undefined;
+---
+
+<span
+    class:list={[
+        'subject-art',
+        `subject-art--${subject.kind}`,
+        `subject-art--${size}`,
+        `subject-art--${subject.tone}`,
+        subject.format === 'raster' && 'subject-art--raster',
+        rasterPresentation,
+        rasterPresentation === 'subject-art--character-cutout' &&
+            (size === 'hero' || feather) &&
+            'subject-art--feathered-character',
+    ]}
+    data-subject-art={subject.format === 'raster' ? undefined : subject.id}
+    data-subject-art-raster={subject.format === 'raster' ? subject.id : undefined}
+    data-source-width={rasterMetadata?.width}
+    data-source-height={rasterMetadata?.height}
+    data-visible-x={rasterMetadata?.visibleAlpha?.x}
+    data-visible-y={rasterMetadata?.visibleAlpha?.y}
+    data-visible-width={rasterMetadata?.visibleAlpha?.width}
+    data-visible-height={rasterMetadata?.visibleAlpha?.height}
+    aria-hidden='true'>
+    {
+        subject.format === 'raster' ? (
+            <>
+                <img
+                    class='subject-art__raster-core'
+                    src={subject.source}
+                    srcset={rasterSrcset}
+                    sizes={rasterSrcset ? (sizes ?? responsiveSizes[size]) : undefined}
+                    alt=''
+                    width={rasterMetadata?.width}
+                    height={rasterMetadata?.height}
+                    loading={prominent ? 'eager' : 'lazy'}
+                    fetchpriority={prominent ? 'high' : 'auto'}
+                    decoding='async'
+                />
+                {subject.overlaySource && (
+                    <img
+                        class='subject-art__raster-effects'
+                        src={subject.overlaySource}
+                        srcset={overlaySrcset}
+                        sizes={overlaySrcset ? (sizes ?? responsiveSizes[size]) : undefined}
+                        alt=''
+                        width={overlayMetadata?.width}
+                        height={overlayMetadata?.height}
+                        loading={prominent ? 'eager' : 'lazy'}
+                        fetchpriority={prominent ? 'high' : 'auto'}
+                        decoding='async'
+                    />
+                )}
+            </>
+        ) : (
+            <svg viewBox={viewBox} focusable='false'>
+                <use href={`${subject.source}#${subject.id}`} />
+                {subject.marks?.map((mark) => (
+                    <use href={`/art/symbols/records.svg#${mark}`} />
+                ))}
+            </svg>
+        )
+    }
+</span>

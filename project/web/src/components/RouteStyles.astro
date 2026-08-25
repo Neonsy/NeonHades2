@@ -1,0 +1,31 @@
+---
+import baseStylesheet from '../styles/routes/base.css?url';
+import buildDetailStylesheet from '../styles/routes/build-detail.css?url';
+import buildsStylesheet from '../styles/routes/builds.css?url';
+import collectionStylesheet from '../styles/routes/collection.css?url';
+import guideStylesheet from '../styles/routes/guide.css?url';
+import homeStylesheet from '../styles/routes/home.css?url';
+import knowledgeStylesheet from '../styles/routes/knowledge.css?url';
+import recordStylesheet from '../styles/routes/record.css?url';
+import tiersStylesheet from '../styles/routes/tiers.css?url';
+
+type Props = {
+    surface: string;
+};
+
+const routeStylesheets: Readonly<Record<string, string>> = {
+    home: homeStylesheet,
+    guide: guideStylesheet,
+    knowledge: knowledgeStylesheet,
+    collection: collectionStylesheet,
+    record: recordStylesheet,
+    builds: buildsStylesheet,
+    'build-detail': buildDetailStylesheet,
+    tiers: tiersStylesheet,
+};
+
+const routeStylesheet = routeStylesheets[Astro.props.surface] ?? knowledgeStylesheet;
+---
+
+<link rel='stylesheet' href={baseStylesheet} />
+<link rel='stylesheet' href={routeStylesheet} />

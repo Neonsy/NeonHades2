@@ -1,0 +1,1821 @@
+{
+    "schema": 1,
+    "generator": "scripts/artwork/generate-codex-derived-art.py",
+    "opencvVersion": "5.0.0",
+    "subjects": [
+        {
+            "recordKey": "world-progression/enemy:AutomatonBeamer",
+            "recordType": "world-progression/enemy",
+            "publicName": "Auto-Watcher",
+            "id": "auto-watcher",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_AutomatonBeamer",
+            "sourceId": "AutomatonBeamer",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_AutomatonBeamer.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/auto-watcher.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/auto-watcher.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:AutomatonEnforcer",
+            "recordType": "world-progression/enemy",
+            "publicName": "Auto-Forcer",
+            "id": "auto-forcer",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_AutomatonEnforcer",
+            "sourceId": "AutomatonEnforcer",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_AutomatonEnforcer.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/auto-forcer.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/auto-forcer.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:BloodlessBerserker",
+            "recordType": "world-progression/enemy",
+            "publicName": "Bone-Raker",
+            "id": "bone-raker",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BloodlessBerserker",
+            "sourceId": "BloodlessBerserker",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BloodlessBerserker.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/bone-raker.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/bone-raker.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:BloodlessGrenadier",
+            "recordType": "world-progression/enemy",
+            "publicName": "Inferno-Bomber",
+            "id": "inferno-bomber",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BloodlessGrenadier",
+            "sourceId": "BloodlessGrenadier",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BloodlessGrenadier.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/inferno-bomber.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/inferno-bomber.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:BloodlessNaked",
+            "recordType": "world-progression/enemy",
+            "publicName": "Bloodless",
+            "id": "bloodless",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BloodlessNaked",
+            "sourceId": "BloodlessNaked",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BloodlessNaked.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/bloodless.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/bloodless.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:BloodlessPitcher",
+            "recordType": "world-progression/enemy",
+            "publicName": "Burn-Flinger",
+            "id": "burn-flinger",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BloodlessPitcher",
+            "sourceId": "BloodlessPitcher",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BloodlessPitcher.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/burn-flinger.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/burn-flinger.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:BloodlessSelfDestruct",
+            "recordType": "world-progression/enemy",
+            "publicName": "Slam-Dancer",
+            "id": "slam-dancer",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BloodlessSelfDestruct",
+            "sourceId": "BloodlessSelfDestruct",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BloodlessSelfDestruct.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/slam-dancer.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/slam-dancer.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:BloodlessWaveFist",
+            "recordType": "world-progression/enemy",
+            "publicName": "Wave-Maker",
+            "id": "wave-maker",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BloodlessWaveMaker",
+            "sourceId": "BloodlessWaveMaker",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BloodlessWaveMaker.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/wave-maker.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/wave-maker.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Boar",
+            "recordType": "world-progression/enemy",
+            "publicName": "Erymanthian Boar",
+            "id": "erymanthian-boar",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Boar",
+            "sourceId": "Boar",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Boar.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/erymanthian-boar.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/erymanthian-boar.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Brawler",
+            "recordType": "world-progression/enemy",
+            "publicName": "Wastrel",
+            "id": "wastrel",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Brawler",
+            "sourceId": "Brawler",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Brawler.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/wastrel.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/wastrel.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:BrokenHearted",
+            "recordType": "world-progression/enemy",
+            "publicName": "Smacker",
+            "id": "smacker",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BrokenHearted",
+            "sourceId": "BrokenHearted",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BrokenHearted.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/smacker.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/smacker.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Brute",
+            "recordType": "world-progression/enemy",
+            "publicName": "Horror",
+            "id": "horror",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TyphonBrute",
+            "sourceId": "TyphonBrute",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TyphonBrute.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/horror.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/horror.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Brute_Miniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Spawn of Typhon",
+            "id": "spawn-of-typhon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TyphonBruteMiniboss",
+            "sourceId": "TyphonBruteMiniboss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TyphonBruteMiniboss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/spawn-of-typhon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/spawn-of-typhon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Captain",
+            "recordType": "world-progression/enemy",
+            "publicName": "The Yargonaut",
+            "id": "the-yargonaut",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_ZombieCaptain",
+            "sourceId": "ZombieCaptain",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_ZombieCaptain.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/the-yargonaut.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/the-yargonaut.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Carrion",
+            "recordType": "world-progression/enemy",
+            "publicName": "Bronzebeak",
+            "id": "bronzebeak",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Carrion",
+            "sourceId": "Carrion",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Carrion.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/bronzebeak.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/bronzebeak.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:CharybdisTentacle",
+            "recordType": "world-progression/enemy",
+            "publicName": "Charybdis",
+            "id": "charybdis",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Charybdis",
+            "sourceId": "Charybdis",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Charybdis.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/charybdis.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/charybdis.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Chronos",
+            "recordType": "world-progression/enemy",
+            "publicName": "Chronos",
+            "id": "chronos",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Chronos",
+            "sourceId": "Chronos",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Chronos.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/portraits/chronos.webp",
+                "master": "art-source/raster/game-derived/story-portraits/chronos.png"
+            },
+            "externalGenerator": "scripts/artwork/generate-story-portraits.py"
+        },
+        {
+            "recordKey": "world-progression/enemy:ClockworkHeavyMelee",
+            "recordType": "world-progression/enemy",
+            "publicName": "Wretched Thug",
+            "id": "wretched-thug",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_WretchThug",
+            "sourceId": "WretchThug",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_WretchThug.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/wretched-thug.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/wretched-thug.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:CorruptedShadeLarge",
+            "recordType": "world-progression/enemy",
+            "publicName": "Bloat-Shade",
+            "id": "bloat-shade",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_CorruptedShadeL",
+            "sourceId": "CorruptedShadeL",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_CorruptedShadeL.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/bloat-shade.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/bloat-shade.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:CorruptedShadeMedium",
+            "recordType": "world-progression/enemy",
+            "publicName": "Blood-Shade",
+            "id": "blood-shade",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_CorruptedShadeM",
+            "sourceId": "CorruptedShadeM",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_CorruptedShadeM.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/blood-shade.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/blood-shade.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:CorruptedShadeSmall",
+            "recordType": "world-progression/enemy",
+            "publicName": "Blight-Shade",
+            "id": "blight-shade",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_CorruptedShadeS",
+            "sourceId": "CorruptedShadeS",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_CorruptedShadeS.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/blight-shade.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/blight-shade.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:CrawlerMiniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Uh-oh",
+            "id": "uh-oh",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_CrawlerMiniBoss",
+            "sourceId": "CrawlerMiniBoss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_CrawlerMiniBoss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/uh-oh.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/uh-oh.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:DespairElemental_Elite",
+            "recordType": "world-progression/enemy",
+            "publicName": "Bawlder",
+            "id": "bawlder",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_DespairElemental",
+            "sourceId": "DespairElemental",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_DespairElemental.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/bawlder.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/bawlder.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Dragon",
+            "recordType": "world-progression/enemy",
+            "publicName": "Sky-Dracon",
+            "id": "sky-dracon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Dragon",
+            "sourceId": "Dragon",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Dragon.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/sky-dracon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/sky-dracon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:DragonBurrower",
+            "recordType": "world-progression/enemy",
+            "publicName": "Land-Dracon",
+            "id": "land-dracon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_DragonBurrowerTyphon",
+            "sourceId": "DragonBurrowerTyphon",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_DragonBurrowerTyphon.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/land-dracon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/land-dracon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Dragon_MiniBoss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Mega-Dracon",
+            "id": "mega-dracon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_DragonMiniboss",
+            "sourceId": "DragonMiniboss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_DragonMiniboss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/mega-dracon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/mega-dracon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Drunk",
+            "recordType": "world-progression/enemy",
+            "publicName": "Boozer",
+            "id": "boozer",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_DeadSeaDrunk",
+            "sourceId": "DeadSeaDrunk",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_DeadSeaDrunk.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/boozer.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/boozer.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:EarthElemental",
+            "recordType": "world-progression/enemy",
+            "publicName": "Headstone",
+            "id": "headstone",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_EarthElementalTyphon",
+            "sourceId": "EarthElementalTyphon",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_EarthElementalTyphon.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/headstone.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/headstone.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Eris",
+            "recordType": "world-progression/enemy",
+            "publicName": "Eris",
+            "id": "eris",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Eris",
+            "sourceId": "Eris",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Eris.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/eris.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/eris.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:FishmanMelee",
+            "recordType": "world-progression/enemy",
+            "publicName": "Lurker",
+            "id": "lurker",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_FishmanMelee",
+            "sourceId": "FishmanMelee",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_FishmanMelee.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/lurker.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/lurker.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:FishmanRanged",
+            "recordType": "world-progression/enemy",
+            "publicName": "Hippo",
+            "id": "hippo",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_FishmanRanged",
+            "sourceId": "FishmanRanged",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_FishmanRanged.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/hippo.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/hippo.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:FogEmitter2",
+            "recordType": "world-progression/enemy",
+            "publicName": "Sorrow-Spiller",
+            "id": "sorrow-spiller",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_FogEmitter2",
+            "sourceId": "FogEmitter2",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_FogEmitter2.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/sorrow-spiller.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/sorrow-spiller.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:FogEmitter_Elite",
+            "recordType": "world-progression/enemy",
+            "publicName": "Shadow-Spiller",
+            "id": "shadow-spiller",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_FogEmitter",
+            "sourceId": "FogEmitter",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_FogEmitter.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/shadow-spiller.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/shadow-spiller.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:GoldElemental",
+            "recordType": "world-progression/enemy",
+            "publicName": "Goldwraith",
+            "id": "goldwraith",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_GoldElemental",
+            "sourceId": "GoldElemental",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_GoldElemental.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/goldwraith.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/goldwraith.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:GoldElemental_MiniBoss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Goldwrath",
+            "id": "goldwrath",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_GoldElementalMiniBoss",
+            "sourceId": "GoldElementalMiniBoss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_GoldElementalMiniBoss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/goldwrath.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/goldwrath.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Guard",
+            "recordType": "world-progression/enemy",
+            "publicName": "Whisper",
+            "id": "whisper",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Guard",
+            "sourceId": "Guard",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Guard.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/whisper.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/whisper.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Guard2",
+            "recordType": "world-progression/enemy",
+            "publicName": "Wet-Whisper",
+            "id": "wet-whisper",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Guard2",
+            "sourceId": "Guard2",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Guard2.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/wet-whisper.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/wet-whisper.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:HarpyCutter",
+            "recordType": "world-progression/enemy",
+            "publicName": "Harpy Talon",
+            "id": "harpy-talon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_HarpyTalonCutter",
+            "sourceId": "HarpyTalonCutter",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_HarpyTalonCutter.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/harpy-talon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/harpy-talon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:HarpyDropper",
+            "recordType": "world-progression/enemy",
+            "publicName": "Harpy Raptor",
+            "id": "harpy-raptor",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_HarpyDropper",
+            "sourceId": "HarpyDropper",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_HarpyDropper.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/harpy-raptor.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/harpy-raptor.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Hecate",
+            "recordType": "world-progression/enemy",
+            "publicName": "Hecate",
+            "id": "hecate",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Hecate",
+            "sourceId": "Hecate",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Hecate.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/portraits/hecate.webp",
+                "master": "art-source/raster/game-derived/story-portraits/hecate.png"
+            },
+            "externalGenerator": "scripts/artwork/generate-story-portraits.py"
+        },
+        {
+            "recordKey": "world-progression/enemy:InfestedCerberus",
+            "recordType": "world-progression/enemy",
+            "publicName": "Infernal Beast",
+            "id": "infernal-beast",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_InfestedCerberus",
+            "sourceId": "InfestedCerberus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_InfestedCerberus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/infernal-beast.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/infernal-beast.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Lamia",
+            "recordType": "world-progression/enemy",
+            "publicName": "Lamia",
+            "id": "lamia",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Lamia",
+            "sourceId": "Lamia",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Lamia.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/lamia.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/lamia.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Lamia_Miniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Queen Lamia",
+            "id": "queen-lamia",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_LamiaMiniBoss",
+            "sourceId": "LamiaMiniBoss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_LamiaMiniBoss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/queen-lamia.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/queen-lamia.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Lovesick",
+            "recordType": "world-progression/enemy",
+            "publicName": "Holeheart",
+            "id": "holeheart",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Lovesick",
+            "sourceId": "Lovesick",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Lovesick.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/holeheart.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/holeheart.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Lycanthrope",
+            "recordType": "world-progression/enemy",
+            "publicName": "Lycaon",
+            "id": "lycaon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Lycanthrope",
+            "sourceId": "Lycanthrope",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Lycanthrope.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/lycaon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/lycaon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Mage",
+            "recordType": "world-progression/enemy",
+            "publicName": "Casket",
+            "id": "casket",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Mage",
+            "sourceId": "Mage",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Mage.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/casket.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/casket.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Mage2",
+            "recordType": "world-progression/enemy",
+            "publicName": "Blasket",
+            "id": "blasket",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Mage2",
+            "sourceId": "Mage2",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Mage2.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/blasket.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/blasket.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Mati",
+            "recordType": "world-progression/enemy",
+            "publicName": "Eyesore",
+            "id": "eyesore",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_MatiTyphon",
+            "sourceId": "MatiTyphon",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_MatiTyphon.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/eyesore.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/eyesore.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Mourner",
+            "recordType": "world-progression/enemy",
+            "publicName": "Mourner",
+            "id": "mourner",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Mourner",
+            "sourceId": "Mourner",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Mourner.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/mourner.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/mourner.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Mudman",
+            "recordType": "world-progression/enemy",
+            "publicName": "Eidolon",
+            "id": "eidolon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Mudman",
+            "sourceId": "Mudman",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Mudman.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/eidolon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/eidolon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Octofish_Miniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Hellifish",
+            "id": "hellifish",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_OctoFishMiniboss",
+            "sourceId": "OctoFishMiniboss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_OctoFishMiniboss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/hellifish.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/hellifish.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Polyphemus",
+            "recordType": "world-progression/enemy",
+            "publicName": "Polyphemus",
+            "id": "polyphemus",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Polyphemus",
+            "sourceId": "Polyphemus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Polyphemus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/portraits/polyphemus.webp",
+                "master": "art-source/raster/game-derived/story-portraits/polyphemus.png"
+            },
+            "externalGenerator": "scripts/artwork/generate-story-portraits.py"
+        },
+        {
+            "recordKey": "world-progression/enemy:Prometheus",
+            "recordType": "world-progression/enemy",
+            "publicName": "Prometheus",
+            "id": "prometheus",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Prometheus",
+            "sourceId": "Prometheus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Prometheus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/portraits/prometheus.webp",
+                "master": "art-source/raster/game-derived/story-portraits/prometheus.png"
+            },
+            "externalGenerator": "scripts/artwork/generate-story-portraits.py"
+        },
+        {
+            "recordKey": "world-progression/enemy:Radiator",
+            "recordType": "world-progression/enemy",
+            "publicName": "Spindle",
+            "id": "spindle",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Radiator",
+            "sourceId": "Radiator",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Radiator.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/spindle.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/spindle.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Radiator2",
+            "recordType": "world-progression/enemy",
+            "publicName": "Sop-Spindle",
+            "id": "sop-spindle",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Radiator2",
+            "sourceId": "Radiator2",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Radiator2.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/sop-spindle.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/sop-spindle.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrCrossbow",
+            "recordType": "world-progression/enemy",
+            "publicName": "Satyr Champion",
+            "id": "satyr-champion",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrCrossbow",
+            "sourceId": "SatyrCrossbow",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrCrossbow.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/satyr-champion.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/satyr-champion.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrCrossbow2",
+            "recordType": "world-progression/enemy",
+            "publicName": "Satyr Raider",
+            "id": "satyr-raider",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrCrossbow2",
+            "sourceId": "SatyrCrossbow2",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrCrossbow2.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/satyr-raider.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/satyr-raider.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrCultist",
+            "recordType": "world-progression/enemy",
+            "publicName": "Satyr Supplicant",
+            "id": "satyr-supplicant",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrCultist",
+            "sourceId": "SatyrCultist",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrCultist.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/satyr-supplicant.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/satyr-supplicant.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrLancer",
+            "recordType": "world-progression/enemy",
+            "publicName": "Satyr Hoplite",
+            "id": "satyr-hoplite",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrLancer",
+            "sourceId": "SatyrLancer",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrLancer.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/satyr-hoplite.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/satyr-hoplite.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrLancer2",
+            "recordType": "world-progression/enemy",
+            "publicName": "Satyr Goldpike",
+            "id": "satyr-goldpike",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrLancer2",
+            "sourceId": "SatyrLancer2",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrLancer2.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/satyr-goldpike.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/satyr-goldpike.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrRatCatcher",
+            "recordType": "world-progression/enemy",
+            "publicName": "Satyr Vierophant",
+            "id": "satyr-vierophant",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrRatCatcher",
+            "sourceId": "SatyrRatCatcher",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrRatCatcher.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/satyr-vierophant.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/satyr-vierophant.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrRatCatcher_Miniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "The Verminancer",
+            "id": "the-verminancer",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrRatCatcherMiniBoss",
+            "sourceId": "SatyrRatCatcherMiniBoss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrRatCatcherMiniBoss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/the-verminancer.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/the-verminancer.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SatyrSapper",
+            "recordType": "world-progression/enemy",
+            "publicName": "Satyr Sapper",
+            "id": "satyr-sapper",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SatyrSapper",
+            "sourceId": "SatyrSapper",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SatyrSapper.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/satyr-sapper.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/satyr-sapper.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Scimiterror",
+            "recordType": "world-progression/enemy",
+            "publicName": "Seesword",
+            "id": "seesword",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Scimiterror",
+            "sourceId": "Scimiterror",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Scimiterror.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/seesword.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/seesword.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Screamer",
+            "recordType": "world-progression/enemy",
+            "publicName": "Wailer",
+            "id": "wailer",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Screamer",
+            "sourceId": "Screamer",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Screamer.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/wailer.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/wailer.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Scylla",
+            "recordType": "world-progression/enemy",
+            "publicName": "Scylla",
+            "id": "scylla",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Scylla",
+            "sourceId": "Scylla",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Scylla.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/portraits/scylla.webp",
+                "master": "art-source/raster/game-derived/story-portraits/scylla.png"
+            },
+            "externalGenerator": "scripts/artwork/generate-story-portraits.py"
+        },
+        {
+            "recordKey": "world-progression/enemy:SentryBot",
+            "recordType": "world-progression/enemy",
+            "publicName": "Auto-Seeker",
+            "id": "auto-seeker",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SentryBot",
+            "sourceId": "SentryBot",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SentryBot.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/auto-seeker.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/auto-seeker.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SiegeVine",
+            "recordType": "world-progression/enemy",
+            "publicName": "Thorn-Weeper",
+            "id": "thorn-weeper",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SiegeVine",
+            "sourceId": "SiegeVine",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SiegeVine.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/thorn-weeper.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/thorn-weeper.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SpreadShotUnit",
+            "recordType": "world-progression/enemy",
+            "publicName": "Wretched Witch",
+            "id": "wretched-witch",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_LightRangedAsphodel",
+            "sourceId": "LightRangedAsphodel",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_LightRangedAsphodel.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/wretched-witch.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/wretched-witch.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Stalker",
+            "recordType": "world-progression/enemy",
+            "publicName": "Stalker",
+            "id": "stalker",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TyphonSupport",
+            "sourceId": "TyphonSupport",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TyphonSupport.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/stalker.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/stalker.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Stalker_Miniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Twins of Typhon",
+            "id": "twins-of-typhon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TyphonSupportMiniboss",
+            "sourceId": "TyphonSupportMiniboss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TyphonSupportMiniboss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/twins-of-typhon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/twins-of-typhon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Stickler",
+            "recordType": "world-progression/enemy",
+            "publicName": "Stickler",
+            "id": "stickler",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_DeadSeaStickler",
+            "sourceId": "DeadSeaStickler",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_DeadSeaStickler.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/stickler.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/stickler.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Swab",
+            "recordType": "world-progression/enemy",
+            "publicName": "Anchor",
+            "id": "anchor",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_DeadSeaSwab",
+            "sourceId": "DeadSeaSwab",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_DeadSeaSwab.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/anchor.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/anchor.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SwarmerClockwork",
+            "recordType": "world-progression/enemy",
+            "publicName": "Sandskull",
+            "id": "sandskull",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_SwarmerClockwork",
+            "sourceId": "SwarmerClockwork",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_SwarmerClockwork.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/sandskull.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/sandskull.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Swarmer_Elite",
+            "recordType": "world-progression/enemy",
+            "publicName": "Numbskull",
+            "id": "numbskull",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Swarmer",
+            "sourceId": "Swarmer",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Swarmer.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/numbskull.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/numbskull.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Talos",
+            "recordType": "world-progression/enemy",
+            "publicName": "Talos",
+            "id": "talos",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Talos",
+            "sourceId": "Talos",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Talos.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/talos.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/talos.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:TimeElemental",
+            "recordType": "world-progression/enemy",
+            "publicName": "Tempus",
+            "id": "tempus",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TimeElemental",
+            "sourceId": "TimeElemental",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TimeElemental.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/tempus.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/tempus.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Treant",
+            "recordType": "world-progression/enemy",
+            "publicName": "Root-Stalker",
+            "id": "root-stalker",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Treant",
+            "sourceId": "Treant",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Treant.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/root-stalker.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/root-stalker.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Turtle",
+            "recordType": "world-progression/enemy",
+            "publicName": "Shellback",
+            "id": "shellback",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Turtle",
+            "sourceId": "Turtle",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Turtle.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/shellback.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/shellback.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:TyphonEye",
+            "recordType": "world-progression/enemy",
+            "publicName": "Eye of Typhon",
+            "id": "eye-of-typhon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TyphonEye",
+            "sourceId": "TyphonEye",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TyphonEye.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/eye-of-typhon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/eye-of-typhon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:TyphonHead",
+            "recordType": "world-progression/enemy",
+            "publicName": "Typhon",
+            "id": "typhon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TyphonHead",
+            "sourceId": "TyphonHead",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TyphonHead.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/portraits/typhon.webp",
+                "master": "art-source/raster/game-derived/story-portraits/typhon.png"
+            },
+            "externalGenerator": "scripts/artwork/generate-story-portraits.py"
+        },
+        {
+            "recordKey": "world-progression/enemy:TyphonTail",
+            "recordType": "world-progression/enemy",
+            "publicName": "Tail of Typhon",
+            "id": "tail-of-typhon",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_TyphonTail",
+            "sourceId": "TyphonTail",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_TyphonTail.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/tail-of-typhon.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/tail-of-typhon.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Vampire",
+            "recordType": "world-progression/enemy",
+            "publicName": "Phantom",
+            "id": "phantom",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Vampire",
+            "sourceId": "Vampire",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Vampire.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/phantom.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/phantom.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:WaterElemental",
+            "recordType": "world-progression/enemy",
+            "publicName": "Droplet",
+            "id": "droplet",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_WaterElemental",
+            "sourceId": "WaterElemental",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_WaterElemental.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/droplet.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/droplet.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:WaterUnit",
+            "recordType": "world-progression/enemy",
+            "publicName": "Sea-Serpent",
+            "id": "sea-serpent",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_WaterUnit",
+            "sourceId": "WaterUnit",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_WaterUnit.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/sea-serpent.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/sea-serpent.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:WaterUnitMiniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Deep Serpent",
+            "id": "deep-serpent",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_WaterUnitMiniBoss",
+            "sourceId": "WaterUnitMiniBoss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_WaterUnitMiniBoss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/deep-serpent.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/deep-serpent.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Zagreus",
+            "recordType": "world-progression/enemy",
+            "publicName": "Zagreus",
+            "id": "zagreus",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Zagreus",
+            "sourceId": "Zagreus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Zagreus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/portraits/zagreus.webp",
+                "master": "art-source/raster/game-derived/story-portraits/zagreus.png"
+            },
+            "externalGenerator": "scripts/artwork/generate-story-portraits.py"
+        },
+        {
+            "recordKey": "world-progression/enemy:Zombie",
+            "recordType": "world-progression/enemy",
+            "publicName": "Shambler",
+            "id": "shambler",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_Zombie",
+            "sourceId": "Zombie",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_Zombie.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/shambler.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/shambler.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:ZombieAssassin",
+            "recordType": "world-progression/enemy",
+            "publicName": "Cutthroat",
+            "id": "cutthroat",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_ZombieAssassin",
+            "sourceId": "ZombieAssassin",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_ZombieAssassin.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/cutthroat.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/cutthroat.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:ZombieAssassin_Miniboss",
+            "recordType": "world-progression/enemy",
+            "publicName": "Master-Slicer",
+            "id": "master-slicer",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_ZombieAssassinMiniBoss",
+            "sourceId": "ZombieAssassinMiniBoss",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_ZombieAssassinMiniBoss.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/master-slicer.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/master-slicer.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:ZombieCrewman",
+            "recordType": "world-progression/enemy",
+            "publicName": "Sea-Shambler",
+            "id": "sea-shambler",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_ZombieCrewman",
+            "sourceId": "ZombieCrewman",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_ZombieCrewman.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/sea-shambler.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/sea-shambler.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:ZombieHeavyRanged",
+            "recordType": "world-progression/enemy",
+            "publicName": "Lubber",
+            "id": "lubber",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_ZombieHeavyRanged",
+            "sourceId": "ZombieHeavyRanged",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_ZombieHeavyRanged.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/lubber.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/lubber.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:ZombieOlympus",
+            "recordType": "world-progression/enemy",
+            "publicName": "Snow-Shambler",
+            "id": "snow-shambler",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_ZombieOlympus",
+            "sourceId": "ZombieOlympus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_ZombieOlympus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/snow-shambler.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/snow-shambler.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:ZombieSpawner",
+            "recordType": "world-progression/enemy",
+            "publicName": "Tombstone",
+            "id": "tombstone",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_ZombieSpawner",
+            "sourceId": "ZombieSpawner",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_ZombieSpawner.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/tombstone.webp",
+                "master": "art-source/raster/codex-derived/characters/enemies/tombstone.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:Chaos",
+            "recordType": "world-progression/region",
+            "publicName": "Chaos",
+            "id": "chaos",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeChaos",
+            "sourceId": "BiomeChaos",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeChaos.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/chaos.webp",
+                "master": "art-source/raster/codex-derived/regions/chaos.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:F",
+            "recordType": "world-progression/region",
+            "publicName": "Erebus",
+            "id": "erebus",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeErebus",
+            "sourceId": "BiomeErebus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeErebus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/erebus.webp",
+                "master": "art-source/raster/codex-derived/regions/erebus.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:G",
+            "recordType": "world-progression/region",
+            "publicName": "Oceanus",
+            "id": "oceanus",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeOceanus",
+            "sourceId": "BiomeOceanus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeOceanus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/oceanus.webp",
+                "master": "art-source/raster/codex-derived/regions/oceanus.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:H",
+            "recordType": "world-progression/region",
+            "publicName": "Fields of Mourning",
+            "id": "fields-of-mourning",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeFields",
+            "sourceId": "BiomeFields",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeFields.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/fields-of-mourning.webp",
+                "master": "art-source/raster/codex-derived/regions/fields-of-mourning.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:Home",
+            "recordType": "world-progression/region",
+            "publicName": "The Crossroads",
+            "id": "the-crossroads",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeCrossroads",
+            "sourceId": "BiomeCrossroads",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeCrossroads.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/the-crossroads.webp",
+                "master": "art-source/raster/codex-derived/regions/the-crossroads.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:I",
+            "recordType": "world-progression/region",
+            "publicName": "Tartarus",
+            "id": "tartarus",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeTartarus",
+            "sourceId": "BiomeTartarus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeTartarus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/tartarus.webp",
+                "master": "art-source/raster/codex-derived/regions/tartarus.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:N",
+            "recordType": "world-progression/region",
+            "publicName": "City of Ephyra",
+            "id": "city-of-ephyra",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeEphyra",
+            "sourceId": "BiomeEphyra",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeEphyra.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/city-of-ephyra.webp",
+                "master": "art-source/raster/codex-derived/regions/city-of-ephyra.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:N_SubRooms",
+            "recordType": "world-progression/region",
+            "publicName": "City of Ephyra side rooms",
+            "id": "city-of-ephyra-side-rooms",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeEphyra",
+            "sourceId": "BiomeEphyra",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeEphyra.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/city-of-ephyra-side-rooms.webp",
+                "master": "art-source/raster/codex-derived/regions/city-of-ephyra-side-rooms.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:O",
+            "recordType": "world-progression/region",
+            "publicName": "Rift of Thessaly",
+            "id": "rift-of-thessaly",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeThessaly",
+            "sourceId": "BiomeThessaly",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeThessaly.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/rift-of-thessaly.webp",
+                "master": "art-source/raster/codex-derived/regions/rift-of-thessaly.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:P",
+            "recordType": "world-progression/region",
+            "publicName": "Mount Olympus",
+            "id": "mount-olympus",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeOlympus",
+            "sourceId": "BiomeOlympus",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeOlympus.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/mount-olympus.webp",
+                "master": "art-source/raster/codex-derived/regions/mount-olympus.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/region:Q",
+            "recordType": "world-progression/region",
+            "publicName": "The Summit",
+            "id": "the-summit",
+            "kind": "record",
+            "tone": "thread",
+            "route": "opencv-raster",
+            "canonicalAsset": "GUI:Portraits/Codex/CodexPortrait_BiomeSummit",
+            "sourceId": "BiomeSummit",
+            "sourceFile": ".local/reference/game-assets/GUI/textures/Portraits/Codex/CodexPortrait_BiomeSummit.png",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/regions/the-summit.webp",
+                "master": "art-source/raster/codex-derived/regions/the-summit.png"
+            }
+        }
+    ],
+    "missingSources": [
+        {
+            "recordKey": "world-progression/enemy:Eagle",
+            "publicName": "Aetos",
+            "expectedSource": "CodexPortrait_Eagle"
+        },
+        {
+            "recordKey": "world-progression/enemy:Jellyfish",
+            "publicName": "Hellifishie",
+            "expectedSource": "CodexPortrait_Jellyfish"
+        },
+        {
+            "recordKey": "world-progression/enemy:SirenDrummer",
+            "publicName": "Roxy",
+            "expectedSource": "CodexPortrait_SirenDrummer"
+        },
+        {
+            "recordKey": "world-progression/enemy:SirenKeytarist",
+            "publicName": "Jetty",
+            "expectedSource": "CodexPortrait_SirenKeytarist"
+        }
+    ]
+}

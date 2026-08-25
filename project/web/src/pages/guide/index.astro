@@ -1,0 +1,213 @@
+---
+import { guideChapters, guideMilestones, guideRouteContract } from '../../content/guide';
+import { getChapterProgressChecks } from '../../content/guide-progress';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import { getPublication } from '../../lib/publication';
+import { getSteamPatch } from '../../lib/steam-patches';
+
+const publication = getPublication();
+const steamPatch = getSteamPatch(publication.source.steamBuildId);
+const milestoneArtwork: Record<string, { source: string; width: number; height: number }> = {
+    begin: { source: '/art/scenes/first-night-route.svg', width: 1000, height: 820 },
+    crossroads: { source: '/art/scenes/the-crossroads-landscape.webp', width: 1600, height: 900 },
+    clear: { source: '/art/weapons/witchs-staff.webp', width: 369, height: 492 },
+    expand: { source: '/art/regions/rift-of-thessaly.webp', width: 369, height: 492 },
+    story: { source: '/art/resources/fate-fabric.webp', width: 512, height: 512 },
+    complete: { source: '/art/scenes/home-crossroads.svg', width: 1100, height: 860 },
+};
+const chaptersByMilestone = guideMilestones.map((milestone) => ({
+    ...milestone,
+    chapters: guideChapters.filter((chapter) => chapter.milestone === milestone.id),
+}));
+const allCheckIds = guideChapters.flatMap((chapter) => getChapterProgressChecks(chapter).map((check) => check.id));
+---
+
+<ContentLayout
+    title='A first-time player walkthrough for Hades II'
+    documentTitle={`Hades 2 Walkthrough (${steamPatch.releasedOn.slice(0, 4)}): Full Release & Epilogue`}
+    description={`A post-v1.0 Hades 2 walkthrough from your first night through both routes, the true ending, epilogue and remaining unlocks. Follow ${guideChapters.length} step-by-step chapters.`}
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'A-Z guide', href: '/guide/' },
+    ]}
+    surface='guide'>
+    <header class='guide-threshold'>
+        <div class='guide-threshold-copy'>
+            <h1>New to Hades II? Start here.</h1>
+            <p>
+                {guideRouteContract.reader} Chapter 1 identifies the controls, first room, and first reward before asking
+                you to make a build decision. Later chapters introduce new terms only when your save can encounter them.
+            </p>
+            <nav class='guide-direct-links' aria-label='Choose guide format'>
+                <a href='/guide/overview/'>
+                    <span>Open the progression fast track</span>
+                    <i class='ph ph-arrow-right' aria-hidden='true'></i>
+                </a>
+                <a href='/guide/before-the-first-night/'>
+                    <span>Start chapter 1</span>
+                    <i class='ph ph-arrow-right' aria-hidden='true'></i>
+                </a>
+            </nav>
+        </div>
+        <section class='guide-resume' aria-labelledby='guide-progress-title'>
+            <div><h2 id='guide-progress-title'>Your next chapter</h2><p data-guide-summary hidden></p></div>
+            <div class='guide-progress-meter' aria-hidden='true'><span data-guide-progress-bar></span></div>
+            <a href={`/guide/${guideChapters[0].id}/`} data-resume-guide>Begin with the first chapter</a>
+        </section>
+        <nav class='guide-route-index' aria-label='Walkthrough stages'>
+            <ol>
+                {
+                    chaptersByMilestone.map((milestone, milestoneIndex) => {
+                        const firstChapter = guideChapters.indexOf(milestone.chapters[0]) + 1;
+                        const lastChapter = firstChapter + milestone.chapters.length - 1;
+                        return (
+                            <li>
+                                <a href={`#${milestone.id}`}>
+                                    <span>{String(milestoneIndex + 1).padStart(2, '0')}</span>
+                                    <strong>{milestone.title}</strong>
+                                    <small>
+                                        {firstChapter === lastChapter
+                                            ? `Chapter ${firstChapter}`
+                                            : `Chapters ${firstChapter}\u2013${lastChapter}`}
+                                    </small>
+                                </a>
+                            </li>
+                        );
+                    })
+                }
+            </ol>
+        </nav>
+    </header>
+
+    <nav class='guide-map' aria-label='Walkthrough chapters' data-all-check-ids={JSON.stringify(allCheckIds)}>
+        {
+            chaptersByMilestone.map((milestone, milestoneIndex) => (
+                <section
+                    id={milestone.id}
+                    class={`guide-map-milestone milestone-${milestone.id}`}
+                    data-night-scene={milestone.id}>
+                    <header>
+                        <img
+                            class='milestone-art'
+                            src={milestoneArtwork[milestone.id].source}
+                            width={milestoneArtwork[milestone.id].width}
+                            height={milestoneArtwork[milestone.id].height}
+                            alt=''
+                            loading='lazy'
+                            decoding='async'
+                        />
+                        <span class='milestone-index'>{String(milestoneIndex + 1).padStart(2, '0')}</span>
+                        <div class='milestone-copy'>
+                            <h2>{milestone.title}</h2>
+                            <p>{milestone.summary}</p>
+                        </div>
+                    </header>
+                    <ol>
+                        {milestone.chapters.map((chapter) => {
+                            const chapterIndex = guideChapters.indexOf(chapter);
+                            const progressChecks = getChapterProgressChecks(chapter);
+                            return (
+                                <li
+                                    data-chapter-card
+                                    data-chapter-id={chapter.id}
+                                    data-chapter-title={chapter.title}
+                                    data-checks={JSON.stringify(progressChecks)}>
+                                    <a href={`/guide/${chapter.id}/`}>
+                                        <span class='chapter-position'>
+                                            {String(chapterIndex + 1).padStart(2, '0')}
+                                        </span>
+                                        <span class='chapter-map-copy'>
+                                            <strong>{chapter.title}</strong>
+                                            <span>{chapter.overviewObjective ?? chapter.objective}</span>
+                                        </span>
+                                        <span class='chapter-map-state' data-chapter-state>
+                                            Not started
+                                        </span>
+                                        <i class='ph ph-arrow-right' aria-hidden='true' />
+                                    </a>
+                                </li>
+                            );
+                        })}
+                    </ol>
+                </section>
+            ))
+        }
+    </nav>
+
+    <script>
+        import { $guideProgress, readGuideProgress } from '../../lib/guide-progress-store';
+
+        const map = document.querySelector<HTMLElement>('.guide-map');
+        const cards = [...document.querySelectorAll<HTMLElement>('[data-chapter-card]')];
+        const summary = document.querySelector<HTMLElement>('[data-guide-summary]');
+        const meter = document.querySelector<HTMLElement>('[data-guide-progress-bar]');
+        const resume = document.querySelector<HTMLAnchorElement>('[data-resume-guide]');
+        const allCheckIds = JSON.parse(map?.dataset.allCheckIds ?? '[]') as string[];
+
+        function renderProgress(): void {
+            const progress = readGuideProgress();
+            if (!progress) {
+                if (summary) {
+                    summary.hidden = false;
+                    summary.textContent = 'Saved progress could not be read and has not been replaced.';
+                }
+                return;
+            }
+
+            const completed = allCheckIds.filter((id) => progress.completedChecks[id]).length;
+            const percent = allCheckIds.length === 0 ? 0 : Math.round((completed / allCheckIds.length) * 100);
+            if (summary) {
+                summary.hidden = completed === 0;
+                summary.textContent = completed === 0 ? '' : `${percent}% complete.`;
+            }
+            if (meter) meter.style.transform = `scaleX(${percent / 100})`;
+
+            for (const card of cards) {
+                const checks = JSON.parse(card.dataset.checks ?? '[]') as Array<{ id: string; label: string }>;
+                const done = checks.filter((check) => progress.completedChecks[check.id]).length;
+                const state = card.querySelector<HTMLElement>('[data-chapter-state]');
+                card.dataset.progress = done === checks.length ? 'complete' : done > 0 ? 'active' : 'empty';
+                if (state)
+                    state.textContent =
+                        done === checks.length ? 'Complete' : done > 0 ? `${done} of ${checks.length}` : 'Not started';
+            }
+
+            const firstIncompleteCard = cards.find((card) => card.dataset.progress !== 'complete');
+            const lastVisitedCard = cards.find((card) => card.dataset.chapterId === progress.lastVisitedChapterId);
+            const lastVisitedIndex = lastVisitedCard ? cards.indexOf(lastVisitedCard) : -1;
+            const nextIncompleteAfterVisit =
+                lastVisitedIndex < 0
+                    ? undefined
+                    : cards.slice(lastVisitedIndex + 1).find((card) => card.dataset.progress !== 'complete');
+            const resumeCard =
+                completed === 0
+                    ? cards[0]
+                    : lastVisitedCard?.dataset.progress !== 'complete'
+                      ? lastVisitedCard
+                      : (nextIncompleteAfterVisit ?? firstIncompleteCard ?? cards.at(-1));
+            const resumeChapter = resumeCard?.dataset.chapterId;
+            if (resumeChapter && resume) {
+                const resumeChecks = JSON.parse(resumeCard?.dataset.checks ?? '[]') as Array<{
+                    id: string;
+                    label: string;
+                }>;
+                const nextCheck = resumeChecks.find((check) => !progress.completedChecks[check.id]);
+                const chapterTitle = resumeCard?.dataset.chapterTitle ?? 'the current chapter';
+                resume.href = `/guide/${resumeChapter}/`;
+                resume.textContent = completed > 0 ? `Continue ${chapterTitle}` : 'Begin with the first chapter';
+                if (summary && completed > 0) {
+                    summary.hidden = false;
+                    summary.textContent = `${percent}% complete. ${chapterTitle}${nextCheck ? `, next up, ${nextCheck.label}` : ''}.`;
+                }
+            }
+        }
+
+        $guideProgress.subscribe(renderProgress);
+    </script>
+    <script>
+        import { startGuideMapRuntime } from '../../scripts/guide-map-runtime';
+
+        startGuideMapRuntime();
+    </script>
+</ContentLayout>

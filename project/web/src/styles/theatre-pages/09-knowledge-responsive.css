@@ -1,0 +1,96 @@
+@media (max-width: 1100px) {
+    .knowledge-hero {
+        grid-template-columns: 1fr;
+        gap: 3.5rem;
+    }
+    .knowledge-hero h1 {
+        max-width: 12ch;
+    }
+    .knowledge-search {
+        position: relative;
+        top: auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .guide-threshold,
+    .knowledge-hero,
+    .collection-hero,
+    .builds-workshop,
+    .tier-hall,
+    .record-hero,
+    .first-night-hero,
+    .crossroads-hero {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .knowledge-search,
+    .relationship-rail {
+        position: relative;
+        top: auto;
+    }
+    .knowledge-starts > div {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .knowledge-starts > div,
+    .knowledge-gateways {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .page-hero,
+    .guide-threshold,
+    .builds-workshop,
+    .tier-hall,
+    .build-detail-hero,
+    .tier-list-hero,
+    .record-hero {
+        min-height: auto;
+        padding-block: 2rem 5rem;
+    }
+    .knowledge-starts,
+    .collection-atlas,
+    .tier-preview {
+        margin-top: 8rem;
+    }
+    .knowledge-starts > header,
+    .collection-atlas > header,
+    .tier-preview > header {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+    .knowledge-starts > div,
+    .knowledge-gateways {
+        grid-template-columns: 1fr;
+    }
+    .tier-preview > div {
+        grid-template-columns: 1fr;
+    }
+    .knowledge-starts a {
+        grid-template-columns: 5.25rem minmax(0, 1fr);
+        min-height: 11rem;
+        padding-block: 1.6rem;
+    }
+    .knowledge-starts .subject-art {
+        width: 5.25rem;
+        height: 5.25rem;
+    }
+    .knowledge-gateways > a {
+        grid-template-columns: 5.5rem minmax(0, 1fr);
+        min-height: 14rem;
+    }
+    .knowledge-gateways > a > .subject-art {
+        width: 5.5rem;
+        height: 5.5rem;
+    }
+    .collection-lines {
+        columns: 1;
+    }
+    .collection-lines a {
+        min-height: 8rem;
+        padding-block: 1.6rem;
+    }
+}

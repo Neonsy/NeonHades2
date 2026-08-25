@@ -1,0 +1,609 @@
+---
+import RatingMark from '../RatingMark.astro';
+import RecordLink from '../RecordLink.astro';
+import { BUILD_SLOT_LABELS, type BuildTarget, type BuildVariant } from '../../lib/build-guide';
+import { getFieldBySuffix, getRecord, getRecordName } from '../../lib/publication';
+
+type Props = { variant: BuildVariant };
+
+const { variant } = Astro.props;
+const prefix = variant.goal;
+const goalLabel = variant.goal === 'strongest' ? 'Strongest' : 'Safest';
+const stageLabel = (stage: string): string =>
+    ({ opening: 'Opening Keepsake', 'later-region': 'Later regions', 'final-region': 'Final region' })[stage] ?? stage;
+const effectFor = (reference: { id: string; recordType: string }): string | undefined => {
+    const record = getRecord(`${reference.recordType}:${reference.id}`);
+    return record ? getFieldBySuffix<string>(record, 'description') : undefined;
+};
+const targetName = (target: BuildTarget): string =>
+    getRecordName(`${target.reference.recordType}:${target.reference.id}`);
+const targetKind = (target: BuildTarget): string | undefined => {
+    const record = getRecord(`${target.reference.recordType}:${target.reference.id}`);
+    return record ? getFieldBySuffix<string>(record, 'kind') : undefined;
+};
+const uniqueTargetSelections = (target: BuildTarget): BuildTarget['selectedPrerequisites'] =>
+    target.selectedPrerequisites.filter(
+        (reference, index, selections) =>
+            selections.findIndex(
+                (candidate) => candidate.recordType === reference.recordType && candidate.id === reference.id
+            ) === index
+    );
+const targetReusesSelection = (target: BuildTarget): boolean =>
+    uniqueTargetSelections(target).length < target.selectedPrerequisites.length;
+const referenceKey = (reference: { id: string; recordType: string }): string =>
+    `${reference.recordType}:${reference.id}`;
+const remainingRequirementGroups = (target: BuildTarget) => {
+    const selected = new Set(uniqueTargetSelections(target).map(referenceKey));
+    return target.requirementGroups
+        .map((references, index) => ({
+            index,
+            references: references.filter((reference) => !selected.has(referenceKey(reference))),
+        }))
+        .filter((group) => group.references.length > 0);
+};
+const mainLanes = variant.boonPriorities;
+const preservedInteractions = variant.buildInteractions.filter((interaction) => interaction.kind !== 'conflict');
+const interactionBreakIndexes = (total: number, columns: number): Set<number> => {
+    const baseColumnSize = Math.floor(total / columns);
+    const largerColumns = total % columns;
+    return new Set(
+        Array.from({ length: columns - 1 }, (_, columnIndex) => {
+            const completedColumns = columnIndex + 1;
+            return completedColumns * baseColumnSize + Math.min(completedColumns, largerColumns);
+        })
+    );
+};
+const wideInteractionColumns = preservedInteractions.length <= 5 ? 2 : 3;
+const wideInteractionBreaks = interactionBreakIndexes(preservedInteractions.length, wideInteractionColumns);
+const twoColumnInteractionBreaks = interactionBreakIndexes(preservedInteractions.length, 2);
+const comparableText = (value: string): string => value.replace(/\s+/gu, ' ').trim().toLocaleLowerCase();
+const supportingStrengths = variant.strengths.filter(
+    (item) => comparableText(item) !== comparableText(variant.overallReason)
+);
+const supportingWeaknesses = variant.weaknesses.filter(
+    (item) => comparableText(item) !== comparableText(variant.overallLimitation)
+);
+const sequenceWidthShare = (step: string): number => step.length + 12;
+const displayLaneReason = (
+    reason: string | undefined,
+    slot: keyof typeof BUILD_SLOT_LABELS,
+    group: 'preferred' | 'fallback'
+): string | undefined => {
+    if (!reason || !/optional\s+\w+\s+slot/iu.test(reason)) return reason;
+    const slotLabel = BUILD_SLOT_LABELS[slot];
+    return group === 'fallback'
+        ? `Use this if the preferred ${slotLabel} choice does not appear. It keeps the complete five-slot package coherent without changing the plan's higher priorities.`
+        : `This is the recommended ${slotLabel} choice for the complete five-slot package. Take it after the higher-priority choices only when offers compete.`;
+};
+const namedSelectionKeys = new Set(
+    [
+        ...variant.boonPriorities.flatMap((lane) => [...lane.preferred, ...lane.fallback]),
+        ...variant.duoLegendaryTargets,
+    ].map((item) => `${item.reference.recordType}:${item.reference.id}`)
+);
+const usefulTiers = ['A', 'B']
+    .map((rating) => ({
+        rating,
+        items: variant.boonRankings.filter(
+            (item) =>
+                item.rating === rating && !namedSelectionKeys.has(`${item.reference.recordType}:${item.reference.id}`)
+        ),
+    }))
+    .filter((tier) => tier.items.length > 0);
+const laterKeepsakes = variant.keepsakeRoute.filter((step) => step.stage !== 'opening');
+const targetEntries = variant.duoLegendaryTargets.map((target, index) => ({ index, target }));
+const rareTargetGroups = [
+    {
+        heading: 'Duo Boons',
+        key: 'duo',
+        summary: 'Pairings this plan can reach without replacing its main actions.',
+    },
+    {
+        heading: 'Legendary Boons',
+        key: 'legendary',
+        summary: 'Single-god finishers with their own prerequisite path.',
+    },
+]
+    .map((group) => ({
+        ...group,
+        entries: targetEntries.filter(({ target }) => targetKind(target) === group.key),
+    }))
+    .filter((group) => group.entries.length > 0);
+const unclassifiedTarget = targetEntries.find(({ target }) => !['duo', 'legendary'].includes(targetKind(target) ?? ''));
+if (unclassifiedTarget) {
+    throw new Error(
+        `Rare build target has no Duo or Legendary classification: ${targetName(unclassifiedTarget.target)}`
+    );
+}
+---
+
+<section
+    id={`${prefix}-build`}
+    class='build-variant-panel'
+    data-build-panel={prefix}
+    data-build-variant={prefix}
+    aria-labelledby={`${prefix}-tab`}>
+    <div class='build-goal-sheet'>
+        <section id={`${prefix}-combat-loop`} class='build-plan-overview' aria-labelledby={`${prefix}-plan-title`}>
+            <header>
+                <div>
+                    <h2 id={`${prefix}-plan-title`}>{goalLabel} run plan</h2>
+                    <dl class='build-plan-summary'>
+                        <div>
+                            <dt>Excels at</dt>
+                            <dd>{variant.overallReason}</dd>
+                        </div>
+                        <div>
+                            <dt>Watch for</dt>
+                            <dd>{variant.overallLimitation}</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class='build-verdict'>
+                    <RatingMark rating={variant.overallRating} label={`${goalLabel} overall aspect grade`} />
+                    <span>Overall grade</span>
+                </div>
+            </header>
+
+            <section class='build-plan-sequence' aria-labelledby={`${prefix}-sequence-title`}>
+                <h3 id={`${prefix}-sequence-title`}>Combat sequence</h3>
+                <ol data-sequence-size={variant.playstyleCombatSequence.length}>
+                    {
+                        variant.playstyleCombatSequence.map((step, index) => (
+                            <li style={`--sequence-width-share: ${sequenceWidthShare(step)}`}>
+                                <span>{index + 1}</span>
+                                <p>{step}</p>
+                            </li>
+                        ))
+                    }
+                </ol>
+            </section>
+
+            {
+                (supportingStrengths.length > 0 || supportingWeaknesses.length > 0) && (
+                    <div class='build-plan-notes'>
+                        {supportingStrengths.length > 0 && (
+                            <section>
+                                <h3>Also strong</h3>
+                                <ul>
+                                    {supportingStrengths.map((item) => (
+                                        <li>{item}</li>
+                                    ))}
+                                </ul>
+                            </section>
+                        )}
+                        {supportingWeaknesses.length > 0 && (
+                            <section>
+                                <h3>Avoid</h3>
+                                <ul>
+                                    {supportingWeaknesses.map((item) => (
+                                        <li>{item}</li>
+                                    ))}
+                                </ul>
+                            </section>
+                        )}
+                    </div>
+                )
+            }
+
+            <div class='context-ribbon' aria-label={`${goalLabel} build ratings`}>
+                {
+                    variant.contextRatings.map((item) => (
+                        <div>
+                            <>
+                                <RatingMark rating={item.rating} />
+                                <strong>
+                                    {
+                                        {
+                                            consistency: 'Consistency',
+                                            speed: 'Clear speed',
+                                            safety: 'Safety',
+                                            'high-fear': 'High Fear',
+                                        }[item.context]
+                                    }
+                                </strong>
+                            </>
+                        </div>
+                    ))
+                }
+            </div>
+        </section>
+
+        <section id={`${prefix}-run-sheet`} class='build-run-sheet' aria-labelledby={`${prefix}-run-sheet-title`}>
+            <div class='build-run-sheet-heading'>
+                <span>Essential loadout</span>
+                <h2 id={`${prefix}-run-sheet-title`}>Take these five Boons first</h2>
+                <p>{variant.playstyleCombatSequence[0]}</p>
+            </div>
+            <ol
+                class='boon-priority-overview'
+                aria-label={`${goalLabel} main Boon priority order`}
+                data-balanced-grid
+                data-balanced-grid-min='13rem'
+                data-balanced-grid-max='5'>
+                {
+                    mainLanes.map((lane, index) => (
+                        <li>
+                            <>
+                                <span>Priority {index + 1}</span>
+                                <strong>{BUILD_SLOT_LABELS[lane.slot]}</strong>
+                                <RecordLink reference={lane.preferred[0].reference} />
+                            </>
+                        </li>
+                    ))
+                }
+            </ol>
+        </section>
+    </div>
+
+    <section id={`${prefix}-breakpoints`} class='build-breakpoints' aria-labelledby={`${prefix}-breakpoints-title`}>
+        <header>
+            <span>Commit check</span>
+            <h2 id={`${prefix}-breakpoints-title`}>When this build comes online</h2>
+            <p>
+                The first two stages make the plan functional. The last is a power spike, not a reason to delay the run.
+            </p>
+        </header>
+        <ol>
+            {
+                variant.powerBreakpoints.map((breakpoint, index) => (
+                    <li data-breakpoint-stage={breakpoint.stage}>
+                        <span>{String(index + 1).padStart(2, '0')}</span>
+                        <div>
+                            <strong>{breakpoint.title}</strong>
+                            <p>{breakpoint.condition}</p>
+                            <small>{breakpoint.effect}</small>
+                            <div class='breakpoint-references'>
+                                {breakpoint.references.map((reference) => (
+                                    <RecordLink reference={reference} />
+                                ))}
+                            </div>
+                        </div>
+                    </li>
+                ))
+            }
+        </ol>
+    </section>
+
+    <nav class='build-jump' aria-label={`${goalLabel} build sections`}>
+        <a href={`#${prefix}-main-boons`}>Five-slot Boons</a>
+        {variant.duoLegendaryTargets.length > 0 && <a href={`#${prefix}-rare-targets`}>Rare targets</a>}
+        <a href={`#${prefix}-useful-boons`}>Useful Boons</a>
+        <a href={`#${prefix}-hammers`}>Daedalus</a>
+        {preservedInteractions.length > 0 && <a href={`#${prefix}-interactions`}>Interactions</a>}
+        {laterKeepsakes.length > 0 && <a href={`#${prefix}-keepsakes`}>Keepsake swaps</a>}
+        <a href={`#${prefix}-route`}>Boss and route</a>
+    </nav>
+
+    <section id={`${prefix}-main-boons`} class='build-section boon-plan'>
+        <header>
+            <div>
+                <span>Alternatives and slot details</span><h2>Adjust only after the five essentials</h2><p>
+                    Attack, Special, Cast, Dash, and Gain stay in the shown order when offers compete. Open a slot to
+                    see its other proven fits and fallbacks.
+                </p>
+            </div>
+        </header>
+        <div
+            class='boon-lanes boon-lanes--complete'
+            data-balanced-grid
+            data-balanced-grid-layout='justified'
+            data-balanced-grid-align='row'
+            data-balanced-grid-min='22rem'
+            data-balanced-grid-max='3'>
+            {
+                mainLanes.map((lane, index) => (
+                    <article data-boon-priority={index + 1}>
+                        <header>
+                            <>
+                                <span>
+                                    Priority {index + 1} · {BUILD_SLOT_LABELS[lane.slot]}
+                                </span>
+                                <strong>{lane.role === 'core' ? 'Build focus' : 'Supporting slot'}</strong>
+                            </>
+                        </header>
+                        <div class='boon-lane-body'>
+                            <div class='boon-first-choice'>
+                                <div>
+                                    <span class='choice-label'>First choice</span>
+                                    <RecordLink reference={lane.preferred[0].reference} />
+                                    {effectFor(lane.preferred[0].reference) && (
+                                        <p class='boon-effect'>{effectFor(lane.preferred[0].reference)}</p>
+                                    )}
+                                    {displayLaneReason(lane.preferred[0].reason, lane.slot, 'preferred') && (
+                                        <small class='boon-fit'>
+                                            {displayLaneReason(lane.preferred[0].reason, lane.slot, 'preferred')}
+                                        </small>
+                                    )}
+                                </div>
+                            </div>
+                            {lane.preferred.length > 1 && (
+                                <details>
+                                    <summary>Other proven fits</summary>
+                                    <div class='boon-alternatives'>
+                                        {lane.preferred.slice(1).map((item) => (
+                                            <div>
+                                                <RecordLink reference={item.reference} />
+                                                {effectFor(item.reference) && (
+                                                    <p class='boon-effect'>{effectFor(item.reference)}</p>
+                                                )}
+                                                {displayLaneReason(item.reason, lane.slot, 'preferred') && (
+                                                    <small class='boon-fit'>
+                                                        {displayLaneReason(item.reason, lane.slot, 'preferred')}
+                                                    </small>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </details>
+                            )}
+                            <details>
+                                <>
+                                    <summary>Fallbacks if the first choice does not appear</summary>
+                                    <div class='boon-alternatives'>
+                                        {lane.fallback.map((item) => (
+                                            <div>
+                                                <RecordLink reference={item.reference} />
+                                                {effectFor(item.reference) && (
+                                                    <p class='boon-effect'>{effectFor(item.reference)}</p>
+                                                )}
+                                                {displayLaneReason(item.reason, lane.slot, 'fallback') && (
+                                                    <small class='boon-fit'>
+                                                        {displayLaneReason(item.reason, lane.slot, 'fallback')}
+                                                    </small>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            </details>
+                        </div>
+                    </article>
+                ))
+            }
+        </div>
+    </section>
+
+    {
+        variant.duoLegendaryTargets.length > 0 && (
+            <section id={`${prefix}-rare-targets`} class='build-section rare-targets-section'>
+                <header>
+                    <div>
+                        <>
+                            <span>Optional ceiling</span>
+                            <h2>Duo and Legendary targets</h2>
+                            <p>
+                                Finish the functional build first. Open Requirement to compare this plan with the other
+                                valid options.
+                            </p>
+                        </>
+                    </div>
+                </header>
+                <div class='rare-target-groups'>
+                    {rareTargetGroups.map((group) => (
+                        <section class:list={['rare-target-group', `rare-target-group--${group.key}`]}>
+                            <header>
+                                <h3>{group.heading}</h3>
+                                <p>{group.summary}</p>
+                            </header>
+                            <div class='rare-targets'>
+                                {group.entries.map(({ target: item, index: targetIndex }) => (
+                                    <article class='rare-target-card'>
+                                        <header class='rare-target-heading'>
+                                            <RecordLink reference={item.reference} />
+                                        </header>
+                                        {effectFor(item.reference) && (
+                                            <p class='boon-effect rare-target-effect'>{effectFor(item.reference)}</p>
+                                        )}
+                                        <div class='rare-target-opens-with'>
+                                            <span>Opens with</span>
+                                            <ul>
+                                                {uniqueTargetSelections(item).map((reference) => (
+                                                    <li>
+                                                        <RecordLink reference={reference} />
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        <footer>
+                                            <button
+                                                type='button'
+                                                class='rare-target-requirements'
+                                                popovertarget={`${prefix}-rare-target-requirement-${targetIndex + 1}`}
+                                                style={`anchor-name: --${prefix}-rare-target-requirement-${targetIndex + 1}`}
+                                                aria-label={`View requirement for ${targetName(item)}`}>
+                                                <i class='ph ph-sparkle' aria-hidden='true' />
+                                                <span>Requirement</span>
+                                            </button>
+                                        </footer>
+                                        <div
+                                            id={`${prefix}-rare-target-requirement-${targetIndex + 1}`}
+                                            class='rare-target-popover'
+                                            style={`position-anchor: --${prefix}-rare-target-requirement-${targetIndex + 1}`}
+                                            popover='auto'>
+                                            <span>Requirement</span>
+                                            <section class='requirement-plan-uses' aria-label='This plan uses'>
+                                                <strong>This plan uses</strong>
+                                                <ul>
+                                                    {uniqueTargetSelections(item).map((reference) => (
+                                                        <li>
+                                                            <RecordLink reference={reference} />
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </section>
+                                            {targetReusesSelection(item) && (
+                                                <small class='requirement-reuse-note'>
+                                                    One selected Boon satisfies more than one prerequisite group.
+                                                </small>
+                                            )}
+                                            <section class='requirement-options' aria-label='Other valid options'>
+                                                <strong>{item.requirementSummary}</strong>
+                                                {remainingRequirementGroups(item).length > 0 && (
+                                                    <>
+                                                        <span>Other options</span>
+                                                        <ol>
+                                                            {remainingRequirementGroups(item).map(
+                                                                (requirementGroup) => (
+                                                                    <li>
+                                                                        <span>Group {requirementGroup.index + 1}</span>
+                                                                        <div>
+                                                                            {requirementGroup.references.map(
+                                                                                (reference) => (
+                                                                                    <RecordLink reference={reference} />
+                                                                                )
+                                                                            )}
+                                                                        </div>
+                                                                    </li>
+                                                                )
+                                                            )}
+                                                        </ol>
+                                                    </>
+                                                )}
+                                            </section>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    ))}
+                </div>
+            </section>
+        )
+    }
+
+    <section id={`${prefix}-useful-boons`} class='build-section useful-boons'>
+        <header>
+            <div>
+                <span>Beyond the five slots</span><h2>Additional useful Boons</h2><p>
+                    Add these only after the five main slots are secure. The tiers are specific to {
+                        goalLabel.toLowerCase()
+                    } mode.
+                </p>
+            </div>
+        </header>
+        <div class='useful-tier-list'>
+            {
+                usefulTiers.map((tier) => (
+                    <details class='useful-tier'>
+                        <summary>
+                            <>
+                                <RatingMark rating={tier.rating} />
+                                <span>{tier.rating === 'A' ? 'Strong additions' : 'Situational fits'}</span>
+                                <small>{tier.items.length} Boons</small>
+                            </>
+                        </summary>
+                        <div
+                            class='useful-tier-grid'
+                            data-balanced-grid
+                            data-balanced-grid-layout='justified'
+                            data-balanced-grid-min='18rem'
+                            data-balanced-grid-max='4'>
+                            {tier.items.map((item) => (
+                                <article>
+                                    <RecordLink reference={item.reference} />
+                                    {effectFor(item.reference) && (
+                                        <p class='boon-effect'>{effectFor(item.reference)}</p>
+                                    )}
+                                    {item.reason && <small class='boon-fit'>{item.reason}</small>}
+                                </article>
+                            ))}
+                        </div>
+                    </details>
+                ))
+            }
+        </div>
+    </section>
+
+    <section id={`${prefix}-hammers`} class='build-section hammer-plan'>
+        <header>
+            <div>
+                <span>Run upgrades</span><h2>Daedalus Hammers next</h2><p>
+                    These improve the move already carrying the plan. They do not replace a missing main Boon.
+                </p>
+            </div>
+        </header>
+        <ol data-balanced-grid data-balanced-grid-min='18rem' data-balanced-grid-max='3'>
+            {
+                variant.hammerRankings.map((item) => (
+                    <li>
+                        <div>
+                            <RecordLink reference={item.reference} />
+                            {effectFor(item.reference) && <p class='boon-effect'>{effectFor(item.reference)}</p>}
+                            {item.reason && <small class='boon-fit'>{item.reason}</small>}
+                        </div>
+                    </li>
+                ))
+            }
+        </ol>
+    </section>
+
+    {
+        preservedInteractions.length > 0 && (
+            <section id={`${prefix}-interactions`} class='build-section interaction-plan'>
+                <header>
+                    <div>
+                        <h2>Useful interactions</h2>
+                    </div>
+                </header>
+                <ul
+                    class:list={[
+                        'interaction-ledger',
+                        { 'interaction-ledger--compact': preservedInteractions.length <= 5 },
+                    ]}
+                    data-interaction-count={preservedInteractions.length}>
+                    {preservedInteractions.map((interaction, index) => (
+                        <li
+                            data-interaction-break-wide={wideInteractionBreaks.has(index) || undefined}
+                            data-interaction-break-two={twoColumnInteractionBreaks.has(index) || undefined}>
+                            <article>
+                                <div class='interaction-references'>
+                                    {interaction.references.map((reference) => (
+                                        <RecordLink reference={reference} />
+                                    ))}
+                                </div>
+                                <p>{interaction.reason}</p>
+                                <small>{interaction.condition}</small>
+                            </article>
+                        </li>
+                    ))}
+                </ul>
+            </section>
+        )
+    }
+
+    {
+        laterKeepsakes.length > 0 && (
+            <section id={`${prefix}-keepsakes`} class='build-section keepsake-plan'>
+                <header>
+                    <div>
+                        <>
+                            <h2>Switch Keepsakes when their job is done</h2>
+                            <p>The starting Keepsake is listed in Setup. These are the in-run swaps.</p>
+                        </>
+                    </div>
+                </header>
+                <ol>
+                    {laterKeepsakes.map((step, index) => (
+                        <li>
+                            <span class='route-step'>{index + 2}</span>
+                            <div>
+                                <strong>{stageLabel(step.stage)}</strong>
+                                <RecordLink reference={step.reference} />
+                                <p>{step.reason}</p>
+                                <small>{step.switchCondition}</small>
+                            </div>
+                        </li>
+                    ))}
+                </ol>
+            </section>
+        )
+    }
+
+    <section id={`${prefix}-route`} class='build-section route-plan'>
+        <header><div><h2>Boss and route decisions</h2></div></header>
+        <div class='route-plan-prose'>
+            {variant.bossRouteConsiderations.map((consideration) => <p>{consideration}</p>)}
+        </div>
+    </section>
+</section>

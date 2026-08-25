@@ -46,18 +46,33 @@ async function verifyRuntimeCompletion(
   ]);
   const manifest = JSON.parse(manifestFile.content.toString("utf8")) as Readonly<Record<string, unknown>>;
   const completion = JSON.parse(completionFile.content.toString("utf8")) as Readonly<Record<string, unknown>>;
-  if (manifest.schema !== "neodes2-guide-runtime-manifest-1") {
-    throw new Error("Unsupported guide runtime manifest schema.");
+  if (manifest.schema === "neodes2-guide-runtime-manifest-1") {
+    if (completion.schema !== "neodes2-guide-runtime-completion-1") {
+      throw new Error("Unsupported guide runtime completion marker schema.");
+    }
+    if (manifest.reportFile !== "runtime-report.json" || manifest.exporterVersion !== exporterVersion) {
+      throw new Error("Guide runtime finalization metadata does not match the report.");
+    }
+    if (manifest.reportSha256 !== reportSha256 || completion.reportSha256 !== reportSha256) {
+      throw new Error("Guide runtime report hash does not match its finalization metadata.");
+    }
+    return;
   }
-  if (completion.schema !== "neodes2-guide-runtime-completion-1") {
-    throw new Error("Unsupported guide runtime completion marker schema.");
+  if (manifest.schema === "neodes2-guide-acquisition-manifest-1") {
+    if (completion.schema !== "neodes2-guide-acquisition-completion-1") {
+      throw new Error("Unsupported guide acquisition completion marker schema.");
+    }
+    if (
+      manifest.runtimeReportSha256 !== reportSha256 ||
+      manifest.exporterVersion !== exporterVersion ||
+      completion.acquisitionId !== manifest.acquisitionId ||
+      completion.manifestSha256 !== sha256(manifestFile.content)
+    ) {
+      throw new Error("Completed guide acquisition does not authenticate its runtime report.");
+    }
+    return;
   }
-  if (manifest.reportFile !== "runtime-report.json" || manifest.exporterVersion !== exporterVersion) {
-    throw new Error("Guide runtime finalization metadata does not match the report.");
-  }
-  if (manifest.reportSha256 !== reportSha256 || completion.reportSha256 !== reportSha256) {
-    throw new Error("Guide runtime report hash does not match its finalization metadata.");
-  }
+  throw new Error("Unsupported guide runtime manifest schema.");
 }
 
 export async function createRuntimeGuideAcquisition(

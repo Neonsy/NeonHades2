@@ -1,0 +1,329 @@
+@media (max-width: 1100px) {
+    .collection-intro-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .collection-hero,
+    .collection-hero > * {
+        min-width: 0;
+    }
+    .weapon-family-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .collection-intro-grid,
+    .build-unlock-card {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .guide-threshold,
+    .knowledge-hero,
+    .collection-hero,
+    .builds-workshop,
+    .tier-hall,
+    .record-hero,
+    .first-night-hero,
+    .crossroads-hero {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .story-destinations {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .story-destinations a {
+        border-bottom: 1px solid var(--rule);
+    }
+    .story-codex > header {
+        grid-template-columns: 1fr;
+    }
+    .story-codex > header .eyebrow {
+        grid-column: 1;
+    }
+    .story-codex-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .collection-purpose > summary {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+        gap: var(--space-4);
+    }
+    .collection-purpose-command {
+        justify-self: start;
+    }
+    .story-codex-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .story-codex-grid .subject-art {
+        aspect-ratio: 4 / 5;
+    }
+    .story-codex-card__label {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.55rem;
+        padding: 0.85rem 0.9rem 1rem;
+    }
+    .story-codex-card__label > span {
+        font-size: var(--type-support);
+    }
+    .weapon-family-index > header {
+        grid-template-columns: 1fr;
+    }
+    .weapon-family-index > header .eyebrow {
+        grid-column: 1;
+    }
+    .weapon-family-grid {
+        grid-template-columns: 1fr;
+    }
+    .weapon-family-grid a {
+        grid-template-rows: minmax(24rem, 120vw) auto;
+    }
+    .collection-hero h1 {
+        max-width: 100%;
+        font-size: clamp(2.85rem, 13.5vw, 3.35rem);
+    }
+    .reference-table-wrap::before {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        display: block;
+        width: max-content;
+        margin-bottom: 0.75rem;
+        padding: 0.45rem 0.65rem;
+        background: var(--ink-deep);
+        color: var(--thread);
+        content: 'Swipe horizontally for more columns →';
+        font-size: var(--type-support);
+        letter-spacing: 0.02em;
+    }
+    .page-hero,
+    .guide-threshold,
+    .builds-workshop,
+    .tier-hall,
+    .build-detail-hero,
+    .tier-list-hero,
+    .record-hero {
+        min-height: auto;
+        padding-block: 2rem 5rem;
+    }
+    .story-destinations {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    .story-destinations a {
+        min-height: 8.5rem;
+        padding-block: 1.5rem;
+        border-right: 0;
+    }
+    .collection-toolbar {
+        grid-template-columns: 1fr;
+        margin-top: 5rem;
+    }
+    .record-index > li > a {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        min-height: 9rem;
+        padding-block: 1.7rem;
+    }
+    .record-index-link--illustrated {
+        grid-template-columns: 5.25rem minmax(0, 1fr) !important;
+        column-gap: 1.25rem !important;
+        row-gap: 0.85rem !important;
+    }
+    .record-index-link--illustrated > .subject-art {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        align-self: start;
+        width: 5.25rem;
+        height: 6rem;
+        margin-top: -0.15rem;
+    }
+    .record-index-link--illustrated > .record-index-copy {
+        display: grid;
+        grid-column: 2;
+        grid-row: 1;
+        gap: 0.55rem;
+        min-width: 0;
+    }
+    .record-index--relationships .record-index-link--illustrated {
+        grid-template-columns: 5.25rem minmax(0, 1fr) !important;
+        column-gap: 0.85rem !important;
+        min-height: 9.5rem;
+        padding: 0 0.85rem;
+    }
+    .record-index--relationships .record-index-link--illustrated > .subject-art--character {
+        grid-column: 1;
+        grid-row: 1 / 3;
+        width: 5.25rem;
+        height: 100%;
+        min-height: 9.5rem;
+        margin-top: 0;
+    }
+    .record-index--relationships .record-index-copy {
+        grid-column: 2;
+        grid-row: 1 / 3;
+    }
+    .record-index--relationships
+        .subject-art--character.subject-art--row.subject-art--raster
+        .subject-art__raster-core {
+        transform: translateY(9%) scale(1.28);
+    }
+    .record-index-link--illustrated > .record-type {
+        grid-column: 2;
+        grid-row: 2;
+    }
+    .record-index-link--illustrated > .record-index-copy > strong,
+    .record-index-link--illustrated > .record-index-copy > span:not(.record-type) {
+        grid-column: auto;
+    }
+    .record-index--relationships .record-index-link--illustrated > .record-index-copy > strong,
+    .record-index--relationships .record-index-link--illustrated > .record-index-copy > span:not(.record-type) {
+        grid-column: auto;
+    }
+    .record-type {
+        justify-self: start;
+    }
+}
+
+@media (max-width: 350px) {
+    .story-codex-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1100px) {
+    .record-index--arcana,
+    .record-index--keepsakes,
+    .record-index--hexes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .record-index--arcana,
+    .record-index--keepsakes,
+    .record-index--hexes,
+    .record-index--familiars {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    :is(
+            .record-index--achievements,
+            .record-index--arcana,
+            .record-index--enemies,
+            .record-index--familiars,
+            .record-index--hammers,
+            .record-index--hexes,
+            .record-index--incantations,
+            .record-index--keepsakes,
+            .record-index--oath,
+            .record-index--prophecies,
+            .record-index--regions,
+            .record-index--resources
+        )
+        .record-index-link--illustrated {
+        grid-template-columns: 5.25rem minmax(0, 1fr) !important;
+        grid-template-rows: auto auto;
+        gap: 0.85rem 1.25rem !important;
+        min-height: 0;
+        padding: 1.45rem 1.25rem;
+        border-left: 0;
+    }
+    :is(
+            .record-index--achievements,
+            .record-index--arcana,
+            .record-index--enemies,
+            .record-index--familiars,
+            .record-index--hammers,
+            .record-index--hexes,
+            .record-index--incantations,
+            .record-index--keepsakes,
+            .record-index--oath,
+            .record-index--prophecies,
+            .record-index--regions,
+            .record-index--resources
+        )
+        .record-index-link--illustrated
+        > .subject-art {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        align-self: start;
+        width: 5.25rem;
+        height: 6rem;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+    }
+    :is(
+            .record-index--achievements,
+            .record-index--arcana,
+            .record-index--enemies,
+            .record-index--familiars,
+            .record-index--hammers,
+            .record-index--hexes,
+            .record-index--incantations,
+            .record-index--keepsakes,
+            .record-index--oath,
+            .record-index--prophecies,
+            .record-index--regions,
+            .record-index--resources
+        )
+        .record-index-copy {
+        display: grid;
+        grid-column: 2;
+        grid-row: 1;
+        gap: 0.55rem;
+        min-width: 0;
+    }
+    :is(
+            .record-index--achievements,
+            .record-index--arcana,
+            .record-index--enemies,
+            .record-index--familiars,
+            .record-index--hammers,
+            .record-index--hexes,
+            .record-index--incantations,
+            .record-index--keepsakes,
+            .record-index--oath,
+            .record-index--prophecies,
+            .record-index--regions,
+            .record-index--resources
+        )
+        .record-type {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
+        align-self: start;
+        font-size: var(--type-support);
+    }
+}
+
+@container collection-record-card (max-width: 20rem) {
+    :is(.record-index--arcana, .record-index--keepsakes, .record-index--hexes, .record-index--familiars)
+        .record-index-link--illustrated {
+        grid-template-columns: 4rem minmax(0, 1fr) !important;
+        gap: 0.75rem !important;
+        padding: 1.1rem;
+    }
+
+    :is(.record-index--arcana, .record-index--keepsakes, .record-index--hexes, .record-index--familiars)
+        .record-index-link--illustrated
+        > .subject-art {
+        width: 4rem;
+        height: 4.5rem;
+    }
+
+    :is(.record-index--arcana, .record-index--keepsakes, .record-index--hexes, .record-index--familiars)
+        .record-index-link--illustrated
+        > .record-type {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+
+    :is(.record-index--arcana, .record-index--keepsakes, .record-index--hexes, .record-index--familiars)
+        .record-index-copy
+        > :where(strong, span) {
+        overflow-wrap: anywhere;
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "schema": 1,
+    "asset": "/art/scenes/the-crossroads-landscape.webp",
+    "source": {
+        "path": "art-source/krita/region-maps/the-crossroads.kra",
+        "kind": "project-owned Krita reconstruction",
+        "sha256": "537185db77265266d27ebbbca533a62e459589a71a3e904d5cc686e4f4c91652"
+    },
+    "delivery": {
+        "width": 1600,
+        "height": 900,
+        "format": "webp",
+        "sha256": "1e753c636b464bea3527cd00a04975426121e18cdb303b39a1600ab6e3913ba5"
+    }
+}

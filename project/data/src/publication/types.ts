@@ -6,11 +6,36 @@ export interface PublicationRecordField extends PublicationField {
   readonly value: JsonValue;
 }
 
+export interface PublicationRecordPublicModel {
+  readonly name: string;
+  readonly slug: string;
+  readonly typeLabel: string;
+  readonly summary: string | null;
+  readonly href: string;
+  readonly aliases: readonly string[];
+  readonly spoilerLevel: PageDefinition["spoilerLevel"];
+  readonly category: string;
+  readonly presentation: "collection" | "detail" | "guide" | "embedded";
+}
+
+export type PublicationDisposition =
+  | {
+      readonly status: "published";
+      readonly category: string;
+      readonly presentation: PublicationRecordPublicModel["presentation"];
+    }
+  | {
+      readonly status: "excluded";
+      readonly reason: "missing-public-name" | "no-reader-facing-view" | "unsupported-record-type";
+    };
+
 export interface PublicationRecord {
   readonly key: string;
   readonly recordType: string;
   readonly id: string;
   readonly fields: readonly PublicationRecordField[];
+  readonly public: PublicationRecordPublicModel | null;
+  readonly publication: PublicationDisposition;
 }
 
 export interface PublicationPage {
@@ -47,7 +72,7 @@ export interface PublicationCondition {
 }
 
 export interface PublicationDataset {
-  readonly schema: "neodes2-publication-1";
+  readonly schema: "neodes2-publication-3";
   readonly source: {
     readonly datasetAcquisitionId: string;
     readonly datasetSha256: string;
@@ -82,6 +107,8 @@ export interface PublicationReport {
   readonly incompleteReverseRelationships: readonly string[];
   readonly pagesWithoutRecords: readonly string[];
   readonly recordsWithoutSearchTerms: readonly string[];
+  readonly duplicatePublicRoutes: readonly string[];
+  readonly invalidPublicModels: readonly string[];
   readonly complete: boolean;
 }
 

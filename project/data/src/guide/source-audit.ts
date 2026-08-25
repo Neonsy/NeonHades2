@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
 import { parseSteamAchievementSchema, type SteamAchievementText } from "./steam-achievements.js";
+import { extractStaticGuideSystems, type StaticGuideSystems } from "./static-systems.js";
 
 export interface GuideSourceAudit {
   readonly schema: "neodes2-guide-source-audit-1";
@@ -16,6 +17,7 @@ export interface GuideSourceAudit {
     readonly surface: readonly string[];
   };
   readonly achievements: readonly SteamAchievementText[];
+  readonly systems: StaticGuideSystems;
   readonly issues: readonly string[];
   readonly complete: boolean;
 }
@@ -128,13 +130,14 @@ export async function auditGuideSources(
 ): Promise<GuideSourceAudit> {
   const acquisition = resolve(sourceAcquisitionDirectory);
   const scripts = join(acquisition, "sources", "Content", "Scripts");
-  const [shrineSource, questSource, roomSetsSource, achievementSource, heroSource, achievementSchema] = await Promise.all([
+  const [shrineSource, questSource, roomSetsSource, achievementSource, heroSource, achievementSchema, systems] = await Promise.all([
     readFile(join(scripts, "ShrineData.lua"), "utf8"),
     readFile(join(scripts, "QuestData.lua"), "utf8"),
     readFile(join(scripts, "RoomSets.lua"), "utf8"),
     readFile(join(scripts, "AchievementData.lua"), "utf8"),
     readFile(join(scripts, "HeroData.lua"), "utf8"),
     readFile(resolve(achievementSchemaPath)),
+    extractStaticGuideSystems(acquisition),
   ]);
   const shrineOrder = orderedStrings(shrineSource, /\bShrineUpgradeOrder\s*=/u);
   const bountyOrder = orderedStrings(shrineSource, /\bBountyOrder\s*=/u);
@@ -164,6 +167,23 @@ export async function auditGuideSources(
   if (!sameValues([...outroOrder].sort(), outroIds)) {
     issues.push("GameOutroPriorities and GameOutroData contain different identifiers.");
   }
+  for (const [label, actual, expected] of [
+    ["elements", systems.elements.length, 4],
+    ["gathering tool states", systems.gatheringTools.length, 8],
+    ["fish", systems.fish.length, 27],
+    ["cultivation outcomes", systems.cultivation.length, 17],
+    ["garden plots", systems.gardenPlotCount, 6],
+    ["opening states", systems.openingStates.length, 1],
+    ["god appearance paths", systems.godAppearances.length, 11],
+    ["encounter support providers", systems.encounterFriends.length, 12],
+    ["encounter aid choices", systems.encounterAids.length, 83],
+    ["run rewards", systems.runRewards.length, 13],
+    ["Strife curse systems", systems.strifeCurses.length, 1],
+    ["surface penalty systems", systems.surfacePenalties.length, 1],
+  ] as const) {
+    if (actual !== expected) issues.push(`Expected ${expected} ${label}, found ${actual}.`);
+  }
+  if (systems.marketOffers.length === 0) issues.push("Market offers are empty.");
   return {
     schema: "neodes2-guide-source-audit-1",
     sourceAcquisitionDirectory: acquisition,
@@ -174,6 +194,7 @@ export async function auditGuideSources(
     outroOrder,
     routeRegions: { underworld, surface },
     achievements,
+    systems,
     issues,
     complete: issues.length === 0,
   };
@@ -189,6 +210,17 @@ export function renderGuideSourceAudit(audit: GuideSourceAudit): string {
     `- Prophecies: ${audit.questOrder.length}`,
     `- Outros: ${audit.outroIds.length}`,
     `- Steam achievements: ${audit.achievements.length}`,
+    `- Elements: ${audit.systems.elements.length}`,
+    `- Gathering tool states: ${audit.systems.gatheringTools.length}`,
+    `- Fish: ${audit.systems.fish.length}`,
+    `- Cultivation outcomes: ${audit.systems.cultivation.length}`,
+    `- Market offers: ${audit.systems.marketOffers.length}`,
+    `- Run rewards: ${audit.systems.runRewards.length}`,
+    `- God appearance paths: ${audit.systems.godAppearances.length}`,
+    `- Encounter support providers: ${audit.systems.encounterFriends.length}`,
+    `- Encounter aid choices: ${audit.systems.encounterAids.length}`,
+    `- Strife curse systems: ${audit.systems.strifeCurses.length}`,
+    `- Surface penalty systems: ${audit.systems.surfacePenalties.length}`,
     `- Issues: ${audit.issues.length}`,
     "",
     ...audit.issues.map((issue) => `- ${issue}`),

@@ -1,0 +1,24 @@
+---
+import type { DivineTheme } from '../lib/divine-theme';
+
+type Props = { theme: DivineTheme; compact?: boolean };
+
+const { theme, compact = false } = Astro.props;
+const symbolSource = `/art/gods/symbols/${theme.slug}.webp`;
+---
+
+<div
+    class:list={['divine-signature', compact && 'divine-signature--compact']}
+    data-divine-signature={theme.slug}
+    aria-hidden='true'>
+    <img
+        src={symbolSource}
+        srcset={`/art-responsive/256/gods/symbols/${theme.slug}.webp 256w, ${symbolSource} 512w`}
+        sizes='7.25rem'
+        alt=''
+        width='512'
+        height='512'
+        loading='lazy'
+        decoding='async'
+    />
+</div>

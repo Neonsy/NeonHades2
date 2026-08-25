@@ -1,0 +1,337 @@
+---
+import RecordField from '../../../components/RecordField.astro';
+import RecordLink from '../../../components/RecordLink.astro';
+import BackLink from '../../../components/BackLink.astro';
+import ReaderSections from '../../../components/ReaderSections.astro';
+import RelationshipGroup from '../../../components/RelationshipGroup.astro';
+import RegionMap from '../../../components/RegionMap.astro';
+import SubjectArtwork from '../../../components/SubjectArtwork.astro';
+import CrossroadsKnowledge from '../../../components/CrossroadsKnowledge.astro';
+import ContentLayout from '../../../layouts/ContentLayout.astro';
+import { divineThemeStyle, getDivineTheme } from '../../../lib/divine-theme';
+import {
+    getContentRecords,
+    getPublication,
+    getRecord,
+    getRecordLinkLabel,
+    getRecordName,
+    getReferencePage,
+    getRelationships,
+    isReaderFacingRecord,
+    recordHref,
+    recordRouteSlug,
+    recordTypeLabel,
+    type PublicationRelationship,
+    type PublicationRecord,
+} from '../../../lib/publication';
+import {
+    collectReferences,
+    derivedRecordSections,
+    extractEffectMetrics,
+    fieldSuffix,
+    recordSummary,
+    visibleRecordFields,
+} from '../../../lib/presentation';
+import { getRecordSubjectArt } from '../../../lib/subject-art';
+import { recordMetadataDescription } from '../../../lib/seo-copy';
+import { progressionTable } from '../../../lib/progression';
+
+type Props = {
+    record: PublicationRecord;
+};
+
+export function getStaticPaths() {
+    const records = getContentRecords().filter(
+        (record) => record.public?.presentation === 'detail' && recordHref(record).startsWith('/knowledge/records/')
+    );
+    for (const record of records) {
+        if (!getReferencePage(record)) {
+            throw new Error(`Detail record has no reader-facing parent collection: ${record.key}`);
+        }
+    }
+    return records.map((record) => ({
+        params: { slug: recordRouteSlug(record) },
+        props: { record },
+    }));
+}
+
+const { record } = Astro.props;
+const publication = getPublication();
+const name = getRecordName(record);
+const subjectArt = getRecordSubjectArt(record);
+const isCharacterArtwork =
+    subjectArt.kind === 'character' ||
+    (subjectArt.format === 'raster' && subjectArt.source.startsWith('/art/characters/'));
+const collectionPage = getReferencePage(record);
+const collectionHref = collectionPage ? `/knowledge/${collectionPage.id.split('/')[1]}/` : '/knowledge/';
+const returnLabel =
+    collectionHref === '/knowledge/regions/'
+        ? 'regions'
+        : collectionPage
+          ? collectionPage.title.toLowerCase()
+          : 'knowledge';
+const summary = recordSummary(record);
+if (!summary) {
+    throw new Error(`Detail record has no authored public summary: ${record.key}`);
+}
+const metadataName = record.public?.slug.endsWith('-repeatable') ? `${name} (repeatable)` : name;
+const collectionSlug = collectionPage?.id.split('/')[1];
+if (!collectionSlug) throw new Error(`Detail record has no metadata collection: ${record.key}`);
+const metadataSummary = recordMetadataDescription(metadataName, collectionSlug, record.recordType, summary);
+const relationships = getRelationships(record.key);
+const fieldOrder = [
+    'name-description',
+    'description',
+    'behavior',
+    'base-effect',
+    'effect',
+    'effects',
+    'objectives',
+    'availability',
+    'appearance',
+    'unlock-requirements',
+    'requirements',
+    'prerequisites',
+    'acquisition',
+    'acquisition-locations',
+    'costs',
+    'unlock-costs',
+    'rank-costs-effects',
+    'rank-effects',
+    'starting-capacity',
+    'upgrade-series',
+    'level-scaling',
+    'rarity-scaling',
+    'rewards',
+    'sale',
+];
+const readerFields = visibleRecordFields(record, summary);
+const giverField =
+    record.recordType === 'mechanics/boon' ? readerFields.find((field) => fieldSuffix(field.id) === 'god') : undefined;
+const givers = giverField ? collectReferences(giverField.value) : [];
+const aspectRankEffects =
+    record.recordType === 'mechanics/weapon-aspect'
+        ? readerFields.find((field) => fieldSuffix(field.id) === 'rank-effects')?.value
+        : undefined;
+const visibleFields = readerFields
+    .filter(
+        (field) =>
+            field.id !== giverField?.id &&
+            (record.recordType !== 'mechanics/weapon-aspect' || fieldSuffix(field.id) !== 'rank-effects')
+    )
+    .sort((a, b) => {
+        const aOrder = fieldOrder.indexOf(fieldSuffix(a.id));
+        const bOrder = fieldOrder.indexOf(fieldSuffix(b.id));
+        return (aOrder < 0 ? 999 : aOrder) - (bOrder < 0 ? 999 : bOrder);
+    });
+const derivedSections = derivedRecordSections(record)
+    .map((section) => ({
+        ...section,
+        paragraphs: section.paragraphs.filter((paragraph) => paragraph !== summary),
+    }))
+    .filter(
+        (section) =>
+            section.paragraphs.length > 0 ||
+            section.facts.length > 0 ||
+            section.references.length > 0 ||
+            (section.orderedSteps?.length ?? 0) > 0 ||
+            (section.referenceGroups?.length ?? 0) > 0
+    );
+const divineTheme = getDivineTheme(record);
+const isFamiliar = record.recordType === 'mechanics/familiar';
+const isRegion = record.recordType === 'world-progression/region';
+const isCrossroads = record.key === 'world-progression/region:Home';
+const quickFieldCandidates = visibleFields.filter((field) => fieldSuffix(field.id) !== 'weapon-affinity');
+const compactQuickFieldCandidates = quickFieldCandidates.filter((field) => {
+    if (progressionTable(field.id, field.value, aspectRankEffects)) return false;
+    const serializedValue = JSON.stringify(field.value);
+    const metrics = extractEffectMetrics(field.value);
+    const compactMetrics =
+        metrics.length > 0 && metrics.length <= 2 && metrics.every((metric) => metric.values.length <= 4);
+    return collectReferences(field.value).length <= 4 && (serializedValue.length <= 520 || compactMetrics);
+});
+const primaryFields = isFamiliar
+    ? quickFieldCandidates.filter((field) => fieldSuffix(field.id) === 'unlock-requirements').slice(0, 1)
+    : compactQuickFieldCandidates.slice(0, 2);
+const primaryFieldIds = new Set(primaryFields.map((field) => field.id));
+const remainingFields = visibleFields.filter((field) => !primaryFieldIds.has(field.id));
+const hasQuickFacts = primaryFields.length > 0;
+const familiarBenefits = isFamiliar
+    ? summary
+          .replace(/\.$/u, '')
+          .split(/,\s+(?:and\s+)?|\s+and\s+/u)
+          .map((benefit) => benefit.trim())
+          .filter(Boolean)
+          .slice(0, 3)
+    : [];
+
+const linked = (items: PublicationRelationship[]) =>
+    [
+        ...items
+            .reduce((grouped, relationship) => {
+                const target = getRecord(relationship.targetKey);
+                if (!target || !isReaderFacingRecord(target)) return grouped;
+                grouped.set(target.key, target);
+                return grouped;
+            }, new Map<string, PublicationRecord>())
+            .values(),
+    ].sort((a, b) => getRecordLinkLabel(a).localeCompare(getRecordLinkLabel(b)));
+const fieldReferenceKeys = new Set(
+    visibleFields.flatMap((field) =>
+        collectReferences(field.value, 200).map((reference) => `${reference.recordType}:${reference.id}`)
+    )
+);
+const dependencies = linked(relationships.forward).filter((target) => !fieldReferenceKeys.has(target.key));
+const dependencyKeys = new Set(dependencies.map((target) => target.key));
+const usedBy = linked(relationships.reverse).filter(
+    (target) => !dependencyKeys.has(target.key) && !fieldReferenceKeys.has(target.key)
+);
+const hasRelationships = dependencies.length > 0 || usedBy.length > 0;
+const hasRecordDepth = remainingFields.length > 0 || derivedSections.length > 0 || hasRelationships;
+const hasDenseRelationships = dependencies.length > 8 || usedBy.length > 8;
+const dependencyPreviewLimit = hasDenseRelationships ? 8 : 14;
+const usedByPreviewLimit = hasDenseRelationships ? 8 : 18;
+---
+
+<ContentLayout
+    title={`${metadataName} · ${recordTypeLabel(record.recordType)}`}
+    description={metadataSummary}
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Knowledge', href: '/knowledge/' },
+        ...(collectionPage ? [{ name: collectionPage.title, href: collectionHref }] : []),
+        { name, href: recordHref(record) },
+    ]}
+    surface={`record record-${collectionPage?.id.split('/')[1] ?? 'knowledge'}`}>
+    <div
+        class:list={['record-page-frame', divineTheme && 'record-page-frame--divine']}
+        style={divineTheme ? divineThemeStyle(divineTheme) : undefined}
+        data-divine-domain={divineTheme?.slug}>
+        <header
+            class:list={[
+                'record-hero',
+                'record-hero-v2',
+                'record-hero--illustrated',
+                isFamiliar && 'record-hero--familiar',
+                isRegion && 'record-hero--region',
+                isCharacterArtwork && 'record-hero--character-art',
+                subjectArt.format === 'raster' && isCharacterArtwork && 'record-hero--raster-art',
+                !hasQuickFacts && 'record-hero--without-quick-facts',
+            ]}>
+            <nav class='record-return' aria-label='Back to collection'>
+                <BackLink href={collectionHref} label={`Back to ${returnLabel}`} />
+            </nav>
+            <div class='record-title-block'>
+                <h1>{name}</h1>
+                {
+                    givers.length > 0 && (
+                        <dl class='record-givers'>
+                            <dt>Given by</dt>
+                            <dd>
+                                {givers.map((giver) => (
+                                    <RecordLink reference={giver} artSize='identity' />
+                                ))}
+                            </dd>
+                        </dl>
+                    )
+                }
+                <p>{summary}</p>
+            </div>
+            {isRegion ? <RegionMap region={name} /> : <SubjectArtwork subject={subjectArt} size='hero' />}
+            {
+                isFamiliar && familiarBenefits.length > 0 && (
+                    <dl class='familiar-role-grid' aria-label={`${name} field roles`}>
+                        {familiarBenefits.map((benefit, index) => (
+                            <div>
+                                <dt>{['Passive', 'Combat', 'Gathering'][index]}</dt>
+                                <dd>{benefit}</dd>
+                            </div>
+                        ))}
+                    </dl>
+                )
+            }
+            {
+                hasQuickFacts && (
+                    <article class='record-quick-facts' aria-label={`${name} essential facts`}>
+                        <div class='record-dossier'>
+                            {isFamiliar && <h2>How to recruit {name}</h2>}
+                            {primaryFields.map((field) => (
+                                <RecordField field={field} effectValue={aspectRankEffects} />
+                            ))}
+                        </div>
+                        {hasRecordDepth && (
+                            <a href='#record-depth'>
+                                {isFamiliar
+                                    ? 'See abilities, upgrades, and relationships'
+                                    : 'See full details and relationships'}
+                                <span aria-hidden='true'>↓</span>
+                            </a>
+                        )}
+                    </article>
+                )
+            }
+        </header>
+
+        {isCrossroads && <CrossroadsKnowledge />}
+
+        {
+            hasRecordDepth && (
+                <div
+                    id='record-depth'
+                    class:list={[
+                        'record-layout',
+                        remainingFields.length === 0 && derivedSections.length === 0 && 'record-layout-relations-only',
+                        !hasRelationships && 'record-layout-details-only',
+                        hasDenseRelationships && 'record-layout-relations-dense',
+                    ]}>
+                    {remainingFields.length > 0 || derivedSections.length > 0 ? (
+                        <article class='record-dossier' aria-label={`${name} details`}>
+                            <ReaderSections sections={derivedSections} />
+                            {remainingFields.map((field) => (
+                                <RecordField field={field} effectValue={aspectRankEffects} />
+                            ))}
+                        </article>
+                    ) : null}
+
+                    {hasRelationships ? (
+                        <aside
+                            class:list={[
+                                'relationship-rail',
+                                'relationship-rail-v2',
+                                hasDenseRelationships && 'relationship-rail--dense',
+                            ]}
+                            aria-labelledby='relationships-title'>
+                            <header>
+                                <h2 id='relationships-title'>Related to {name}</h2>
+                            </header>
+                            {dependencies.length > 0 && (
+                                <RelationshipGroup
+                                    title='Direct relationships'
+                                    records={dependencies}
+                                    previewLimit={dependencyPreviewLimit}
+                                    moreNoun='connections'
+                                    hideLabel='Hide additional connections'
+                                />
+                            )}
+                            {usedBy.length > 0 && (
+                                <RelationshipGroup
+                                    title='Used in'
+                                    records={usedBy}
+                                    previewLimit={usedByPreviewLimit}
+                                    moreNoun='uses'
+                                    hideLabel='Hide additional uses'
+                                />
+                            )}
+                        </aside>
+                    ) : null}
+                </div>
+            )
+        }
+    </div>
+</ContentLayout>
+
+<script>
+    import { startRelationshipDisclosures } from '../../../scripts/relationship-disclosure-runtime';
+    startRelationshipDisclosures();
+</script>

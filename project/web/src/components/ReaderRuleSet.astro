@@ -1,0 +1,145 @@
+---
+import type { ReaderRule } from '../lib/presentation';
+
+type SetRule = Extract<ReaderRule, { kind: 'set' }>;
+type Props = { rule: SetRule };
+
+const { rule } = Astro.props;
+const Element = rule.collapsed ? 'details' : 'section';
+const countLabel = rule.groups.length > 1 ? `${rule.groups.length} Familiar paths` : `${rule.itemCount} entries`;
+const itemParts = (item: string) => {
+    const separator = item.indexOf(' · ');
+    return separator < 0
+        ? { detail: '', label: item }
+        : { detail: item.slice(separator + 3), label: item.slice(0, separator) };
+};
+---
+
+<Element
+    class:list={['condition-set', rule.groups.length > 1 && 'condition-set--grouped']}
+    data-condition-set
+    data-condition-set-collapsed={rule.collapsed ? '' : undefined}>
+    {
+        rule.collapsed ? (
+            <summary>
+                <strong>{rule.lead}</strong>
+                <span>Show {countLabel}</span>
+            </summary>
+        ) : (
+            <header>
+                <strong>{rule.lead}</strong>
+                <span>{countLabel}</span>
+            </header>
+        )
+    }
+    <ol class='condition-groups'>
+        {
+            rule.groups.map((group) => (
+                <li>
+                    <h3>{group.heading}</h3>
+                    <ul>
+                        {group.items.map((item) => {
+                            const { detail, label } = itemParts(item);
+                            return (
+                                <li>
+                                    <span>{label}</span>
+                                    {detail && <small>{detail}</small>}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </li>
+            ))
+        }
+    </ol>
+</Element>
+
+<style>
+    .condition-set {
+        padding: clamp(1.15rem, 2vw, 1.6rem);
+        border: 1px solid color-mix(in srgb, var(--divine-primary) 24%, transparent);
+        background: rgb(7 12 20 / 0.55);
+    }
+    .condition-set > :is(header, summary) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem 1.25rem;
+        align-items: baseline;
+        justify-content: space-between;
+        color: var(--paper);
+    }
+    .condition-set > summary {
+        cursor: pointer;
+    }
+    .condition-set > summary::marker {
+        content: '';
+    }
+    .condition-set > :is(header, summary) > span {
+        color: var(--divine-primary);
+        font-size: var(--type-support);
+        font-weight: 700;
+    }
+    .condition-groups {
+        display: grid;
+        gap: 1rem;
+        margin: 1.25rem 0 0;
+        padding: 0;
+        list-style: none;
+    }
+    .condition-set--grouped .condition-groups {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .condition-groups > li {
+        min-width: 0;
+        padding: 1.3rem;
+        border: 2px solid color-mix(in srgb, var(--divine-primary) 34%, transparent);
+        background: color-mix(in srgb, var(--ink-deep) 82%, transparent);
+        box-shadow:
+            0 0 1.35rem color-mix(in srgb, var(--divine-primary) 11%, transparent),
+            inset 0 1px color-mix(in srgb, var(--paper) 5%, transparent);
+    }
+    .condition-set--grouped .condition-groups > li {
+        flex: 1 1 12rem;
+        max-width: 18rem;
+    }
+    .condition-groups h3 {
+        margin: 0;
+        padding-block-end: 0.85rem;
+        border-block-end: 1px solid color-mix(in srgb, var(--divine-primary) 24%, transparent);
+        color: var(--paper);
+        font-size: var(--type-support);
+        text-transform: uppercase;
+    }
+    .condition-groups ul {
+        display: grid;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .condition-set:not(.condition-set--grouped) .condition-groups ul {
+        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+        column-gap: 1.5rem;
+    }
+    .condition-groups ul > li {
+        display: grid;
+        gap: 0.2rem;
+        align-content: center;
+        min-height: 3.3rem;
+        padding-block: 0.75rem;
+        border-block-end: 1px solid color-mix(in srgb, var(--divine-primary) 17%, transparent);
+        color: var(--paper-soft);
+    }
+    .condition-groups ul > li:last-child {
+        border-block-end: 0;
+    }
+    .condition-groups ul > li > span {
+        color: var(--paper);
+        font-weight: 650;
+    }
+    .condition-groups ul > li > small {
+        color: var(--divine-primary);
+        font-size: var(--type-support);
+    }
+</style>

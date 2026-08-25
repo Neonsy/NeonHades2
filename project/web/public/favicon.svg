@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 256 256"
+   version="1.1"
+   role="img"
+   aria-labelledby="mark-title mark-description"
+   id="svg30"
+   sodipodi:docname="neonhades2-mark.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview30"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <title
+     id="mark-title">NeonHades2</title>
+  <desc
+     id="mark-description">A moonlit fate needle crossing a faceted obsidian seal.</desc>
+  <defs
+     id="defs12">
+    <linearGradient
+       id="obsidian"
+       x1="34"
+       y1="27"
+       x2="220"
+       y2="228"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#19243a"
+         id="stop1" />
+      <stop
+         offset="0.52"
+         stop-color="#0a1020"
+         id="stop2" />
+      <stop
+         offset="1"
+         stop-color="#171026"
+         id="stop3" />
+    </linearGradient>
+    <linearGradient
+       id="moon"
+       x1="63"
+       y1="55"
+       x2="177"
+       y2="206"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#d8fff8"
+         id="stop4" />
+      <stop
+         offset="0.45"
+         stop-color="#63e6d2"
+         id="stop5" />
+      <stop
+         offset="1"
+         stop-color="#2e918f"
+         id="stop6" />
+    </linearGradient>
+    <linearGradient
+       id="thread"
+       x1="127"
+       y1="41"
+       x2="138"
+       y2="214"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#fff2a5"
+         id="stop7" />
+      <stop
+         offset="0.55"
+         stop-color="#f2bd57"
+         id="stop8" />
+      <stop
+         offset="1"
+         stop-color="#b15b46"
+         id="stop9" />
+    </linearGradient>
+    <linearGradient
+       id="violet"
+       x1="103"
+       y1="113"
+       x2="154"
+       y2="166"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#c1b4ff"
+         id="stop10" />
+      <stop
+         offset="0.55"
+         stop-color="#8868f3"
+         id="stop11" />
+      <stop
+         offset="1"
+         stop-color="#49309b"
+         id="stop12" />
+    </linearGradient>
+    <filter
+       id="rim"
+       x="-0.43636364"
+       y="-0.15"
+       width="1.8727273"
+       height="1.3"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         stdDeviation="4"
+         result="blur"
+         id="feGaussianBlur12" />
+      <feColorMatrix
+         in="blur"
+         values="0 0 0 0 0.388 0 0 0 0 0.902 0 0 0 0 0.824 0 0 0 .42 0"
+         id="feColorMatrix12" />
+    </filter>
+  </defs>
+  <g
+     id="seal"
+     inkscape:groupmode="layer"
+     inkscape:label="Obsidian seal">
+    <path
+       d="M128 12 191 32 231 86 226 158 185 219 128 244 68 222 28 165 24 91 65 35Z"
+       fill="#050812"
+       stroke="#050711"
+       stroke-width="10"
+       stroke-linejoin="round"
+       id="path12" />
+    <path
+       d="M128 18 188 37 224 89 219 155 181 213 128 237 73 216 35 161 31 94 69 42Z"
+       fill="url(#obsidian)"
+       stroke="#445071"
+       stroke-width="3"
+       stroke-linejoin="round"
+       id="path13" />
+    <path
+       d="M69 42 128 18 109 72 52 102 31 94Z"
+       fill="#2d3855"
+       opacity=".72"
+       id="path14" />
+    <path
+       d="M188 37 224 89 174 83 143 48Z"
+       fill="#221b3b"
+       opacity=".84"
+       id="path15" />
+    <path
+       d="M219 155 181 213 150 178 177 126Z"
+       fill="#11192c"
+       opacity=".9"
+       id="path16" />
+    <path
+       d="M73 216 35 161 84 158 110 206Z"
+       fill="#132a33"
+       opacity=".76"
+       id="path17" />
+  </g>
+  <g
+     id="g20"
+     inkscape:groupmode="layer"
+     inkscape:label="Moon crescent">
+    <path
+       d="M96 52c-33 14-54 48-50 84 5 48 47 83 94 79 29-3 55-20 69-46-18 15-41 22-64 18-44-7-73-48-65-91 3-18 12-33 24-46-3 0-5 1-8 2Z"
+       fill="#63e6d2"
+       opacity=".35"
+       filter="url(#rim)"
+       id="path18" />
+    <path
+       d="M96 52c-33 14-54 48-50 84 5 48 47 83 94 79 29-3 55-20 69-46-18 15-41 22-64 18-44-7-73-48-65-91 3-18 12-33 24-46-3 0-5 1-8 2Z"
+       fill="url(#moon)"
+       stroke="#07121c"
+       stroke-width="6"
+       stroke-linejoin="round"
+       id="path19" />
+    <path
+       d="M62 92c-9 27-1 58 19 79 18 18 42 28 67 27-38 10-78-13-88-51-5-19-4-38 2-55Z"
+       fill="#effffb"
+       opacity=".58"
+       id="path20" />
+  </g>
+  <g
+     id="needle"
+     inkscape:groupmode="layer"
+     inkscape:label="Fate needle">
+    <path
+       d="m132 37 11 22-7 151-8 20-7-20 5-151Z"
+       fill="#f2bd57"
+       opacity=".34"
+       filter="url(#rim)"
+       id="path21" />
+    <path
+       d="m132 37 9 23-7 148-6 17-5-17 5-148Z"
+       fill="url(#thread)"
+       stroke="#070a13"
+       stroke-width="4"
+       stroke-linejoin="round"
+       id="path22" />
+    <path
+       d="m132 37 4 23-6 148-2 9-1-9 4-148Z"
+       fill="#fff6c9"
+       opacity=".72"
+       id="path23" />
+    <path
+       d="M129 22 143 42 132 58 119 42Z"
+       fill="#f2bd57"
+       stroke="#070a13"
+       stroke-width="4"
+       stroke-linejoin="round"
+       id="path24" />
+    <circle
+       cx="132"
+       cy="42"
+       r="4.5"
+       fill="#0a1020"
+       stroke="#fff2a5"
+       stroke-width="2"
+       id="circle24" />
+  </g>
+  <g
+     id="fate-shard"
+     inkscape:groupmode="layer"
+     inkscape:label="Fate shard">
+    <path
+       d="m129 105 31 29-31 35-31-35Z"
+       fill="#8868f3"
+       opacity=".28"
+       filter="url(#rim)"
+       id="path25" />
+    <path
+       d="m129 105 31 29-31 35-31-35Z"
+       fill="url(#violet)"
+       stroke="#07101d"
+       stroke-width="6"
+       stroke-linejoin="round"
+       id="path26" />
+    <path
+       d="m129 116 18 18-18 21-18-21Z"
+       fill="#10182a"
+       stroke="#d8fff8"
+       stroke-width="3"
+       stroke-linejoin="round"
+       id="path27" />
+    <path
+       d="m129 123 10 11-10 12-10-12Z"
+       fill="#63e6d2"
+       id="path28" />
+  </g>
+  <g
+     id="stars"
+     inkscape:groupmode="layer"
+     inkscape:label="Guide stars">
+    <path
+       d="m72 63 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"
+       fill="#f2bd57"
+       id="path29" />
+    <path
+       d="m184 90 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"
+       fill="#d8fff8"
+       id="path30" />
+    <circle
+       cx="178"
+       cy="188"
+       r="4"
+       fill="#8868f3"
+       stroke="#c1b4ff"
+       stroke-width="2"
+       id="circle30" />
+  </g>
+</svg>

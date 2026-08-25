@@ -1,0 +1,279 @@
+---
+import GuideChecklist from '../../components/GuideChecklist.astro';
+import BackLink from '../../components/BackLink.astro';
+import RecordLink from '../../components/RecordLink.astro';
+import ChapterJourneyNav from '../../components/guide/ChapterJourneyNav.astro';
+import ChapterIllustration from '../../components/guide/ChapterIllustration.astro';
+import ChapterContents from '../../components/guide/ChapterContents.astro';
+import FirstCrossroadsChapter from '../../components/guide/FirstCrossroadsChapter.astro';
+import FirstNightChapter from '../../components/guide/FirstNightChapter.astro';
+import ChapterTerms from '../../components/guide/ChapterTerms.astro';
+import ChapterActionPlan from '../../components/guide/ChapterActionPlan.astro';
+import GuideLinks from '../../components/guide/GuideLinks.astro';
+import { guideChapters, guideMilestones, type GuideChapter } from '../../content/guide';
+import { getChapterPresentation } from '../../content/guide-presentation';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import { getPublication } from '../../lib/publication';
+import { guideMetadataTitle } from '../../lib/seo-copy';
+
+export function getStaticPaths() {
+    return guideChapters.map((chapter) => ({ params: { chapter: chapter.id }, props: { chapter } }));
+}
+
+type Props = { chapter: GuideChapter };
+
+const { chapter } = Astro.props;
+const publication = getPublication();
+const chapterIndex = guideChapters.indexOf(chapter);
+const previous = guideChapters[chapterIndex - 1];
+const next = guideChapters[chapterIndex + 1];
+const milestone = guideMilestones.find((candidate) => candidate.id === chapter.milestone);
+const isFirstNight = chapter.id === 'the-first-night';
+const isFirstCrossroads = chapter.id === 'first-return';
+const presentation = getChapterPresentation(chapter.id);
+const referenceDirectoryLinkCount = 6;
+const contentSections = [
+    { href: '#chapter-action-plan-title', label: 'Do these first' },
+    ...(chapter.terms?.length ? [{ href: '#chapter-terms', label: 'Recognize these first' }] : []),
+    ...presentation.order.flatMap((section) => {
+        if (section === 'orientation') return [{ href: '#orientation', label: presentation.headings.orientation }];
+        if (section === 'loadout' && chapter.loadout) return [{ href: '#loadout', label: chapter.loadout.title }];
+        if (section === 'learning') return [{ href: '#learning', label: presentation.headings.learning }];
+        if (section === 'actions') return [{ href: '#actions', label: presentation.headings.actions }];
+        if (section === 'choices' && chapter.choices?.length)
+            return [{ href: '#choices', label: presentation.headings.choices }];
+        if (section === 'overlap' && chapter.overlap?.length)
+            return [{ href: '#overlap', label: presentation.headings.overlap }];
+        if (section === 'fallback') return [{ href: '#fallback', label: presentation.headings.fallback }];
+        if (section === 'checklist') return [{ href: '#progress', label: presentation.headings.checklist }];
+        return [];
+    }),
+];
+---
+
+<ContentLayout
+    title={chapter.title}
+    documentTitle={guideMetadataTitle(chapter.id)}
+    description={chapter.objective}
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'A-Z guide', href: '/guide/' },
+        { name: chapter.title, href: `/guide/${chapter.id}/` },
+    ]}
+    surface={`guide guide-${chapter.milestone}`}>
+    {isFirstNight && <FirstNightChapter chapter={chapter} />}
+    {isFirstCrossroads && <FirstCrossroadsChapter chapter={chapter} />}
+
+    {
+        !isFirstNight && !isFirstCrossroads && (
+            <>
+                <article class='chapter-composition' data-chapter-form={presentation.form} data-chapter-id={chapter.id}>
+                    <nav class='chapter-breadcrumb' aria-label='Walkthrough location'>
+                        <BackLink href='/guide/' label='All chapters' />
+                        <span>{milestone?.title}</span>
+                    </nav>
+
+                    <header class='chapter-hero' data-night-scene={chapter.milestone}>
+                        <div>
+                            <h1>{chapter.title}</h1>
+                            <p>{chapter.objective}</p>
+                        </div>
+                        <ChapterIllustration chapterId={chapter.id} form={presentation.form} />
+                    </header>
+
+                    <ChapterActionPlan chapter={chapter} />
+
+                    <div class='chapter-reading-shell'>
+                        <ChapterContents items={contentSections} />
+                        <div class='chapter-reading'>
+                            <ChapterTerms terms={chapter.terms} />
+
+                            {presentation.order.map((section) => (
+                                <>
+                                    {section === 'orientation' && (
+                                        <section
+                                            id='orientation'
+                                            class='chapter-orientation'
+                                            data-night-scene='orientation'>
+                                            <div>
+                                                <h2>{presentation.headings.orientation}</h2>
+                                                <p>{chapter.entry}</p>
+                                            </div>
+                                            <blockquote>{chapter.why}</blockquote>
+                                        </section>
+                                    )}
+
+                                    {section === 'loadout' && chapter.loadout && (
+                                        <section
+                                            id='loadout'
+                                            class='chapter-loadout'
+                                            data-night-scene='loadout'
+                                            aria-labelledby='loadout-title'>
+                                            <header>
+                                                <h2 id='loadout-title'>{chapter.loadout.title}</h2>
+                                                <p>{chapter.loadout.summary}</p>
+                                            </header>
+                                            <dl
+                                                data-balanced-grid
+                                                data-balanced-grid-layout='justified'
+                                                data-balanced-grid-align='row'
+                                                data-balanced-grid-balance='equal'
+                                                data-balanced-grid-min='18rem'
+                                                data-balanced-grid-max='3'>
+                                                {chapter.loadout.items.map((item) => (
+                                                    <div>
+                                                        <dt>{item.label}</dt>
+                                                        <dd>
+                                                            <strong>{item.value}</strong>
+                                                            <span>{item.reason}</span>
+                                                            {item.references && (
+                                                                <div class='chapter-links'>
+                                                                    {item.references.map((reference) => (
+                                                                        <RecordLink reference={reference} />
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </dd>
+                                                    </div>
+                                                ))}
+                                            </dl>
+                                        </section>
+                                    )}
+
+                                    {section === 'learning' && (
+                                        <section
+                                            id='learning'
+                                            class='chapter-learning'
+                                            data-night-scene='learn'
+                                            aria-labelledby='learn-title'>
+                                            <h2 id='learn-title'>{presentation.headings.learning}</h2>
+                                            <ul class='chapter-learning-list'>
+                                                {chapter.learn.map((item) => (
+                                                    <li>{item}</li>
+                                                ))}
+                                            </ul>
+                                        </section>
+                                    )}
+
+                                    {section === 'actions' && (
+                                        <section
+                                            id='actions'
+                                            class='chapter-actions-v2'
+                                            data-night-scene='actions'
+                                            aria-labelledby='actions-title'>
+                                            <h2 id='actions-title'>{presentation.headings.actions}</h2>
+                                            <ol
+                                                class='chapter-action-list'
+                                                data-balanced-grid
+                                                data-balanced-grid-layout='independent'
+                                                data-balanced-grid-min='34rem'
+                                                data-balanced-grid-max='3'>
+                                                {chapter.steps.map((step, index) => (
+                                                    <li
+                                                        class:list={{
+                                                            'chapter-action--directory-lead':
+                                                                (chapter.steps[index + 1]?.links?.length ?? 0) >=
+                                                                referenceDirectoryLinkCount,
+                                                            'chapter-action--reference-directory':
+                                                                (step.links?.length ?? 0) >=
+                                                                referenceDirectoryLinkCount,
+                                                        }}
+                                                        data-balanced-grid-span={
+                                                            (chapter.steps[index + 1]?.links?.length ?? 0) >=
+                                                                referenceDirectoryLinkCount ||
+                                                            (step.links?.length ?? 0) >= referenceDirectoryLinkCount
+                                                                ? 'all'
+                                                                : undefined
+                                                        }>
+                                                        <div>
+                                                            <strong>{step.title}</strong>
+                                                            <p>{step.body}</p>
+                                                            {step.references && (
+                                                                <div class='chapter-links'>
+                                                                    {step.references.map((item) => (
+                                                                        <RecordLink reference={item} />
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                            <GuideLinks links={step.links} />
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ol>
+                                        </section>
+                                    )}
+
+                                    {section === 'choices' && chapter.choices && chapter.choices.length > 0 && (
+                                        <section
+                                            id='choices'
+                                            class='choice-table'
+                                            data-night-scene='choices'
+                                            aria-labelledby='choices-title'>
+                                            <h2 id='choices-title'>{presentation.headings.choices}</h2>
+                                            <ul>
+                                                {chapter.choices.map((choice) => (
+                                                    <li>
+                                                        <strong class='choice-table__situation'>
+                                                            {choice.situation}
+                                                        </strong>
+                                                        <strong class='choice-table__action'>{choice.choice}</strong>
+                                                        <span class='choice-table__reason'>{choice.reason}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </section>
+                                    )}
+
+                                    {section === 'overlap' && chapter.overlap && chapter.overlap.length > 0 && (
+                                        <section
+                                            id='overlap'
+                                            class='chapter-overlap'
+                                            data-night-scene='overlap'
+                                            aria-labelledby='overlap-title'>
+                                            <h2 id='overlap-title'>{presentation.headings.overlap}</h2>
+                                            <div>
+                                                {chapter.overlap.map((item) => (
+                                                    <article>
+                                                        <strong>{item.title}</strong>
+                                                        <p>{item.body}</p>
+                                                        {item.references && (
+                                                            <div class='chapter-links'>
+                                                                {item.references.map((reference) => (
+                                                                    <RecordLink reference={reference} />
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                        <GuideLinks links={item.links} />
+                                                    </article>
+                                                ))}
+                                            </div>
+                                        </section>
+                                    )}
+
+                                    {section === 'fallback' && (
+                                        <section id='fallback' class='chapter-fallback-v2' data-night-scene='fallback'>
+                                            <h2>{presentation.headings.fallback}</h2>
+                                            <p>{chapter.fallback}</p>
+                                            <GuideLinks links={chapter.fallbackLinks} />
+                                        </section>
+                                    )}
+
+                                    {section === 'checklist' && (
+                                        <section id='progress' class='chapter-checklist-section'>
+                                            <GuideChecklist chapter={chapter} title={presentation.headings.checklist} />
+                                        </section>
+                                    )}
+                                </>
+                            ))}
+                        </div>
+                    </div>
+                </article>
+
+                <ChapterJourneyNav previous={previous} next={next} />
+            </>
+        )
+    }
+
+    {(isFirstNight || isFirstCrossroads) && <ChapterJourneyNav previous={previous} next={next} />}
+</ContentLayout>

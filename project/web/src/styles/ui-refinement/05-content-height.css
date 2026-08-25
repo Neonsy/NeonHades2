@@ -1,0 +1,67 @@
+/* Hero space is earned by content; ordinary pages never reserve a screenful. */
+.page-hero,
+.guide-threshold,
+.builds-workshop,
+.tier-hall,
+.build-detail-hero,
+.tier-list-hero,
+.record-hero {
+    min-height: auto;
+}
+
+.page-hero > div > p,
+.guide-threshold-copy > p,
+.builds-workshop > div > p,
+.tier-hall > div > p,
+.build-detail-hero p,
+.tier-list-hero p,
+.record-title-block > p {
+    margin-top: var(--space-5);
+    font-size: var(--type-body);
+    line-height: 1.62;
+}
+
+.guide-threshold-copy h1,
+.collection-hero h1,
+.builds-workshop h1,
+.tier-hall h1,
+.build-title-line h1,
+.tier-list-hero h1,
+.record-title-block h1,
+.record-hero--illustrated .record-title-block h1,
+.record-hero--region .record-title-block h1,
+.first-night-intro h1,
+.chapter-hero h1 {
+    font-size: var(--type-title);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+}
+
+@media (min-width: 901px) {
+    .chapter-hero {
+        min-height: min(28rem, 56svh);
+    }
+}
+
+@media (max-width: 900px) {
+    .home-hero-copy::before {
+        inset-inline: 0;
+    }
+
+    .home-hero-copy {
+        padding-inline: var(--space-4);
+    }
+}
+
+.knowledge-hero h1 {
+    max-width: 18ch;
+    font-size: clamp(2.8rem, 3.9vw, 4rem);
+    line-height: 1.05;
+}
+
+.home-hero-copy h1,
+.home-offerings h2,
+.home-questions h2 {
+    font-size: var(--type-display);
+    line-height: 1.02;
+}

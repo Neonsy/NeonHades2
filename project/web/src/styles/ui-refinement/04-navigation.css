@@ -1,0 +1,313 @@
+/* Navigation stays familiar and touchable while the visual world remains authored. */
+.world-header {
+    top: 0;
+    width: 100%;
+    min-height: 5rem;
+    margin-inline: auto;
+    padding-inline: max(var(--edge), calc((100% - var(--world)) / 2));
+    background: var(--ink);
+    border-bottom: 1px solid var(--rule);
+    clip-path: none;
+    box-shadow: none;
+}
+
+.world-primary-nav a,
+.world-wordmark,
+.world-search {
+    min-height: var(--control-height);
+}
+
+.world-primary-nav a {
+    font-size: var(--type-label);
+    letter-spacing: 0.065em;
+}
+
+.world-primary-nav a::after {
+    height: 2px;
+    background: var(--ember);
+}
+
+.world-search-icon,
+.world-menu-toggle,
+.world-nav-scrim {
+    display: none;
+}
+
+@media (max-width: 1100px) {
+    .world-header {
+        top: 0;
+        grid-template-columns: minmax(0, 1fr) auto 3rem;
+        grid-template-rows: auto;
+        gap: var(--space-3);
+        width: 100%;
+        min-height: 5rem;
+        padding: 0.625rem var(--space-4);
+        will-change: auto;
+    }
+
+    .world-search {
+        position: relative;
+        z-index: 4;
+        grid-row: 1;
+        grid-column: 2;
+    }
+}
+
+@media (max-width: 1100px) {
+    html.has-navigation-open,
+    html.has-navigation-open body {
+        overflow: hidden;
+    }
+
+    .world-wordmark {
+        position: relative;
+        z-index: 3;
+        min-width: 0;
+        gap: 0.7rem;
+    }
+
+    .world-wordmark > img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .world-wordmark strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .world-menu-toggle {
+        position: relative;
+        z-index: 4;
+        grid-row: 1;
+        grid-column: 3;
+        display: grid;
+        width: 3rem;
+        min-height: 3rem;
+        place-items: center;
+        padding: 0;
+        border: 1px solid color-mix(in srgb, var(--projection) 42%, transparent);
+        border-radius: 0.2rem;
+        color: var(--paper);
+        background: color-mix(in srgb, var(--projection) 11%, var(--ink-deep));
+        cursor: pointer;
+    }
+
+    .world-menu-icon {
+        position: relative;
+        display: block;
+        width: 1.5rem;
+        height: 1.125rem;
+    }
+
+    .world-menu-icon > span {
+        position: absolute;
+        left: 0;
+        display: block;
+        width: 100%;
+        height: 2px;
+        border-radius: 0.2rem;
+        background: currentColor;
+        transform-origin: center;
+        transition:
+            top 220ms var(--ease-stage),
+            transform 220ms var(--ease-stage),
+            opacity 120ms ease-out;
+    }
+
+    .world-menu-icon > span:first-child {
+        top: 0.0625rem;
+    }
+
+    .world-menu-icon > span:nth-child(2) {
+        top: 0;
+    }
+
+    .world-menu-icon > span:last-child {
+        top: 0.9375rem;
+    }
+
+    .world-header.is-navigation-open .world-menu-icon > span:first-child,
+    .world-header.is-navigation-open .world-menu-icon > span:last-child {
+        top: 0;
+    }
+
+    .world-header.is-navigation-open .world-menu-icon > span:first-child {
+        transform: rotate(45deg);
+    }
+
+    .world-header.is-navigation-open .world-menu-icon > span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0.35);
+    }
+
+    .world-header.is-navigation-open .world-menu-icon > span:last-child {
+        transform: rotate(-45deg);
+    }
+
+    .world-nav-scrim {
+        position: fixed;
+        z-index: 1;
+        inset: 0;
+        display: block;
+        visibility: hidden;
+        background: rgb(1 4 10 / 0.68);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+            opacity 220ms ease-out,
+            visibility 0s linear 240ms;
+    }
+
+    .world-primary-nav {
+        position: fixed;
+        z-index: 2;
+        inset: 0 0 0 auto;
+        grid-row: auto;
+        grid-column: auto;
+        display: flex;
+        width: min(86vw, 24rem);
+        height: 100vh;
+        height: 100dvh;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: var(--space-2);
+        padding: calc(6.25rem + env(safe-area-inset-top)) var(--space-4)
+            calc(var(--space-6) + env(safe-area-inset-bottom));
+        overflow-y: auto;
+        border-left: 1px solid color-mix(in srgb, var(--thread) 36%, transparent);
+        background:
+            radial-gradient(circle at 100% 0, color-mix(in srgb, var(--projection) 20%, transparent), transparent 34%),
+            linear-gradient(160deg, rgb(12 20 28 / 0.99), rgb(16 13 31 / 0.99));
+        box-shadow: -1.5rem 0 4rem rgb(1 4 10 / 0.55);
+        opacity: 0;
+        transform: translateX(100%);
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+            transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 180ms ease-out,
+            visibility 0s linear 280ms;
+    }
+
+    .world-primary-nav a {
+        width: 100%;
+        min-height: 4rem;
+        flex: 0 0 auto;
+        justify-content: flex-start;
+        padding: var(--space-3) var(--space-4);
+        border: 1px solid transparent;
+        border-radius: 0.5rem 1.35rem 0.5rem 1.35rem;
+        font-size: clamp(1.25rem, 5.5vw, 1.5rem);
+        letter-spacing: 0.035em;
+        white-space: normal;
+    }
+
+    .world-primary-nav a:is(:hover, [aria-current='page']) {
+        border-color: color-mix(in srgb, var(--thread) 34%, transparent);
+        background: linear-gradient(
+            110deg,
+            color-mix(in srgb, var(--thread) 14%, transparent),
+            color-mix(in srgb, var(--projection) 14%, transparent)
+        );
+    }
+
+    .world-primary-nav a::after {
+        right: var(--space-4);
+        bottom: 0.65rem;
+        left: var(--space-4);
+        opacity: 0;
+        transform: scaleX(0);
+        visibility: hidden;
+        transition:
+            transform 200ms var(--ease-stage),
+            opacity 120ms ease-out;
+    }
+
+    .world-primary-nav a:is(:hover, [aria-current='page'])::after,
+    .world-header .world-primary-nav a:focus-visible::after {
+        opacity: 1;
+        transform: scaleX(1);
+        visibility: visible;
+    }
+
+    .world-primary-nav .world-nav-label--full {
+        display: inline;
+    }
+
+    .world-primary-nav .world-nav-label--short {
+        display: none;
+    }
+
+    .world-header.is-navigation-open .world-primary-nav,
+    .world-header.is-navigation-open .world-nav-scrim {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transition-delay: 0s;
+    }
+
+    .world-header.is-navigation-open .world-primary-nav {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 760px) {
+    .world-header {
+        grid-template-columns: minmax(0, 1fr) 3rem 3rem;
+        gap: var(--space-2);
+        width: calc(100% - 0.75rem);
+        min-height: 4.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .world-search {
+        width: 3rem;
+        min-height: 3rem;
+        justify-content: center;
+        border: 1px solid color-mix(in srgb, var(--thread) 30%, transparent);
+        border-radius: 0.2rem;
+        background: color-mix(in srgb, var(--thread) 7%, var(--ink-deep));
+    }
+
+    .world-search-icon {
+        display: inline-block;
+        color: var(--thread-bright);
+        font-size: 1.625rem;
+    }
+
+    .world-search-label--full,
+    .world-search kbd {
+        display: none;
+    }
+
+    .world-search-label--short {
+        position: absolute !important;
+        display: inline !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        border: 0 !important;
+        white-space: nowrap !important;
+    }
+}
+
+@media (max-width: 430px) {
+    .world-header {
+        width: calc(100% - 0.5rem);
+        padding-inline: 0.625rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .world-footer-meta a,
+    .world-primary-nav,
+    .world-nav-scrim,
+    .world-menu-icon > span {
+        transition: none;
+    }
+}

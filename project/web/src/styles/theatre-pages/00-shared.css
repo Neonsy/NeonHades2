@@ -1,0 +1,27 @@
+/* The page families share materials, not composition. */
+
+.content-main > :first-child {
+    position: relative;
+}
+
+.page-hero,
+.guide-threshold,
+.builds-workshop,
+.tier-hall,
+.build-detail-hero,
+.tier-list-hero,
+.record-hero {
+    min-height: min(52rem, 76svh);
+}
+.page-hero > div > p,
+.guide-threshold-copy > p,
+.builds-workshop > div > p,
+.tier-hall > div > p,
+.build-detail-hero p,
+.tier-list-hero p,
+.record-title-block > p {
+    max-width: 44rem;
+    margin-top: 1.5rem;
+    color: var(--paper-soft);
+    font-size: clamp(1.125rem, 1.5vw, 1.4rem);
+}

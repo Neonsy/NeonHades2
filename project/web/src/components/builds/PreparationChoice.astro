@@ -1,0 +1,18 @@
+---
+import { getRecord, getRecordLinkLabel, recordHref, isReaderFacingRecord } from '../../lib/publication';
+import { getRecordSubjectArt } from '../../lib/subject-art';
+import SubjectArtwork from '../SubjectArtwork.astro';
+
+type Props = { reference: { id: string; recordType: string }; reason?: string };
+const { reference, reason } = Astro.props;
+const record = getRecord(`${reference.recordType}:${reference.id}`);
+if (!record || !isReaderFacingRecord(record)) throw new Error('Preparation choice requires a public record.');
+---
+
+<a class='preparation-choice' href={recordHref(record)}>
+    <SubjectArtwork subject={getRecordSubjectArt(record)} size='identity' />
+    <span>
+        <strong>{getRecordLinkLabel(record)}</strong>
+        {reason && <span>{reason}</span>}
+    </span>
+</a>

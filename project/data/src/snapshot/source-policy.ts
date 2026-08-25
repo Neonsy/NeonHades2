@@ -9,6 +9,7 @@ export interface SourcePolicyRule {
   readonly directory: string;
   readonly extension: ".lua" | ".sjson";
   readonly files: "all" | readonly string[];
+  readonly recursive?: boolean;
 }
 
 export interface SourcePolicy {
@@ -20,10 +21,7 @@ export const sourcePolicy = {
   schema: "neodes2-source-policy-1",
   rules: [
     { directory: "Content/Scripts", extension: ".lua", files: "all" },
-    { directory: "Content/Game/Text/en", extension: ".sjson", files: "all" },
-    { directory: "Content/Game/Projectiles", extension: ".sjson", files: "all" },
-    { directory: "Content/Game/Units", extension: ".sjson", files: ["Enemies.sjson"] },
-    { directory: "Content/Game/Weapons", extension: ".sjson", files: "all" },
+    { directory: "Content/Game", extension: ".sjson", files: "all", recursive: true },
   ],
 } as const satisfies SourcePolicy;
 
@@ -60,6 +58,7 @@ export function validateSourcePolicy(value: unknown): SourcePolicy {
     const directory = candidate.directory;
     const extension = candidate.extension;
     const files = candidate.files;
+    const recursive = candidate.recursive;
 
     if (typeof directory !== "string") {
       throw new Error(`Source policy rule ${index} is missing its directory.`);
@@ -88,6 +87,13 @@ export function validateSourcePolicy(value: unknown): SourcePolicy {
       throw new Error(`Source policy rule ${index} has an invalid file selector.`);
     }
 
+    if (recursive !== undefined && typeof recursive !== "boolean") {
+      throw new Error(`Source policy rule ${index} has an invalid recursive flag.`);
+    }
+    if (recursive === true && files !== "all") {
+      throw new Error(`Recursive source policy rule ${index} must select all matching files.`);
+    }
+
     if (Array.isArray(files)) {
       if (files.length === 0) {
         throw new Error(`Source policy rule ${index} has no named files.`);
@@ -108,6 +114,7 @@ export function validateSourcePolicy(value: unknown): SourcePolicy {
       directory,
       extension: extension as SourcePolicyRule["extension"],
       files: files === "all" ? "all" : [...files] as readonly string[],
+      ...(recursive === undefined ? {} : { recursive }),
     };
   });
 

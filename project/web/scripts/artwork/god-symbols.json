@@ -1,0 +1,85 @@
+{
+    "schema": 1,
+    "generator": "scripts/artwork/generate-god-symbols.py",
+    "opencvVersion": "5.0.0",
+    "deliveryCropScale": 0.38,
+    "silhouetteBlurSigma": 6.0,
+    "silhouetteEdgeThreshold": 18.0,
+    "silhouetteComponentRatio": 0.02,
+    "silhouetteComponentReach": 0.08,
+    "silhouetteSupportRadius": 7,
+    "assets": [
+        {
+            "id": "aphrodite",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Aphrodite.png",
+            "master": "art-source/raster/game-derived/god-symbols/aphrodite.png",
+            "delivery": "/art/gods/symbols/aphrodite.webp"
+        },
+        {
+            "id": "apollo",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Apollo.png",
+            "master": "art-source/raster/game-derived/god-symbols/apollo.png",
+            "delivery": "/art/gods/symbols/apollo.webp"
+        },
+        {
+            "id": "ares",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Ares.png",
+            "master": "art-source/raster/game-derived/god-symbols/ares.png",
+            "delivery": "/art/gods/symbols/ares.webp"
+        },
+        {
+            "id": "chaos",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Chaos.png",
+            "master": "art-source/raster/game-derived/god-symbols/chaos.png",
+            "delivery": "/art/gods/symbols/chaos.webp"
+        },
+        {
+            "id": "demeter",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Demeter.png",
+            "master": "art-source/raster/game-derived/god-symbols/demeter.png",
+            "delivery": "/art/gods/symbols/demeter.webp"
+        },
+        {
+            "id": "hephaestus",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Hephaestus.png",
+            "master": "art-source/raster/game-derived/god-symbols/hephaestus.png",
+            "delivery": "/art/gods/symbols/hephaestus.webp"
+        },
+        {
+            "id": "hera",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Hera.png",
+            "master": "art-source/raster/game-derived/god-symbols/hera.png",
+            "delivery": "/art/gods/symbols/hera.webp"
+        },
+        {
+            "id": "hermes",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Hermes.png",
+            "master": "art-source/raster/game-derived/god-symbols/hermes.png",
+            "delivery": "/art/gods/symbols/hermes.webp"
+        },
+        {
+            "id": "hestia",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Hestia.png",
+            "master": "art-source/raster/game-derived/god-symbols/hestia.png",
+            "delivery": "/art/gods/symbols/hestia.webp"
+        },
+        {
+            "id": "poseidon",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Poseidon.png",
+            "master": "art-source/raster/game-derived/god-symbols/poseidon.png",
+            "delivery": "/art/gods/symbols/poseidon.webp"
+        },
+        {
+            "id": "zeus",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Screens/BoonSelectSymbols/Zeus.png",
+            "master": "art-source/raster/game-derived/god-symbols/zeus.png",
+            "delivery": "/art/gods/symbols/zeus.webp"
+        },
+        {
+            "id": "shared",
+            "source": ".local/reference/game-assets/GUI/textures/GUI/Icons/Boon.png",
+            "master": "art-source/raster/game-derived/god-symbols/shared.png",
+            "delivery": "/art/gods/symbols/shared.webp"
+        }
+    ]
+}

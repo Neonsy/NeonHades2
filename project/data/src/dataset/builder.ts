@@ -54,14 +54,14 @@ const domainConfigs: Readonly<Record<DatasetDomainName, DomainConfig>> = {
     manifestSchema: "neodes2-guide-acquisition-manifest-1",
     completionSchema: "neodes2-guide-acquisition-completion-1",
     coverageSchema: "neodes2-guide-coverage-1",
-    datasetSchema: "neodes2-guide-data-1",
+    datasetSchema: "neodes2-guide-data-2",
     datasetFile: "guide.json",
   },
   loadouts: {
     manifestSchema: "neodes2-loadout-acquisition-manifest-1",
     completionSchema: "neodes2-loadout-acquisition-completion-1",
     coverageSchema: "neodes2-loadout-coverage-1",
-    datasetSchema: "neodes2-loadouts-1",
+    datasetSchema: "neodes2-loadouts-2",
     datasetFile: "loadouts.json",
   },
   weapons: {
@@ -181,6 +181,11 @@ function derivedCounts(domain: DatasetDomainName, dataset: Readonly<Record<strin
     bounties: length("bounties"), relationships: length("relationships"), prophecies: length("prophecies"),
     narrative: length("narrative"), outros: length("outros"), achievements: length("achievements"),
     namedRequirements: length("namedRequirements"),
+    gatheringTools: length("gatheringTools"), fish: length("fish"), cultivation: length("cultivation"),
+    marketOffers: length("marketOffers"), runRewards: length("runRewards"), openingStates: length("openingStates"),
+    godAppearances: length("godAppearances"), encounterFriends: length("encounterFriends"),
+    encounterAids: length("encounterAids"), encounterAidEffects: length("encounterAidEffects"), strifeCurses: length("strifeCurses"),
+    surfacePenalties: length("surfacePenalties"),
   };
 }
 
@@ -207,11 +212,13 @@ function assertDatasetShape(
   if (dataset.schema !== config.datasetSchema) throw new Error(`Unsupported ${domain} normalized dataset schema.`);
   const requiredArrays: Readonly<Record<DatasetDomainName, readonly string[]>> = {
     arcana: ["layout", "cards"], boons: ["gods", "boons"],
-    guide: ["routes", "regions", "rooms", "encounters", "enemies", "rewards", "consumables", "resources", "statusElements", "oathConditions", "bounties", "bountyOrder", "relationships", "prophecies", "narrative", "outros", "outroPriorities", "achievements", "namedRequirements", "runClearMessages"],
+    guide: ["routes", "regions", "rooms", "encounters", "enemies", "rewards", "consumables", "resources", "statusElements", "oathConditions", "bounties", "bountyOrder", "relationships", "prophecies", "narrative", "outros", "outroPriorities", "achievements", "namedRequirements", "runClearMessages", "gatheringTools", "fish", "cultivation", "marketOffers", "runRewards", "openingStates", "godAppearances", "encounterFriends", "encounterAids", "encounterAidEffects", "strifeCurses", "surfacePenalties"],
     loadouts: ["keepsakes", "familiars", "hexes", "incantations", "automaticWorldUpgradeIds"],
     weapons: ["weapons", "aspects", "hammers"],
   };
   for (const field of requiredArrays[domain]) arrayValue(dataset[field], `${domain} dataset.${field}`);
+  if (domain === "loadouts") record(dataset.incantationRevealPolicy, "loadouts dataset.incantationRevealPolicy");
+  if (domain === "guide") integerValue(dataset.gardenPlotCount, "guide dataset.gardenPlotCount");
   return dataset;
 }
 

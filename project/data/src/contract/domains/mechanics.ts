@@ -1,4 +1,4 @@
-import { editorial, fact } from "../field.js";
+import { derived, editorial, fact } from "../field.js";
 import type { DomainContract } from "../types.js";
 
 const luaRuntime = ["lua-source", "runtime-table"] as const;
@@ -31,6 +31,16 @@ export const mechanicsDomain = {
           normalization: "references",
           cardinality: "one-or-more",
           validations: ["references-exist", "runtime-source-agree"],
+          requirementIds: ["reference.gods-boons", "progression.boons"],
+        }),
+        fact({
+          id: "availability",
+          description: "Player-facing first-appearance, guarantee, repeat-offer, and secret-door rules for the god.",
+          sourceClasses: ["lua-source"],
+          sourcePatterns: ["Content/Scripts/RequirementsData.lua", "Content/Scripts/BiomeStateData.lua", "Content/Scripts/RoomData*.lua"],
+          normalization: "requirement-expression",
+          cardinality: "zero-or-one",
+          validations: ["requirement-resolves"],
           requirementIds: ["reference.gods-boons", "progression.boons"],
         }),
       ],
@@ -76,6 +86,15 @@ export const mechanicsDomain = {
           description: "Official English boon name.",
           sourceClasses: localized,
           sourcePatterns: ["Content/Game/Text/en/_LootData_*.sjson", "TraitText.en.sjson"],
+          normalization: "localized-text",
+          validations: ["required", "localized"],
+          requirementIds: ["reference.gods-boons", "progression.boons"],
+        }),
+        fact({
+          id: "description",
+          description: "Official English boon effect text with resolved player-visible values.",
+          sourceClasses: localized,
+          sourcePatterns: ["Content/Game/Text/en/TraitText.en.sjson"],
           normalization: "localized-text",
           validations: ["required", "localized"],
           requirementIds: ["reference.gods-boons", "progression.boons"],
@@ -156,6 +175,57 @@ export const mechanicsDomain = {
           cardinality: "zero-or-more",
           validations: ["references-exist", "runtime-source-agree"],
           requirementIds: ["weapon.boon-priorities", "ratings.aspect-boons"],
+        }),
+      ],
+    },
+    {
+      id: "weapon",
+      description: "A Nocturnal Arm, its unlock, and its available aspects.",
+      stableId: "weapon identifier",
+      sourcePatterns: [
+        "Content/Scripts/WeaponShopData.lua",
+        "Content/Scripts/WeaponData*.lua",
+        "Content/Game/Text/en/_WeaponShopData*.sjson",
+      ],
+      fields: [
+        fact({
+          id: "name-description",
+          description: "Official English weapon name and description.",
+          sourceClasses: localized,
+          sourcePatterns: ["Content/Game/Text/en/_WeaponShopData*.sjson"],
+          normalization: "localized-text",
+          validations: ["required", "localized"],
+          requirementIds: ["reference.weapons-aspects"],
+        }),
+        fact({
+          id: "aspects",
+          description: "Aspects belonging to the weapon.",
+          sourceClasses: luaRuntime,
+          sourcePatterns: ["Content/Scripts/TraitData_Aspect*.lua", "Processed TraitData.RequiredWeapon"],
+          normalization: "references",
+          cardinality: "one-or-more",
+          validations: ["required", "references-exist", "runtime-source-agree"],
+          requirementIds: ["reference.weapons-aspects"],
+        }),
+        fact({
+          id: "unlock-costs",
+          description: "Resources required to unlock the weapon.",
+          sourceClasses: luaRuntime,
+          sourcePatterns: ["Content/Scripts/WeaponShopData.lua", "WeaponShopItemData"],
+          normalization: "ordered-values",
+          cardinality: "zero-or-more",
+          validations: ["nonnegative", "references-exist", "runtime-source-agree"],
+          requirementIds: ["weapon.unlock-costs", "progression.weapons"],
+        }),
+        fact({
+          id: "unlock-requirements",
+          description: "Requirements that make the weapon available.",
+          sourceClasses: luaRuntime,
+          sourcePatterns: ["Content/Scripts/WeaponShopData.lua", "WeaponShopItemData"],
+          normalization: "requirement-expression",
+          cardinality: "zero-or-one",
+          validations: ["requirement-resolves", "runtime-source-agree"],
+          requirementIds: ["weapon.unlock-costs", "progression.weapons"],
         }),
       ],
     },
@@ -276,7 +346,7 @@ export const mechanicsDomain = {
           description: "Compatible weapons, aspects, and mutually exclusive upgrades.",
           sourceClasses: luaRuntime,
           sourcePatterns: [
-            "Content/Scripts/TraitData_*.lua GameStateRequirements",
+            "Content/Scripts/TraitData_*.lua",
             "Processed TraitData.GameStateRequirements",
           ],
           normalization: "references",
@@ -405,6 +475,15 @@ export const mechanicsDomain = {
           requirementIds: ["reference.keepsakes"],
         }),
         fact({
+          id: "description",
+          description: "Official English keepsake effect text with resolved player-visible values.",
+          sourceClasses: localized,
+          sourcePatterns: ["Content/Game/Text/en/TraitText.en.sjson"],
+          normalization: "localized-text",
+          validations: ["required", "localized"],
+          requirementIds: ["reference.keepsakes", "progression.keepsakes"],
+        }),
+        fact({
           id: "acquisition",
           description: "Gift or relationship requirement that awards the keepsake.",
           sourceClasses: luaRuntime,
@@ -502,7 +581,7 @@ export const mechanicsDomain = {
     },
     {
       id: "incantation",
-      description: "An incantation and its costs, unlock requirements, and effects.",
+      description: "An incantation and its costs, eligibility, reveal timing, and effects.",
       stableId: "world-upgrade identifier",
       sourcePatterns: ["Content/Scripts/WorldUpgradeData.lua", "Content/Scripts/RequirementsData.lua"],
       fields: [
@@ -517,11 +596,21 @@ export const mechanicsDomain = {
         }),
         fact({
           id: "unlock-requirements",
-          description: "Requirements that reveal and enable the incantation.",
+          description: "Direct eligibility requirements for the incantation, separate from Cauldron reveal timing.",
           sourceClasses: luaRuntime,
           sourcePatterns: ["Content/Scripts/WorldUpgradeData.lua", "Processed WorldUpgradeData"],
           normalization: "requirement-expression",
           validations: ["requirement-resolves", "runtime-source-agree"],
+          requirementIds: ["reference.incantations", "progression.incantations"],
+        }),
+        fact({
+          id: "availability",
+          description: "Cauldron reveal limits and ordering behavior that can delay an eligible incantation.",
+          sourceClasses: ["lua-source"],
+          sourcePatterns: ["Content/Scripts/GhostAdminData.lua", "Content/Scripts/GhostAdminData_Items.lua", "Content/Scripts/GhostAdminLogic.lua"],
+          normalization: "ordered-values",
+          cardinality: "zero-or-one",
+          validations: [],
           requirementIds: ["reference.incantations", "progression.incantations"],
         }),
         fact({
@@ -543,6 +632,18 @@ export const mechanicsDomain = {
           validations: ["runtime-source-agree"],
           requirementIds: ["reference.incantations", "progression.incantations"],
         }),
+      ],
+    },
+    {
+      id: "run-reward",
+      description: "A guide-relevant chamber reward and the exact benefit it provides.",
+      stableId: "reward identifier",
+      sourcePatterns: ["Content/Scripts/LootData.lua", "Content/Scripts/ConsumableData.lua", "Content/Game/Text/en/TraitText.en.sjson", "Content/Game/Text/en/HelpText.en.sjson"],
+      fields: [
+        fact({ id: "name-description", description: "Official English reward name and any available description.", sourceClasses: ["lua-source", "localization-sjson"], sourcePatterns: ["Content/Game/Text/en/TraitText.en.sjson", "Content/Game/Text/en/HelpText.en.sjson"], normalization: "localized-text", validations: ["required", "localized"], requirementIds: ["reference.run-rewards", "progression.run-reward-priorities"] }),
+        fact({ id: "effect", description: "Permanent resource, run stat, boon level, Hammer, Olympian, Hermes, Family Dispute, Hex, or Path of Stars effect.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/LootData.lua", "Content/Scripts/ConsumableData.lua"], normalization: "ordered-values", validations: ["required", "nonnegative", "references-exist"], requirementIds: ["reference.run-rewards", "progression.run-reward-priorities"] }),
+        fact({ id: "availability", description: "Player-facing eligibility conditions for rewards that are not always legal.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/LootData.lua", "Content/Scripts/ConsumableData.lua", "Content/Scripts/RequirementsData.lua"], normalization: "requirement-expression", cardinality: "zero-or-one", validations: ["requirement-resolves"], requirementIds: ["reference.run-rewards", "progression.run-reward-priorities"] }),
+        fact({ id: "selection", description: "Reward-store ownership, selection context, and alternative eligibility conditions that prove where the reward can actually be offered.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/LootData.lua"], normalization: "ordered-values", validations: ["required", "requirement-resolves"], requirementIds: ["reference.run-rewards", "progression.run-reward-priorities"] }),
       ],
     },
     {
@@ -585,6 +686,60 @@ export const mechanicsDomain = {
           description: "Priority, earliest recommended stage, exact ordered guide uses, and when the reader should spend or reserve every resource with a known use.",
           requirementIds: ["reference.resources", "progression.resources"],
         }),
+      ],
+    },
+    {
+      id: "gathering-tool",
+      description: "A gathering tool, its upgrade, cost, unlock rule, and gathered element.",
+      stableId: "weapon-shop tool identifier",
+      sourcePatterns: ["Content/Scripts/WeaponShopData.lua", "Content/Game/Text/en/TraitText.en.sjson"],
+      fields: [
+        fact({ id: "name-description", description: "Official English tool name and description.", sourceClasses: localized, sourcePatterns: ["Content/Game/Text/en/TraitText.en.sjson"], normalization: "localized-text", validations: ["required", "localized"], requirementIds: ["reference.resources", "progression.resources"] }),
+        fact({ id: "level-costs", description: "Base or upgraded tool level and its resource costs.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/WeaponShopData.lua"], normalization: "ordered-values", validations: ["required", "nonnegative", "references-exist"], requirementIds: ["reference.resources", "progression.initial-investments"] }),
+        fact({ id: "unlock-requirements", description: "Player-facing conditions that make the tool available.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/WeaponShopData.lua"], normalization: "requirement-expression", validations: ["requirement-resolves"], requirementIds: ["progression.initial-investments"] }),
+        fact({ id: "gathering-effect", description: "Resource or element the tool can produce.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/WeaponShopData.lua"], normalization: "ordered-values", validations: ["references-exist"], requirementIds: ["reference.resources", "progression.resources"] }),
+      ],
+    },
+    {
+      id: "fish",
+      description: "A fish, where it can be caught, its rarity, and its sale value.",
+      stableId: "fish resource identifier",
+      sourcePatterns: ["Content/Scripts/HarvestData.lua", "Content/Scripts/MarketData.lua"],
+      fields: [
+        fact({ id: "catch-location", description: "Region, rarity, and weighted catch rules.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/HarvestData.lua"], normalization: "ordered-values", validations: ["required", "references-exist", "nonnegative"], requirementIds: ["reference.resources"] }),
+        fact({ id: "sale", description: "Exact sale output and currency.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/MarketData.lua"], normalization: "ordered-values", validations: ["required", "references-exist", "nonnegative"], requirementIds: ["reference.resources", "progression.resources"] }),
+      ],
+    },
+    {
+      id: "cultivation",
+      description: "A garden seed and its possible harvest outcomes.",
+      stableId: "seed and outcome identifier",
+      sourcePatterns: ["Content/Scripts/GardenData.lua"],
+      fields: [
+        fact({ id: "seed-output", description: "Seed, output resource, amount, and possible bonus seed.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/GardenData.lua"], normalization: "ordered-values", validations: ["required", "references-exist", "nonnegative"], requirementIds: ["reference.resources"] }),
+        fact({ id: "growth", description: "Growth range, outcome weight, and availability conditions.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/GardenData.lua"], normalization: "ordered-values", validations: ["required", "nonnegative", "requirement-resolves"], requirementIds: ["reference.resources", "progression.resources"] }),
+      ],
+    },
+    {
+      id: "market-offer",
+      description: "A Wretched Broker or limited market exchange.",
+      stableId: "market category and offer identifier",
+      sourcePatterns: ["Content/Scripts/MarketData.lua"],
+      fields: [
+        fact({ id: "exchange", description: "Resources paid and received.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/MarketData.lua"], normalization: "ordered-values", validations: ["required", "references-exist", "nonnegative"], requirementIds: ["reference.resources", "progression.resources"] }),
+        fact({ id: "availability", description: "Offer category, refresh behavior, and player-facing conditions.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/MarketData.lua"], normalization: "requirement-expression", validations: ["requirement-resolves"], requirementIds: ["reference.resources"] }),
+      ],
+    },
+    {
+      id: "encounter-aid",
+      description: "A benefit offered by a friendly encounter and its build-relevant effects.",
+      stableId: "trait or benefit identifier",
+      sourcePatterns: ["Content/Scripts/NPCData*.lua", "Content/Scripts/TraitData*.lua", "Content/Game/Text/en/TraitText.en.sjson"],
+      fields: [
+        fact({ id: "name-description", description: "Official English aid name and effect description with game-processed effect values.", sourceClasses: ["lua-source", "localization-sjson", "runtime-table"], sourcePatterns: ["Content/Game/Text/en/TraitText.en.sjson", "Processed TraitData"], normalization: "ordered-values", validations: ["required", "localized", "runtime-source-agree"], requirementIds: ["reference.world", "progression.beginner-builds"] }),
+        fact({ id: "provider", description: "Friendly encounter that offers the aid.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/NPCData*.lua"], normalization: "reference", validations: ["required", "reference-exists"], requirementIds: ["reference.world"] }),
+        fact({ id: "availability", description: "Conditions that make this aid selectable.", sourceClasses: ["lua-source"], sourcePatterns: ["Content/Scripts/NPCData*.lua", "Content/Scripts/TraitData*.lua"], normalization: "requirement-expression", validations: ["requirement-resolves"], requirementIds: ["reference.world"] }),
+        derived({ id: "build-affinity", description: "Combat, economy, Arcana, Familiar, or loadout systems affected by the aid.", requirementIds: ["progression.beginner-builds", "reference.world"] }),
       ],
     },
     {

@@ -1,0 +1,72 @@
+---
+import ContentLayout from '../../../layouts/ContentLayout.astro';
+import { getPublication, pageHref } from '../../../lib/publication';
+
+const publication = getPublication();
+const pages = publication.pages.filter((page) => page.pageKind === 'tier-list');
+const descriptions: Record<string, string> = {
+    arcana: 'Compare new-player value, Grasp pressure, aspect fit, and the point where a card becomes optional.',
+    aspects: 'Compare how each aspect plays across consistency, speed, safety, rank investment, and high Fear.',
+    boons: 'Compare general value without pretending a weapon-specific interaction applies to every build.',
+    familiars: 'Compare combat value, gathering utility, and the situations that justify changing companions.',
+    hexes: "Compare impact, safety, Magick demand, and whether the Hex interrupts the weapon's normal actions.",
+    keepsakes: 'Compare acquisition, leveling value, active lifecycle, and the exact condition for switching.',
+    weapons: 'Compare weapon families before the selected aspect and build determine the final result.',
+};
+---
+
+<ContentLayout
+    title='Hades II tier lists'
+    description='Compare Hades II weapons, Boons, Keepsakes, Familiars, and Hexes ranked separately for safety and damage, with an explanation for every choice.'
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Knowledge', href: '/knowledge/' },
+        { name: 'Tier lists', href: '/knowledge/tier-lists/' },
+    ]}
+    surface='tiers'>
+    <header class='tier-hall'>
+        <div class='tier-hall-copy'>
+            <h1>Tier lists, with the reasons.</h1>
+            <p>
+                General value, first-clear safety, speed, high Fear, and aspect fit produce different winners. Choose
+                the comparison you need, then read the reason and limitation with the rank.
+            </p>
+        </div>
+    </header>
+
+    <nav class='tier-catalogue tier-catalogue-v2' aria-label='Tier lists'>
+        {
+            pages.map((page) => {
+                const slug = page.id.split('/')[1] ?? page.id;
+                return (
+                    <a href={pageHref(page)}>
+                        <span class='tier-catalogue-copy'>
+                            <>
+                                <strong>{page.title}</strong>
+                                <span>{descriptions[slug]}</span>
+                            </>
+                        </span>
+                        <i class='ph ph-arrow-right' aria-hidden='true' />
+                    </a>
+                );
+            })
+        }
+    </nav>
+
+    <section class='tier-principles-section' aria-labelledby='tier-principles-title'>
+        <header>
+            <p class='eyebrow'>Ranking key</p>
+            <h2 id='tier-principles-title'>What the letters mean here</h2>
+        </header>
+        <dl class='tier-principles'>
+            <div><dt>S</dt><dd>Exceptional for the situation described and difficult to replace.</dd></div>
+            <div><dt>A</dt><dd>Strong and reliable, with a limitation that matters in some builds.</dd></div>
+            <div><dt>B</dt><dd>Useful when its condition, interaction, or objective is present.</dd></div>
+            <div>
+                <dt>C</dt>
+                <dd>Specialized, demanding, or outperformed for the comparison being made.</dd>
+            </div>
+        </dl>
+    </section>
+</ContentLayout>

@@ -1,0 +1,388 @@
+---
+type LandmarkKind = 'entry' | 'grove' | 'water' | 'gate' | 'ship' | 'city' | 'peak' | 'void' | 'guardian';
+
+type Landmark = {
+    x: number;
+    y: number;
+    label: string;
+    kind: LandmarkKind;
+};
+
+type RegionMapDefinition = {
+    route: string;
+    position: string;
+    caption: string;
+    accent: string;
+    secondary: string;
+    terrain: string[];
+    contours: string[];
+    path: string;
+    landmarks: Landmark[];
+};
+
+type Props = {
+    region: string;
+};
+
+const maps: Record<string, RegionMapDefinition> = {
+    'The Crossroads': {
+        route: 'Sanctuary',
+        position: 'Between nights',
+        caption: 'Paths gather at the Silver Pool before each descent or ascent.',
+        accent: '#69ead7',
+        secondary: '#a98cff',
+        terrain: [
+            'M92 278C142 148 280 86 407 128C489 56 642 76 701 169C838 170 910 266 868 374C790 474 657 492 559 438C447 516 293 486 249 409C153 423 72 372 92 278Z',
+        ],
+        contours: [
+            'M162 281C238 209 321 215 399 260C463 297 532 299 603 244C676 188 755 210 807 278',
+            'M196 351C300 296 375 332 451 374C540 424 649 411 759 328',
+        ],
+        path: 'M130 330C260 329 303 269 418 282C523 294 562 367 681 341C748 327 792 281 839 229',
+        landmarks: [
+            { x: 132, y: 330, label: 'Training grounds', kind: 'entry' },
+            { x: 418, y: 282, label: 'Silver Pool', kind: 'water' },
+            { x: 681, y: 341, label: 'Taverna', kind: 'grove' },
+            { x: 839, y: 229, label: 'Night paths', kind: 'gate' },
+        ],
+    },
+    Erebus: {
+        route: 'Underworld route',
+        position: 'Region 1',
+        caption: 'A branching forest descent converges on Hecate at the boundary gate.',
+        accent: '#70e3bd',
+        secondary: '#8975ef',
+        terrain: [
+            'M71 150C175 79 291 87 367 153C468 90 604 108 651 185C755 137 878 202 894 306C837 434 712 464 616 413C503 499 361 458 313 384C199 427 79 354 71 150Z',
+        ],
+        contours: [
+            'M118 188C210 145 301 170 354 226C419 294 493 303 576 244C663 182 749 185 835 243',
+            'M109 315C205 282 292 303 361 361C438 425 550 426 638 356C703 304 772 294 852 327',
+        ],
+        path: 'M111 198C193 239 213 342 324 330C442 317 427 199 548 214C662 229 662 367 773 355C819 350 846 320 870 285',
+        landmarks: [
+            { x: 111, y: 198, label: 'Crossroads gate', kind: 'entry' },
+            { x: 324, y: 330, label: 'Witching woods', kind: 'grove' },
+            { x: 548, y: 214, label: 'Reward paths', kind: 'gate' },
+            { x: 870, y: 285, label: 'Guardian', kind: 'guardian' },
+        ],
+    },
+    Oceanus: {
+        route: 'Underworld route',
+        position: 'Region 2',
+        caption: 'Flooded chambers follow the canal current toward the Sirens’ stage.',
+        accent: '#5eddd9',
+        secondary: '#4e8fe8',
+        terrain: ['M78 128H872V427H78Z', 'M142 181H355V365H142Z M411 145H602V394H411Z M660 190H815V355H660Z'],
+        contours: [
+            'M95 226C194 183 274 286 368 239C471 187 541 289 650 236C731 197 799 226 854 266',
+            'M94 319C180 276 265 378 354 330C452 277 547 381 640 326C722 278 797 299 852 342',
+        ],
+        path: 'M111 277C208 231 247 340 344 294C439 249 468 178 568 216C666 253 675 339 770 311C816 298 843 264 870 231',
+        landmarks: [
+            { x: 111, y: 277, label: 'Floodgate', kind: 'entry' },
+            { x: 344, y: 294, label: 'Canal locks', kind: 'water' },
+            { x: 568, y: 216, label: 'Fountain rooms', kind: 'water' },
+            { x: 870, y: 231, label: 'Sirens', kind: 'guardian' },
+        ],
+    },
+    'Fields of Mourning': {
+        route: 'Underworld route',
+        position: 'Region 3',
+        caption: 'Open mourning fields bend around shades, Echo’s refuge, and the Guardian approach.',
+        accent: '#e7789b',
+        secondary: '#72d8c7',
+        terrain: [
+            'M70 196C157 107 293 99 378 172C452 106 578 114 638 189C730 127 857 177 892 275C862 397 727 458 629 394C548 474 404 463 344 389C250 453 111 403 70 309Z',
+            'M181 245C240 194 322 197 362 250C310 310 239 329 181 290Z',
+            'M487 194C554 157 628 178 654 235C603 281 533 287 487 246Z',
+            'M671 302C734 264 810 293 825 351C773 395 704 395 671 350Z',
+        ],
+        contours: [
+            'M113 185C207 147 281 158 349 210C411 258 473 264 539 220C620 165 700 180 781 232C820 257 852 278 878 309',
+            'M104 353C180 315 248 321 314 361C390 408 476 409 548 366C638 312 722 328 833 381',
+            'M207 132C234 175 231 209 197 247 M741 177C708 222 706 259 739 292',
+        ],
+        path: 'M105 281C190 240 251 353 342 319C432 285 410 190 516 204C608 217 596 340 702 331C781 324 826 276 868 225',
+        landmarks: [
+            { x: 105, y: 281, label: 'Oceanus gate', kind: 'entry' },
+            { x: 342, y: 319, label: 'Mourning fields', kind: 'grove' },
+            { x: 516, y: 204, label: 'Echo’s refuge', kind: 'water' },
+            { x: 868, y: 225, label: 'Guardian', kind: 'guardian' },
+        ],
+    },
+    Tartarus: {
+        route: 'Underworld route',
+        position: 'Region 4',
+        caption: 'The prison descent tightens through sealed rings toward Chronos.',
+        accent: '#d95c75',
+        secondary: '#b99358',
+        terrain: ['M94 106H866V454H94Z', 'M172 159H788V407H172Z', 'M253 210H707V357H253Z', 'M357 247H603V326H357Z'],
+        contours: ['M141 132V429 M819 132V429', 'M208 184V383 M752 184V383', 'M286 229V342 M674 229V342'],
+        path: 'M112 280H214V190H329V370H451V222H572V354H699V183H817V280H870',
+        landmarks: [
+            { x: 112, y: 280, label: 'Descent', kind: 'entry' },
+            { x: 329, y: 370, label: 'Prison ring', kind: 'gate' },
+            { x: 572, y: 354, label: 'Golden cells', kind: 'city' },
+            { x: 870, y: 280, label: 'Chronos', kind: 'guardian' },
+        ],
+    },
+    'City of Ephyra': {
+        route: 'Surface route',
+        position: 'Region 1',
+        caption: 'Six warded districts feed the central city gate and Polyphemus encounter.',
+        accent: '#e2ad55',
+        secondary: '#64c8be',
+        terrain: [
+            'M83 112H877V448H83Z',
+            'M125 153H328V255H125Z M125 300H328V407H125Z M377 153H580V255H377Z M377 300H580V407H377Z M629 153H835V255H629Z M629 300H835V407H629Z',
+        ],
+        contours: ['M101 280H859', 'M352 129V431 M604 129V431'],
+        path: 'M103 378C203 371 202 210 307 207C410 204 429 348 526 344C629 340 633 203 740 207C809 210 838 248 861 280',
+        landmarks: [
+            { x: 103, y: 378, label: 'Surface gate', kind: 'entry' },
+            { x: 307, y: 207, label: 'Warded district', kind: 'city' },
+            { x: 526, y: 344, label: 'Central square', kind: 'city' },
+            { x: 861, y: 280, label: 'Cyclops gate', kind: 'guardian' },
+        ],
+    },
+    'City of Ephyra side rooms': {
+        route: 'Surface route',
+        position: 'Ephyra districts',
+        caption: 'Optional city chambers branch from the ward route before the central gate.',
+        accent: '#d7a553',
+        secondary: '#9f78d8',
+        terrain: ['M90 120H870V440H90Z', 'M145 170H815V390H145Z'],
+        contours: ['M190 170V390 M310 170V390 M430 170V390 M550 170V390 M670 170V390', 'M145 230H815 M145 330H815'],
+        path: 'M105 280H225V210H350V350H480V210H610V350H735V280H855',
+        landmarks: [
+            { x: 105, y: 280, label: 'Main district', kind: 'entry' },
+            { x: 350, y: 350, label: 'Cache room', kind: 'city' },
+            { x: 610, y: 350, label: 'Ally room', kind: 'city' },
+            { x: 855, y: 280, label: 'Return route', kind: 'gate' },
+        ],
+    },
+    'Rift of Thessaly': {
+        route: 'Surface route',
+        position: 'Region 2',
+        caption: 'The Black Ship crosses broken islands and hostile decks toward Eris.',
+        accent: '#ec765e',
+        secondary: '#55c8ca',
+        terrain: [
+            'M88 315C147 263 211 274 256 324C211 372 144 373 88 339Z',
+            'M330 195C400 147 485 166 516 231C458 282 382 282 330 240Z',
+            'M584 321C658 266 744 283 785 350C715 397 635 393 584 356Z',
+            'M756 145C816 111 875 144 887 203C840 235 791 226 756 190Z',
+        ],
+        contours: [
+            'M76 214C177 162 261 237 350 206C446 172 504 107 596 151C698 199 734 263 888 234',
+            'M76 390C192 340 266 402 372 369C470 338 526 278 626 306C724 334 788 411 888 364',
+        ],
+        path: 'M107 328C191 306 226 345 291 301C356 257 381 207 458 221C545 236 554 342 652 346C747 350 795 257 858 190',
+        landmarks: [
+            { x: 107, y: 328, label: 'Ephyra harbor', kind: 'entry' },
+            { x: 291, y: 301, label: 'Black Ship', kind: 'ship' },
+            { x: 652, y: 346, label: 'Burning fleet', kind: 'ship' },
+            { x: 858, y: 190, label: 'Eris', kind: 'guardian' },
+        ],
+    },
+    'Mount Olympus': {
+        route: 'Surface route',
+        position: 'Region 3',
+        caption: 'A switchback ascent climbs from the foothills through siege lines to Olympus.',
+        accent: '#9aaeff',
+        secondary: '#e1b255',
+        terrain: [
+            'M77 419L219 260L308 326L467 116L578 247L686 159L886 419Z',
+            'M176 419L308 286L376 342L477 190L571 303L682 217L810 419Z',
+        ],
+        contours: ['M116 398H850', 'M177 350H798', 'M249 301H745', 'M336 248H692', 'M421 194H626'],
+        path: 'M112 405C227 383 164 310 288 323C405 336 341 237 470 250C584 262 522 176 645 191C748 204 783 160 847 126',
+        landmarks: [
+            { x: 112, y: 405, label: 'Foothills', kind: 'entry' },
+            { x: 288, y: 323, label: 'Siege line', kind: 'gate' },
+            { x: 645, y: 191, label: 'Olympian walls', kind: 'city' },
+            { x: 847, y: 126, label: 'Prometheus', kind: 'guardian' },
+        ],
+    },
+    'The Summit': {
+        route: 'Surface route',
+        position: 'Region 4',
+        caption: 'The final ascent crosses the shattered crown of Olympus.',
+        accent: '#d6dcff',
+        secondary: '#b184ff',
+        terrain: [
+            'M85 429L245 299L349 337L480 91L610 335L713 270L882 429Z',
+            'M253 429L382 311L480 165L574 315L706 429Z',
+        ],
+        contours: ['M140 405H831', 'M218 361H757', 'M300 315H680', 'M380 266H606'],
+        path: 'M114 416C216 392 213 329 320 335C418 340 394 248 481 227C570 205 593 300 681 272C759 247 798 184 852 122',
+        landmarks: [
+            { x: 114, y: 416, label: 'Olympus gate', kind: 'entry' },
+            { x: 320, y: 335, label: 'Shattered crown', kind: 'peak' },
+            { x: 681, y: 272, label: 'High pass', kind: 'peak' },
+            { x: 852, y: 122, label: 'Summit', kind: 'guardian' },
+        ],
+    },
+    Chaos: {
+        route: 'Beyond the routes',
+        position: 'Chaos gate',
+        caption: 'A fractured passage outside the ordered Underworld and Surface routes.',
+        accent: '#ae83ff',
+        secondary: '#62e3d2',
+        terrain: [
+            'M101 247L240 135L360 210L478 94L592 193L737 127L868 259L757 421L607 365L478 466L346 374L199 421Z',
+            'M229 251L355 174L467 235L589 156L730 252L639 369L491 329L369 408L264 339Z',
+        ],
+        contours: ['M125 279L836 279', 'M480 112V442', 'M201 175L763 395', 'M215 397L745 166'],
+        path: 'M112 279C229 180 304 393 418 296C528 203 592 365 701 266C771 203 815 229 856 279',
+        landmarks: [
+            { x: 112, y: 279, label: 'Chaos gate', kind: 'entry' },
+            { x: 418, y: 296, label: 'Primordial path', kind: 'void' },
+            { x: 701, y: 266, label: 'Offering', kind: 'void' },
+            { x: 856, y: 279, label: 'Return gate', kind: 'gate' },
+        ],
+    },
+};
+
+const { region } = Astro.props;
+const map = maps[region];
+if (!map) throw new Error(`Missing authored region map for ${region}`);
+const mapId = region
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+---
+
+<figure
+    class='region-map'
+    data-region-map={mapId}
+    style={`--map-accent:${map.accent};--map-secondary:${map.secondary}`}
+    aria-labelledby={`${mapId}-map-title ${mapId}-map-caption`}>
+    <svg viewBox='0 0 960 560' role='img'>
+        <title id={`${mapId}-map-title`}>{region} route map</title>
+        <desc>{map.caption}</desc>
+        <defs>
+            <linearGradient id={`${mapId}-ground`} x1='0' y1='0' x2='1' y2='1'>
+                <stop offset='0' stop-color='#111b25'></stop>
+                <stop offset='.52' stop-color='#121722'></stop>
+                <stop offset='1' stop-color='#171324'></stop>
+            </linearGradient>
+            <pattern id={`${mapId}-grid`} width='34' height='34' patternUnits='userSpaceOnUse'>
+                <path d='M34 0H0V34' fill='none' stroke='currentColor' stroke-opacity='.08'></path>
+            </pattern>
+            <filter id={`${mapId}-glow`} x='-60%' y='-60%' width='220%' height='220%'>
+                <feGaussianBlur stdDeviation='7' result='blur'></feGaussianBlur>
+                <feMerge><feMergeNode in='blur'></feMergeNode><feMergeNode in='SourceGraphic'></feMergeNode></feMerge>
+            </filter>
+            <clipPath id={`${mapId}-art-clip`}>
+                <path d='M43 77L70 50H890L917 77V483L890 510H70L43 483Z'></path>
+            </clipPath>
+            <linearGradient id={`${mapId}-art-veil`} x1='0' y1='0' x2='0' y2='1'>
+                <stop offset='0' stop-color='#060a10' stop-opacity='.24'></stop>
+                <stop offset='.56' stop-color='#070a11' stop-opacity='.12'></stop>
+                <stop offset='1' stop-color='#05070c' stop-opacity='.48'></stop>
+            </linearGradient>
+        </defs>
+
+        <path d='M30 68L62 36H898L930 68V492L898 524H62L30 492Z' fill='#080d14' stroke='#05070d' stroke-width='14'
+        ></path>
+        <path
+            d='M43 77L70 50H890L917 77V483L890 510H70L43 483Z'
+            fill={`url(#${mapId}-ground)`}
+            stroke='var(--map-accent)'
+            stroke-opacity='.38'
+            stroke-width='2'></path>
+        <g clip-path={`url(#${mapId}-art-clip)`}>
+            <image
+                class='region-map__art'
+                href={`/art/regions/${mapId}.webp`}
+                x='43'
+                y='50'
+                width='874'
+                height='460'
+                preserveAspectRatio='xMidYMid slice'
+            />
+            <rect x='43' y='50' width='874' height='460' fill={`url(#${mapId}-art-veil)`}></rect>
+            <rect x='55' y='62' width='850' height='436' fill={`url(#${mapId}-grid)`} color='var(--map-secondary)'
+            ></rect>
+        </g>
+
+        <g class='region-map__terrain'>
+            {map.terrain.map((path) => <path d={path} />)}
+        </g>
+        <g class='region-map__contours'>
+            {map.contours.map((path) => <path d={path} />)}
+        </g>
+
+        <path class='region-map__route-shadow' d={map.path}></path>
+        <path class='region-map__route' d={map.path}></path>
+
+        {
+            map.landmarks.map((landmark, index) => (
+                <g class={`region-map__landmark region-map__landmark--${landmark.kind}`}>
+                    <circle cx={landmark.x} cy={landmark.y} r={index === map.landmarks.length - 1 ? 19 : 14} />
+                    {landmark.kind === 'grove' && (
+                        <g transform={`translate(${landmark.x - 13} ${landmark.y - 14})`}>
+                            <path d='M4 22L11 8L18 22ZM14 24L22 5L30 24Z' />
+                        </g>
+                    )}
+                    {landmark.kind === 'water' && (
+                        <path
+                            d={`M${landmark.x - 11} ${landmark.y}Q${landmark.x} ${landmark.y - 13} ${landmark.x + 11} ${landmark.y}Q${landmark.x} ${landmark.y + 13} ${landmark.x - 11} ${landmark.y}Z`}
+                        />
+                    )}
+                    {landmark.kind === 'gate' && (
+                        <path
+                            d={`M${landmark.x - 10} ${landmark.y + 10}V${landmark.y - 5}Q${landmark.x} ${landmark.y - 17} ${landmark.x + 10} ${landmark.y - 5}V${landmark.y + 10}`}
+                        />
+                    )}
+                    {landmark.kind === 'ship' && (
+                        <path
+                            d={`M${landmark.x - 15} ${landmark.y + 4}H${landmark.x + 15}L${landmark.x + 8} ${landmark.y + 12}H${landmark.x - 8}ZM${landmark.x} ${landmark.y + 2}V${landmark.y - 13}L${landmark.x + 12} ${landmark.y - 2}Z`}
+                        />
+                    )}
+                    {landmark.kind === 'city' && (
+                        <path
+                            d={`M${landmark.x - 13} ${landmark.y + 11}V${landmark.y - 9}H${landmark.x - 4}V${landmark.y - 2}H${landmark.x + 4}V${landmark.y - 13}H${landmark.x + 13}V${landmark.y + 11}Z`}
+                        />
+                    )}
+                    {landmark.kind === 'peak' && (
+                        <path
+                            d={`M${landmark.x - 14} ${landmark.y + 11}L${landmark.x} ${landmark.y - 14}L${landmark.x + 14} ${landmark.y + 11}L${landmark.x + 4} ${landmark.y + 3}L${landmark.x - 2} ${landmark.y + 8}L${landmark.x - 7} ${landmark.y + 1}Z`}
+                        />
+                    )}
+                    {landmark.kind === 'void' && (
+                        <path
+                            d={`M${landmark.x} ${landmark.y - 13}C${landmark.x + 17} ${landmark.y - 5} ${landmark.x + 13} ${landmark.y + 14} ${landmark.x - 3} ${landmark.y + 12}C${landmark.x - 17} ${landmark.y + 9} ${landmark.x - 16} ${landmark.y - 7} ${landmark.x} ${landmark.y - 13}Z`}
+                        />
+                    )}
+                    {landmark.kind === 'guardian' && (
+                        <path
+                            d={`M${landmark.x} ${landmark.y - 15}L${landmark.x + 14} ${landmark.y - 4}L${landmark.x + 9} ${landmark.y + 14}H${landmark.x - 9}L${landmark.x - 14} ${landmark.y - 4}Z`}
+                        />
+                    )}
+                </g>
+            ))
+        }
+
+        <g class='region-map__compass' transform='translate(844 420)'>
+            <circle r='31'></circle>
+            <path d='M0-24L7 0L0 24L-7 0Z'></path>
+            <path d='M-24 0L0 7L24 0L0-7Z'></path>
+        </g>
+    </svg>
+    <div class='region-map__key'>
+        <dl>
+            <div><dt>Route</dt><dd>{map.route}</dd></div>
+            <div><dt>Position</dt><dd>{map.position}</dd></div>
+        </dl>
+        <ul aria-label='Map landmarks'>
+            {map.landmarks.map((landmark) => <li>{landmark.label}</li>)}
+        </ul>
+    </div>
+    <figcaption id={`${mapId}-map-caption`}>
+        <strong>{region}</strong>
+        <span>{map.caption}</span>
+    </figcaption>
+</figure>

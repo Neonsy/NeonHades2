@@ -1,0 +1,56 @@
+---
+type Props = { surface: string };
+const { surface } = Astro.props;
+const [domain = 'knowledge', variant = domain] = surface.trim().split(/\s+/u);
+
+const streakPositions = [
+    [5, 12, 0.2, 0.7],
+    [13, 34, 2.6, 0.52],
+    [21, 70, 4.1, 0.86],
+    [29, 18, 1.4, 0.62],
+    [37, 52, 3.5, 1],
+    [45, 86, 0.8, 0.68],
+    [53, 29, 4.6, 0.56],
+    [61, 66, 2, 0.8],
+    [69, 10, 3.1, 0.64],
+    [77, 43, 0, 0.9],
+    [85, 78, 2.9, 0.72],
+    [93, 25, 1.7, 0.58],
+    [9, 90, 3.8, 0.76],
+    [17, 58, 0.6, 0.6],
+    [25, 40, 2.2, 0.84],
+    [33, 80, 4.4, 0.54],
+    [41, 8, 1.1, 0.72],
+    [49, 72, 3.3, 0.94],
+    [57, 46, 0.4, 0.58],
+    [65, 92, 2.5, 0.78],
+    [73, 30, 4.7, 0.66],
+    [81, 62, 1.9, 0.88],
+    [89, 48, 3.6, 0.62],
+    [97, 88, 1.3, 0.74],
+] as const;
+---
+
+<div class='world-atmosphere' data-world-atmosphere={domain} data-world-variant={variant} aria-hidden='true'>
+    <div class='world-atmosphere-color'></div>
+    {domain === 'home' ? <div data-world-shader={domain} /> : null}
+    <div class='world-atmosphere-rim' data-world-rim={domain}></div>
+    <div class='world-atmosphere-particles' data-particle-field={domain}>
+        {
+            streakPositions.map(([x, y, delay, scale]) => (
+                <i
+                    style={`--particle-x:${x}%;--particle-y:${y}%;--particle-delay:-${delay}s;--particle-scale:${scale}`}
+                />
+            ))
+        }
+    </div>
+    <div class='world-atmosphere-motion' data-world-motion={domain}></div>
+    {domain === 'guide' ? <div class='world-atmosphere-mist' /> : null}
+    <div class='world-atmosphere-vignette'></div>
+</div>
+
+<script>
+    import { startAtmosphereRuntime } from '../scripts/atmosphere-runtime';
+
+    void startAtmosphereRuntime().catch((error) => console.error('[NeonHades2] atmosphere renderer failed', error));
+</script>

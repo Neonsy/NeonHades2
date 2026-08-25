@@ -1,0 +1,44 @@
+---
+import SubjectArtwork from '../SubjectArtwork.astro';
+import { getRecordName, recordHref } from '../../lib/publication';
+import { recordSummary } from '../../lib/presentation';
+import { getRecordSubjectArt } from '../../lib/subject-art';
+import type { CollectionViewModel } from '../../lib/collection-view-model';
+
+type Props = Pick<CollectionViewModel, 'weaponRecords'>;
+const { weaponRecords } = Astro.props;
+---
+
+<section class='weapon-family-index' aria-labelledby='weapon-family-title'>
+    <header>
+        <p class='eyebrow'>Six nocturnal arms</p>
+        <h2 id='weapon-family-title'>Choose the weapon before the aspect</h2>
+        <p>
+            Start with the family whose basic rhythm suits you. Open one to compare all four aspects, their unlock
+            requirements, and the builds that make each version work.
+        </p>
+    </header>
+    <ol class='weapon-family-grid'>
+        {
+            weaponRecords.map((record) => {
+                const name = getRecordName(record);
+                const summary = recordSummary(record);
+                const subjectArt = getRecordSubjectArt(record);
+                return (
+                    <li data-record-row data-filter={`${name} weapon`.toLowerCase()}>
+                        <a href={recordHref(record)}>
+                            <SubjectArtwork subject={subjectArt} size='stage' />
+                            <span class='weapon-family-copy'>
+                                <strong>{name}</strong>
+                                <span>{summary}</span>
+                                <span class='weapon-family-cta'>
+                                    View aspects <i class='ph ph-arrow-right' aria-hidden='true' />
+                                </span>
+                            </span>
+                        </a>
+                    </li>
+                );
+            })
+        }
+    </ol>
+</section>

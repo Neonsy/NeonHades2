@@ -1,0 +1,22 @@
+---
+import { getRecordLinkLabel, recordHref, recordTypeLabel, type PublicationRecord } from '../lib/publication';
+import { getRecordSubjectArt } from '../lib/subject-art';
+import SubjectArtwork from './SubjectArtwork.astro';
+
+type Props = {
+    record: PublicationRecord;
+};
+
+const { record } = Astro.props;
+---
+
+<a
+    class='record-link relationship-record-link'
+    href={recordHref(record)}
+    data-record-type={recordTypeLabel(record.recordType)}>
+    <SubjectArtwork subject={getRecordSubjectArt(record)} size='inline' />
+    <span class='relationship-record-link__copy'>
+        <strong>{getRecordLinkLabel(record)}</strong>
+        <span>{recordTypeLabel(record.recordType)}</span>
+    </span>
+</a>

@@ -1,5 +1,5 @@
 {
-  "name": "@neodes2/data",
+  "name": "@neonhades2/data",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,6 +14,8 @@
     "data-ready:build": "tsc -p tsconfig.build.json && node dist/data-ready-build-cli.js",
     "dataset:build": "tsc -p tsconfig.build.json && node dist/dataset-build-cli.js",
     "editorial:build": "tsc -p tsconfig.build.json && node dist/editorial-build-cli.js",
+    "evidence:import": "tsc -p tsconfig.build.json && node dist/evidence-import-cli.js",
+    "evidence:preflight": "tsc -p tsconfig.build.json && node dist/evidence-preflight-cli.js",
     "guide:audit": "tsc -p tsconfig.build.json && node dist/guide-source-audit-cli.js",
     "guide:import": "tsc -p tsconfig.build.json && node dist/guide-runtime-import-cli.js",
     "guide:preflight": "tsc -p tsconfig.build.json && node dist/guide-preflight-cli.js",
@@ -24,6 +26,7 @@
     "observer:config": "tsc -p tsconfig.build.json && node dist/observer-config-cli.js",
     "publication:build": "tsc -p tsconfig.build.json && node dist/publication-build-cli.js",
     "runtime:import": "tsc -p tsconfig.build.json && node dist/runtime-import-cli.js",
+    "runtime-export:import": "tsc -p tsconfig.build.json && node dist/runtime-export-import-cli.js",
     "snapshot": "tsc -p tsconfig.build.json && node dist/snapshot-cli.js",
     "test": "tsc -p tsconfig.test.json && node --test .local/test-dist/test/*.test.js",
     "verification:build": "tsc -p tsconfig.build.json && node dist/verification-build-cli.js",
@@ -38,5 +41,5 @@
   "engines": {
     "node": ">=24.0.0"
   },
-  "packageManager": "pnpm@11.18.0"
+  "packageManager": "pnpm@11.24.0"
 }

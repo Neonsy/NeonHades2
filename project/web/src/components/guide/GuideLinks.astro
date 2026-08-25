@@ -1,0 +1,22 @@
+---
+import type { GuideLink } from '../../content/guide';
+
+type Props = {
+    links?: GuideLink[];
+};
+
+const { links = [] } = Astro.props;
+---
+
+{
+    links.length > 0 && (
+        <nav class='guide-direct-links' aria-label='Related guide destinations'>
+            {links.map((link) => (
+                <a href={link.href}>
+                    <span>{link.label}</span>
+                    <i class='ph ph-arrow-right' aria-hidden='true' />
+                </a>
+            ))}
+        </nav>
+    )
+}

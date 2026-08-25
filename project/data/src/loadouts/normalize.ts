@@ -6,9 +6,10 @@ import type {
   RuntimeKeepsake,
   RuntimeLoadoutReport,
 } from "./runtime-schema.js";
+import type { IncantationRevealPolicy, LoadoutSourceAudit } from "./source-audit.js";
 
 export interface NormalizedLoadoutDataset {
-  readonly schema: "neodes2-loadouts-1";
+  readonly schema: "neodes2-loadouts-2";
   readonly source: {
     readonly acquisitionId: string;
     readonly exporterVersion: string;
@@ -21,6 +22,7 @@ export interface NormalizedLoadoutDataset {
   readonly hexes: readonly RuntimeHex[];
   readonly incantations: readonly RuntimeIncantation[];
   readonly automaticWorldUpgradeIds: readonly string[];
+  readonly incantationRevealPolicy: IncantationRevealPolicy;
   readonly spellTalentConfiguration: JsonObject;
 }
 
@@ -162,7 +164,7 @@ function inspectSamples(
   return { failed, resolved, contextual };
 }
 
-export function normalizeRuntimeLoadouts(report: RuntimeLoadoutReport): {
+export function normalizeRuntimeLoadouts(report: RuntimeLoadoutReport, sourceAudit: LoadoutSourceAudit): {
   readonly dataset: NormalizedLoadoutDataset;
   readonly coverage: LoadoutCoverageReport;
 } {
@@ -252,7 +254,7 @@ export function normalizeRuntimeLoadouts(report: RuntimeLoadoutReport): {
     complete: issues.length === 0,
   };
   const dataset: NormalizedLoadoutDataset = {
-      schema: "neodes2-loadouts-1",
+      schema: "neodes2-loadouts-2",
       source: {
         acquisitionId: report.game.acquisitionId,
         exporterVersion: report.exporterVersion,
@@ -281,6 +283,7 @@ export function normalizeRuntimeLoadouts(report: RuntimeLoadoutReport): {
       })),
       incantations: report.incantations,
       automaticWorldUpgradeIds: report.automaticWorldUpgradeIds,
+      incantationRevealPolicy: sourceAudit.incantationRevealPolicy,
       spellTalentConfiguration: report.spellTalentConfiguration,
     };
   return {

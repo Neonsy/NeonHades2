@@ -1,0 +1,39 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/cinzel';
+import bricolageGrotesqueLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
+import RouteStyles from '../components/RouteStyles.astro';
+import WorldAtmosphere from '../components/WorldAtmosphere.astro';
+import SeoHead from '../components/SeoHead.astro';
+import type { Breadcrumb } from '../lib/seo';
+
+type Props = {
+    title?: string;
+    description?: string;
+    surface?: string;
+    breadcrumbs?: Breadcrumb[];
+    robots?: string;
+};
+
+const {
+    title = 'NeonHades2',
+    description = 'Follow the complete Hades II progression route or find exact answers about builds, unlocks, resources, relationships, and game systems.',
+    surface = 'knowledge',
+    breadcrumbs = [],
+    robots = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
+} = Astro.props;
+const [surfaceDomain = 'knowledge', surfaceVariant = surfaceDomain] = surface.trim().split(/\s+/u);
+---
+
+<!doctype html>
+<html lang='en'>
+    <head>
+        <link rel='preload' href={bricolageGrotesqueLatin} as='font' type='font/woff2' crossorigin='anonymous' />
+        <RouteStyles surface={surfaceDomain} />
+        <SeoHead title={title} description={description} breadcrumbs={breadcrumbs} robots={robots} />
+    </head>
+    <body data-surface={surfaceDomain} data-surface-variant={surfaceVariant}>
+        <WorldAtmosphere surface={surface} />
+        <slot />
+    </body>
+</html>

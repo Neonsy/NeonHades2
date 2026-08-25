@@ -1,0 +1,26 @@
+---
+import type { GuideChapter } from '../../content/guide';
+
+type Props = {
+    chapter: GuideChapter;
+};
+
+const { chapter } = Astro.props;
+const nextActions = chapter.steps.slice(0, 3);
+---
+
+<section class='chapter-action-plan' aria-labelledby='chapter-action-plan-title'>
+    <div class='chapter-action-plan__actions'>
+        <span class='chapter-action-plan__label'>Next actions</span>
+        <h2 id='chapter-action-plan-title'>Do these first</h2>
+        <ol>
+            {nextActions.map((step) => <li>{step.title}</li>)}
+        </ol>
+    </div>
+    <div class='chapter-action-plan__proof'>
+        <span class='chapter-action-plan__label'>You are ready when</span>
+        <ul>
+            {chapter.exit.map((condition) => <li>{condition}</li>)}
+        </ul>
+    </div>
+</section>

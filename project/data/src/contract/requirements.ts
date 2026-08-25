@@ -74,6 +74,18 @@ export const productRequirements = [
     launchBlocking: true,
   },
   {
+    id: "progression.crossroads-orientation",
+    section: "guided-progression",
+    description: "The guide introduces each useful Crossroads facility when the reader first needs it.",
+    launchBlocking: true,
+  },
+  {
+    id: "progression.run-reward-priorities",
+    section: "guided-progression",
+    description: "The guide explains when to choose boons, Daedalus Hammers, Poms, Path of Stars, survivability, and permanent resources.",
+    launchBlocking: true,
+  },
+  {
     id: "progression.resources",
     section: "guided-progression",
     description: "The guide explains early currencies, spending priorities, and reservation rules.",
@@ -152,6 +164,12 @@ export const productRequirements = [
     launchBlocking: true,
   },
   {
+    id: "progression.complete-quests-unlocks",
+    section: "guided-progression",
+    description: "The walkthrough continues until every quest and gameplay unlock is complete, while separating optional prestige and cosmetics.",
+    launchBlocking: true,
+  },
+  {
     id: "reference.weapons-aspects",
     section: "reference",
     description: "The reference covers every weapon and aspect.",
@@ -212,6 +230,12 @@ export const productRequirements = [
     launchBlocking: true,
   },
   {
+    id: "reference.run-rewards",
+    section: "reference",
+    description: "The reference covers the effect and availability of every guide-relevant chamber reward type.",
+    launchBlocking: true,
+  },
+  {
     id: "reference.relationships",
     section: "reference",
     description: "The reference covers relationships, gifts, locks, and rewards.",
@@ -221,6 +245,12 @@ export const productRequirements = [
     id: "reference.prophecies",
     section: "reference",
     description: "The reference covers every Fated List prophecy.",
+    launchBlocking: true,
+  },
+  {
+    id: "reference.prophecy-solutions",
+    section: "reference",
+    description: "Each Fated List prophecy has readable reveal conditions, objectives, rewards, and solution-ready evidence.",
     launchBlocking: true,
   },
   {

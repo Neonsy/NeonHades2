@@ -1,0 +1,209 @@
+---
+import { collectionGuides, collectionSlug, featuredCollections } from '../../content/knowledge';
+import SubjectArtwork from '../../components/SubjectArtwork.astro';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import { getPublication, getRecord, pageHref, recordHref } from '../../lib/publication';
+import { getCollectionSubjectArt, getRecordSubjectArt } from '../../lib/subject-art';
+import { searchableRecordKeys, serializedSearch } from '../../lib/guide-search';
+
+const publication = getPublication();
+const crossroadsRecord = getRecord('world-progression/region:Home');
+if (!crossroadsRecord?.public) throw new Error('Crossroads knowledge entry is missing from the publication.');
+const referencePages = publication.pages.filter(
+    (page) => page.pageKind === 'reference' && page.recordKeys.some((key) => searchableRecordKeys.has(key))
+);
+const tierPages = publication.pages.filter((page) => page.pageKind === 'tier-list');
+const pageBySlug = new Map(referencePages.map((page) => [collectionSlug(page), page]));
+const featuredPages = featuredCollections.flatMap((item) => {
+    const page = pageBySlug.get(item.slug);
+    return page ? [{ item, page }] : [];
+});
+const remainingPages = referencePages.filter(
+    (page) => !featuredCollections.some((item) => item.slug === collectionSlug(page))
+);
+---
+
+<ContentLayout
+    title='Hades II guide and reference'
+    documentTitle='Hades II Reference: Boons, Unlocks & Resources'
+    description='Search Hades II Boons, weapons, builds, unlocks, resources, relationships, regions, prophecies, and story requirements.'
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Knowledge', href: '/knowledge/' },
+    ]}
+    surface='knowledge'>
+    <header class='page-hero knowledge-hero knowledge-hero-v2'>
+        <div>
+            <p class='reference-eyebrow'>Hades II reference</p>
+            <h1>Find your answer.</h1>
+            <p>Boons, weapons, unlocks, and the connections between them.</p>
+        </div>
+        <div class='knowledge-field-case' aria-hidden='true'>
+            <img
+                src='/art/scenes/home-crossroads.svg'
+                width='1100'
+                height='860'
+                alt=''
+                loading='eager'
+                decoding='async'
+            />
+        </div>
+        <section id='search' class='knowledge-search knowledge-search-v2' aria-labelledby='search-title'>
+            <h2 id='search-title' class='visually-hidden'>What do you need to know?</h2>
+            <label for='knowledge-query'>Search the guide and reference</label>
+            <div class='search-line'>
+                <i class='ph ph-magnifying-glass' aria-hidden='true'></i>
+                <input
+                    id='knowledge-query'
+                    type='search'
+                    autocomplete='off'
+                    placeholder='Apollo, Moonstone Axe, fishing…'
+                    aria-controls='search-results'
+                />
+                <kbd>Ctrl K</kbd>
+            </div>
+            <p id='search-status' class='search-status' aria-live='polite'>Search the complete guide.</p>
+            <ol id='search-results' class='search-results' hidden></ol>
+            <script id='search-data' type='application/json' is:inline set:html={serializedSearch} />
+        </section>
+    </header>
+
+    <section class='knowledge-starts' aria-labelledby='knowledge-starts-title'>
+        <header>
+            <h2 id='knowledge-starts-title'>Common starting points</h2>
+            <p>Choose the decision in front of you.</p>
+        </header>
+        <div>
+            <a href={recordHref(crossroadsRecord)}>
+                <SubjectArtwork subject={getRecordSubjectArt(crossroadsRecord)} size='row' />
+                <span class='knowledge-start-copy'>
+                    <strong>Crossroads return checklist</strong>
+                    <span>Process conversations, recipes, permanent upgrades, gifts, and the next-night target.</span>
+                </span>
+                <i class='ph ph-arrow-right' aria-hidden='true'></i>
+            </a>
+            {
+                featuredPages.map(({ item, page }) => {
+                    return (
+                        <a href={pageHref(page)}>
+                            <SubjectArtwork subject={getCollectionSubjectArt(item.slug)} size='row' />
+                            <span class='knowledge-start-copy'>
+                                <strong>{item.title}</strong>
+                                <span>{item.detail}</span>
+                            </span>
+                            <i class='ph ph-arrow-right' aria-hidden='true' />
+                        </a>
+                    );
+                })
+            }
+        </div>
+    </section>
+
+    <nav class='knowledge-gateways knowledge-gateways-v2' aria-label='Build and ranking guides'>
+        <a href='/knowledge/builds/'>
+            <SubjectArtwork subject={getCollectionSubjectArt('builds')} size='row' />
+            <div>
+                <strong>Build by aspect</strong>
+                <span>Start with the moves an aspect uses most, then assemble every supporting system around them.</span
+                >
+            </div>
+            <i class='ph ph-arrow-right' aria-hidden='true'></i>
+        </a>
+        <a href='/knowledge/tier-lists/'>
+            <SubjectArtwork subject={getCollectionSubjectArt('boons')} size='row' />
+            <div>
+                <strong>Compare contextual tier lists</strong>
+                <span>Rankings explain the goal, prerequisites, limitation, and when another choice is better.</span>
+            </div>
+            <i class='ph ph-arrow-right' aria-hidden='true'></i>
+        </a>
+    </nav>
+
+    <aside class='knowledge-beginner-bridge' aria-labelledby='knowledge-beginner-title'>
+        <div>
+            <span>First visit?</span>
+            <h2 id='knowledge-beginner-title'>Use the walkthrough until you know what question to ask.</h2>
+            <p>The A-Z guide introduces each system when you need it, with a clear next step.</p>
+        </div>
+        <a href='/guide/'>Start the beginner walkthrough</a>
+    </aside>
+
+    <section class='knowledge-ownership-map' aria-labelledby='knowledge-map-title'>
+        <header>
+            <h2 id='knowledge-map-title'>Find the right collection</h2>
+            <p>Follow a topic when you do not yet have a name.</p>
+        </header>
+        <dl>
+            <div>
+                <dt><a href='/knowledge/relationships/'>Relationships</a></dt>
+                <dd>First gift reward, current heart lock, next interaction, and story requirement.</dd>
+            </div>
+            <div>
+                <dt><a href='/knowledge/regions/'>Regions and encounters</a></dt>
+                <dd>Where a field character can appear, on which route, and what else can appear there.</dd>
+            </div>
+            <div>
+                <dt><a href='/knowledge/incantations/'>Incantations</a></dt>
+                <dd>What reveals a Cauldron recipe, what it costs, and the system it opens.</dd>
+            </div>
+            <div>
+                <dt><a href='/knowledge/weapons/'>Weapons and aspects</a></dt>
+                <dd>Unlock order, aspect reveal, rank costs, and move identity. Full loadouts live under Builds.</dd>
+            </div>
+            <div>
+                <dt><a href='/knowledge/story/'>Story and prophecies</a></dt>
+                <dd>The exact conversation, route, relationship, or Fated List chain blocking progress.</dd>
+            </div>
+        </dl>
+    </section>
+
+    <section class='collection-atlas collection-atlas-v2' aria-labelledby='collections-title'>
+        <header>
+            <h2 id='collections-title'>Browse the whole reference</h2>
+            <p>Each collection opens with practical decisions, then gives you the complete reference.</p>
+        </header>
+        <div class='collection-lines'>
+            {
+                remainingPages.map((page) => {
+                    const slug = collectionSlug(page);
+                    const guide = collectionGuides[slug];
+                    return (
+                        <a href={pageHref(page)}>
+                            <SubjectArtwork subject={getCollectionSubjectArt(slug)} size='row' />
+                            <span>
+                                <strong>{page.title}</strong>
+                                {guide && <small>{guide.useFor}</small>}
+                            </span>
+                            <i class='ph ph-arrow-right' aria-hidden='true' />
+                        </a>
+                    );
+                })
+            }
+        </div>
+    </section>
+
+    <section class='tier-preview tier-preview-v2' aria-labelledby='tiers-title'>
+        <header>
+            <h2 id='tiers-title'>Compare only what belongs together</h2>
+            <p>
+                General rankings answer a different question from an aspect-specific build. Choose the comparison first.
+            </p>
+        </header>
+        <div>
+            {
+                tierPages.map((page) => (
+                    <a href={pageHref(page)}>
+                        <SubjectArtwork subject={getCollectionSubjectArt(collectionSlug(page))} size='inline' />
+                        {page.title}
+                        <i class='ph ph-arrow-right' aria-hidden='true' />
+                    </a>
+                ))
+            }
+        </div>
+    </section>
+
+    <script>
+        import '../../scripts/knowledge-search';
+    </script>
+</ContentLayout>

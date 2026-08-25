@@ -1,0 +1,51 @@
+---
+import type { GuideChapter } from '../../content/guide';
+
+type Props = {
+    previous?: GuideChapter;
+    next?: GuideChapter;
+};
+
+const { previous, next } = Astro.props;
+---
+
+<nav
+    class:list={['chapter-journey-nav', !previous && 'chapter-journey-nav--forward']}
+    aria-label='Adjacent walkthrough chapters'>
+    {
+        previous ? (
+            <a class='chapter-journey-nav__previous' rel='prev' href={`/guide/${previous.id}/`}>
+                <span class='journey-rune' aria-hidden='true'>
+                    <i class='ph ph-moon-stars' />
+                </span>
+                <span>
+                    <small>Previous chapter</small>
+                    <strong>{previous.title}</strong>
+                </span>
+            </a>
+        ) : null
+    }
+    {
+        next ? (
+            <a class='chapter-journey-nav__next' rel='next' href={`/guide/${next.id}/`}>
+                <span>
+                    <small>Next chapter</small>
+                    <strong>{next.title}</strong>
+                </span>
+                <span class='journey-rune' aria-hidden='true'>
+                    <i class='ph ph-sparkle' />
+                </span>
+            </a>
+        ) : (
+            <a class='chapter-journey-nav__next' href='/guide/'>
+                <span>
+                    <small>Walkthrough</small>
+                    <strong>Return to all chapters</strong>
+                </span>
+                <span class='journey-rune' aria-hidden='true'>
+                    <i class='ph ph-map-trifold' />
+                </span>
+            </a>
+        )
+    }
+</nav>

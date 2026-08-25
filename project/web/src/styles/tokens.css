@@ -1,0 +1,73 @@
+:root {
+    color-scheme: dark;
+    --ink: #0b1314;
+    --ink-deep: #070d0e;
+    --paper: #eee9da;
+    --paper-soft: #c9cbbc;
+    --paper-dim: #acb8ae;
+    --thread: #9bd8af;
+    --thread-bright: #d0f4cb;
+    --projection: #9283b9;
+    --ember: #c7a66c;
+    --moon: #d4d7ee;
+    --rose: #e5a3ad;
+    --sage: #83b692;
+    --rust: #bb785b;
+    --sky: #91bdd0;
+    --cut: #13201f;
+    --cut-high: #1b2b27;
+    --rule: rgb(199 166 108 / 0.25);
+    --rule-bright: #a38e61;
+    --link-underline-thickness: 0.08em;
+    --link-underline-offset: 0.24em;
+    --world: 104rem;
+    --reading: 50rem;
+    --edge: clamp(1.2rem, 3.6vw, 4.6rem);
+    --ease-stage: cubic-bezier(0.2, 0.78, 0.2, 1);
+    font-synthesis: none;
+    --font-body: 'Bricolage Grotesque Variable', sans-serif;
+    --display: 'Cinzel Variable', Georgia, serif;
+
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --space-9: 6rem;
+    --space-10: 8rem;
+
+    --type-body: 1.35rem;
+    --type-support: clamp(1.125rem, 1.0875rem + 0.2vw, 1.25rem);
+    --type-label: 1.125rem;
+    --type-title: clamp(2.75rem, 4.2vw, 4.35rem);
+    --type-display: clamp(3.25rem, 5vw, 5.25rem);
+    --type-section: clamp(2rem, 3.25vw, 3.45rem);
+    --type-subsection: clamp(1.4rem, 2vw, 2rem);
+
+    --reading-wide: 68ch;
+    --reading-compact: 60ch;
+    --control-height: 2.75rem;
+    --control-radius: 0.25rem;
+    --control-inset: 0.25rem;
+    --control-inner-radius: calc(var(--control-radius) - var(--control-inset));
+    --panel-cut: 0.9rem;
+    --panel-inset: 0.65rem;
+    --section-space: clamp(2.75rem, 4vw, 4rem);
+    --section-space-compact: clamp(1.75rem, 2.5vw, 2.75rem);
+
+    --surface-ink: #101b1b;
+    --surface-thread: #14221e;
+    --surface-violet: #1c1b26;
+    --surface-ember: rgb(37 27 18 / 0.9);
+    --surface-sky: rgb(14 25 38 / 0.94);
+    --rule-soft: color-mix(in srgb, var(--thread) 22%, transparent);
+    --rule-medium: color-mix(in srgb, var(--thread) 42%, transparent);
+    --rule-strong: color-mix(in srgb, var(--thread) 72%, var(--projection));
+    --focus-ring: var(--thread-bright);
+    --focus-shadow: 0 0 0 0.22rem rgb(136 104 243 / 0.38);
+    --depth-low: 0 0.9rem 2rem rgb(1 4 10 / 0.25);
+    --depth-medium: 0 1.5rem 3.5rem rgb(1 4 10 / 0.38);
+}

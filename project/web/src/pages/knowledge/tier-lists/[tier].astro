@@ -1,0 +1,312 @@
+---
+import RatingMark from '../../../components/RatingMark.astro';
+import RecordLink from '../../../components/RecordLink.astro';
+import SubjectArtwork from '../../../components/SubjectArtwork.astro';
+import ContentLayout from '../../../layouts/ContentLayout.astro';
+import { createTierListViewModel, getTierListStaticPaths, type TierListProps } from '../../../lib/tier-list-view-model';
+import { getRecord, getRecordLinkLabel, recordHref } from '../../../lib/publication';
+import { getRecordSubjectArt } from '../../../lib/subject-art';
+
+type Props = TierListProps;
+
+export function getStaticPaths() {
+    return getTierListStaticPaths();
+}
+
+const { page, records } = Astro.props;
+const {
+    publication,
+    metadataSubject,
+    tierSlug,
+    introductions,
+    tierViews,
+    comparisonIntroductions,
+    groupedByView,
+    choiceCount,
+    tierMeanings,
+    descriptionFor,
+    keepsakeAdviceFor,
+    boonFitsFor,
+    boonRequirementsFor,
+    hasExactProgressionFor,
+} = createTierListViewModel({ page, records });
+---
+
+<ContentLayout
+    title={page.title}
+    description={`Compare Hades II ${metadataSubject} for safety and damage. Every choice is ordered within its tier and explains its requirements and tradeoffs.`}
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Knowledge', href: '/knowledge/' },
+        { name: 'Tier lists', href: '/knowledge/tier-lists/' },
+        { name: page.title, href: `/knowledge/tier-lists/${tierSlug}/` },
+    ]}
+    surface={`tiers tiers-${tierSlug}`}>
+    <header class='page-hero tier-list-hero tier-list-hero-v2'>
+        <div>
+            <h1>{page.title}</h1>
+            <p>{introductions[tierSlug]}</p>
+        </div>
+    </header>
+
+    {
+        (
+            <section class='tier-view-control' aria-labelledby='tier-view-title'>
+                <div>
+                    <span>Ranking goal</span>
+                    <h2 id='tier-view-title'>What do you want from the run?</h2>
+                    <p id='tier-view-description' data-tier-view-description>
+                        {comparisonIntroductions.safest}
+                    </p>
+                </div>
+                <div class='tier-view-toggle' role='group' aria-label='Ranking goal'>
+                    <button
+                        type='button'
+                        data-tier-view-button='safest'
+                        data-tier-view-description={comparisonIntroductions.safest}
+                        aria-pressed='true'>
+                        <i class='ph ph-shield-check' aria-hidden='true' />
+                        Safest
+                    </button>
+                    <button
+                        type='button'
+                        data-tier-view-button='strongest'
+                        data-tier-view-description={comparisonIntroductions.strongest}
+                        aria-pressed='false'>
+                        <i class='ph ph-lightning' aria-hidden='true' />
+                        Strongest
+                    </button>
+                </div>
+            </section>
+        )
+    }
+
+    {
+        tierViews.map((view) => (
+            <section class='tier-view-panel' data-tier-view-panel={view} hidden={view !== 'safest'}>
+                <nav class='tier-jump' aria-label={`Jump to ${view} tier`}>
+                    {groupedByView[view].map((group) => (
+                        <a
+                            class={`tier-jump-link tier-jump-link-${group.rating.toLowerCase()}`}
+                            href={`#${view}-tier-${group.rating}`}
+                            aria-label={`${group.rating} ${group.entries.length}, jump to ${group.rating} tier, ${choiceCount(group.entries.length)}`}>
+                            <strong>{group.rating}</strong>
+                            <small>{group.entries.length}</small>
+                        </a>
+                    ))}
+                </nav>
+
+                <div class='tier-bands'>
+                    {groupedByView[view].map((group, groupIndex) => (
+                        <details
+                            id={`${view}-tier-${group.rating}`}
+                            class:list={['tier-band', `tier-band-${group.rating.toLowerCase()}`]}
+                            data-disclosure-state={groupIndex === 0 ? 'open' : 'closed'}
+                            open={groupIndex === 0}>
+                            <summary>
+                                <div class='tier-band-rank'>
+                                    <span>Tier</span>
+                                    <h2 aria-label={`${group.rating} tier`}>
+                                        <RatingMark rating={group.rating} label={`${group.rating} tier`} />
+                                    </h2>
+                                </div>
+                                <div class='tier-band-overview'>
+                                    <strong>{tierMeanings[group.rating] ?? 'Ranked for this goal'}</strong>
+                                    <span>{choiceCount(group.entries.length)}</span>
+                                </div>
+                                <i class='ph ph-caret-right' aria-hidden='true' />
+                            </summary>
+                            <div class='tier-band-panel'>
+                                <ol data-balanced-grid data-balanced-grid-min='20rem' data-balanced-grid-max='2'>
+                                    {group.entries.map((entry) => {
+                                        const viewJudgment = entry.comparisonRatings?.[view];
+                                        const subjectKey = entry.subject
+                                            ? `${entry.subject.recordType}:${entry.subject.id}`
+                                            : entry.record.key;
+                                        const subjectRecord = getRecord(subjectKey);
+                                        const name = subjectRecord
+                                            ? getRecordLinkLabel(subjectRecord)
+                                            : getRecordLinkLabel(entry.record);
+                                        const entryRoute = recordHref(entry.record);
+                                        const entryAnchor = entryRoute.includes('#')
+                                            ? entryRoute.slice(entryRoute.indexOf('#') + 1)
+                                            : undefined;
+                                        const href = (
+                                            entry.record.recordType === 'editorial/aspect-guide' ||
+                                            entry.record.recordType === 'editorial/weapon-guide'
+                                                ? recordHref(entry.record)
+                                                : subjectRecord
+                                                  ? recordHref(subjectRecord)
+                                                  : recordHref(entry.record)
+                                        ).split('#', 1)[0];
+                                        const description = descriptionFor(subjectRecord);
+                                        const subjectArt = getRecordSubjectArt(subjectRecord ?? entry.record);
+                                        const keepsakeAdvice =
+                                            tierSlug === 'keepsakes' ? keepsakeAdviceFor(entry, description) : '';
+                                        const showFactualDescription = tierSlug === 'boons' || tierSlug === 'keepsakes';
+                                        const showEditorialDetail = !showFactualDescription && tierSlug !== 'weapons';
+                                        const repeatsGodKeepsakeRule =
+                                            tierSlug === 'keepsakes' &&
+                                            entry.switchCondition ===
+                                                'At the next Keepsake cabinet, replace it after its god offer is consumed or the Boon required by the build is secured.';
+                                        const boonFits = boonFitsFor(subjectRecord);
+                                        const boonRequirements = boonRequirementsFor(subjectRecord);
+                                        const hasExactProgression = hasExactProgressionFor(subjectRecord);
+                                        return (
+                                            <li id={view === 'safest' ? entryAnchor : undefined}>
+                                                <div class='tier-entry-heading'>
+                                                    <a class='tier-entry-record-link' href={href}>
+                                                        <SubjectArtwork subject={subjectArt} size='row' />
+                                                        <span class='tier-entry-record-copy'>
+                                                            <span>{name}</span>
+                                                            {hasExactProgression && (
+                                                                <span class='tier-entry-ranks-link'>
+                                                                    Exact ranks and stats{' '}
+                                                                    <i class='ph ph-arrow-right' aria-hidden='true' />
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                                {showFactualDescription && description && <p>{description}</p>}
+                                                {keepsakeAdvice && <p class='tier-recommendation'>{keepsakeAdvice}</p>}
+                                                {tierSlug === 'weapons' && entry.recommendation && (
+                                                    <p>{entry.recommendation}</p>
+                                                )}
+                                                {showEditorialDetail && entry.recommendation && (
+                                                    <p class='tier-recommendation'>{entry.recommendation}</p>
+                                                )}
+                                                {showEditorialDetail && (viewJudgment?.reason || entry.reason) && (
+                                                    <p>{viewJudgment?.reason || entry.reason}</p>
+                                                )}
+                                                {showEditorialDetail &&
+                                                    (viewJudgment?.limitation || entry.limitation) && (
+                                                        <p class='tier-limitation'>
+                                                            {viewJudgment?.limitation || entry.limitation}
+                                                        </p>
+                                                    )}
+                                                {tierSlug === 'weapons' && viewJudgment?.reason && (
+                                                    <p>{viewJudgment.reason}</p>
+                                                )}
+                                                {tierSlug === 'weapons' && viewJudgment?.limitation && (
+                                                    <p class='tier-limitation'>{viewJudgment.limitation}</p>
+                                                )}
+                                                {boonFits.length > 0 && (
+                                                    <div class='tier-connections'>
+                                                        <strong>Especially strong with</strong>
+                                                        <ul>
+                                                            {boonFits.map((reference) => (
+                                                                <li>
+                                                                    <RecordLink reference={reference} />
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                                {boonRequirements.length > 0 && (
+                                                    <div class='tier-connections'>
+                                                        <strong>Requires</strong>
+                                                        <ul>
+                                                            {boonRequirements.map((reference) => (
+                                                                <li>
+                                                                    <RecordLink reference={reference} />
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                                {entry.switchCondition && !repeatsGodKeepsakeRule && (
+                                                    <p class='tier-switch'>
+                                                        <strong>Switch:</strong> {entry.switchCondition}
+                                                    </p>
+                                                )}
+                                                {showEditorialDetail && tierSlug !== 'aspects' && entry.fallback && (
+                                                    <p class='tier-fallback'>
+                                                        <strong>When to choose another:</strong> {entry.fallback}
+                                                    </p>
+                                                )}
+                                            </li>
+                                        );
+                                    })}
+                                </ol>
+                            </div>
+                        </details>
+                    ))}
+                </div>
+            </section>
+        ))
+    }
+
+    <script>
+        import {
+            captureInitialFragment,
+            cancelFragmentScroll,
+            fragmentTarget,
+            queueFragmentScroll,
+            restoreInitialFragment,
+        } from '../../../scripts/view-fragment-navigation';
+        import { startTierAccordions } from '../../../scripts/exclusive-details-runtime';
+
+        type TierView = 'safest' | 'strongest';
+        const initialFragment = captureInitialFragment();
+        const tierViewButtons = document.querySelectorAll<HTMLButtonElement>('[data-tier-view-button]');
+        const tierViewPanels = document.querySelectorAll<HTMLElement>('[data-tier-view-panel]');
+        const tierViewDescription = document.querySelector<HTMLElement>('[data-tier-view-description]');
+
+        const setTierView = (view: TierView, updateUrl = true): void => {
+            if (updateUrl) cancelFragmentScroll();
+            tierViewButtons.forEach((button) => {
+                button.setAttribute('aria-pressed', String(button.dataset.tierViewButton === view));
+            });
+            const selectedButton = Array.from(tierViewButtons).find((button) => button.dataset.tierViewButton === view);
+            if (tierViewDescription && selectedButton?.dataset.tierViewDescription) {
+                tierViewDescription.textContent = selectedButton.dataset.tierViewDescription;
+            }
+            tierViewPanels.forEach((panel) => {
+                panel.hidden = panel.dataset.tierViewPanel !== view;
+            });
+            document.dispatchEvent(new Event('balanced-grid:change'));
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('view', view);
+                url.hash = '';
+                history.replaceState(null, '', url);
+            }
+        };
+
+        tierViewButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const view = button.dataset.tierViewButton;
+                if (view === 'safest' || view === 'strongest') setTierView(view);
+            });
+        });
+
+        if (tierViewButtons.length > 0) {
+            const requestedView = new URL(window.location.href).searchParams.get('view');
+            setTierView(requestedView === 'strongest' || requestedView === 'damage' ? 'strongest' : 'safest', false);
+        }
+
+        const tierAccordions = startTierAccordions();
+        const openTierFromHash = (hash = window.location.hash, scroll = true): void => {
+            if (!hash) return;
+            const target = fragmentTarget(hash);
+            const panel = target?.closest<HTMLElement>('[data-tier-view-panel]');
+            const view = panel?.dataset.tierViewPanel;
+            if (view === 'safest' || view === 'strongest') setTierView(view, false);
+            tierAccordions.reveal(hash, scroll);
+            if (scroll) queueFragmentScroll(hash);
+        };
+        document.querySelectorAll<HTMLAnchorElement>('.tier-jump a').forEach((link) => {
+            link.addEventListener('click', (event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                if (link.hash !== window.location.hash) history.pushState(null, '', link.href);
+                openTierFromHash(link.hash);
+            });
+        });
+        openTierFromHash(initialFragment, false);
+        restoreInitialFragment(initialFragment);
+        window.addEventListener('hashchange', () => openTierFromHash());
+    </script>
+</ContentLayout>

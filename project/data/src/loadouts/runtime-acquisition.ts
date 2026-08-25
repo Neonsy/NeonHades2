@@ -118,7 +118,7 @@ export async function createRuntimeLoadoutAcquisition(
   assertSameIds(runtime.incantations.map((record) => record.id), sourceAudit.incantationIds, "incantation IDs");
   assertSameIds(runtime.automaticWorldUpgradeIds, sourceAudit.automaticWorldUpgradeIds, "automatic incantation IDs");
 
-  const normalized = normalizeRuntimeLoadouts(runtime);
+  const normalized = normalizeRuntimeLoadouts(runtime, sourceAudit);
   const datasetContent = jsonBytes(normalized.dataset);
   const coverageContent = jsonBytes(normalized.coverage);
   const coverageMarkdownContent = Buffer.from(renderLoadoutCoverageReport(normalized.coverage), "utf8");

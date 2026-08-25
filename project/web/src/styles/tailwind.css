@@ -1,0 +1,13 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+
+@source inline('flex w-full flex-wrap items-center gap-2');
+
+@theme inline {
+    --font-body: 'Bricolage Grotesque Variable', sans-serif;
+    --font-display: 'Cinzel Variable', Georgia, serif;
+    --text-body: var(--type-body);
+    --text-support: var(--type-support);
+    --text-display: var(--type-display);
+    --text-section: var(--type-section);
+}

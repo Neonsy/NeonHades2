@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 820" role="img" aria-labelledby="title desc">
+  <title id="title">The opening route through Erebus</title>
+  <desc id="desc">A moonlit diagonal route passes a weathered tree, carved route stones and a small witchfire lantern before disappearing through the broken Erebus arch below.</desc>
+  <defs>
+    <linearGradient id="sky" x1="603" y1="40" x2="483" y2="612" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#282844"/>
+      <stop offset=".42" stop-color="#171b2e"/>
+      <stop offset="1" stop-color="#09111a"/>
+    </linearGradient>
+    <linearGradient id="moon" x1="663" y1="90" x2="783" y2="236" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#dce7f3"/>
+      <stop offset=".34" stop-color="#8bb9c8"/>
+      <stop offset=".68" stop-color="#5c6fa8"/>
+      <stop offset="1" stop-color="#31385f"/>
+    </linearGradient>
+    <linearGradient id="rock" x1="185" y1="224" x2="780" y2="754" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3d4056"/>
+      <stop offset=".44" stop-color="#22293a"/>
+      <stop offset="1" stop-color="#0d141e"/>
+    </linearGradient>
+    <linearGradient id="rock-light" x1="254" y1="284" x2="742" y2="690" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6b6a82"/>
+      <stop offset=".4" stop-color="#494b63"/>
+      <stop offset="1" stop-color="#252c3d"/>
+    </linearGradient>
+    <linearGradient id="bark" x1="70" y1="106" x2="403" y2="744" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#32313b"/>
+      <stop offset=".42" stop-color="#1d232d"/>
+      <stop offset="1" stop-color="#0a1117"/>
+    </linearGradient>
+    <linearGradient id="teal-fire" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#e0fff8"/>
+      <stop offset=".28" stop-color="#71f2dc"/>
+      <stop offset=".72" stop-color="#29998f"/>
+      <stop offset="1" stop-color="#153f4c"/>
+    </linearGradient>
+    <linearGradient id="violet-fire" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#f0ebff"/>
+      <stop offset=".28" stop-color="#a38cff"/>
+      <stop offset=".72" stop-color="#5c49b2"/>
+      <stop offset="1" stop-color="#2c285d"/>
+    </linearGradient>
+  </defs>
+
+  <!-- distant night, cropped without a badge frame -->
+  <path d="M79 69 907 22l59 635L175 799 47 381Z" fill="url(#sky)"/>
+  <path d="M88 123 863 78l22 22-773 45Z" fill="#535571" opacity=".3"/>
+  <path d="m139 187 689-41" stroke="#8d7be5" stroke-width="3" opacity=".25"/>
+  <!-- moon behind the descending route -->
+  <path d="M729 86c69-4 129 44 135 112 5 68-47 128-116 132-68 4-129-44-134-112-5-69 47-128 115-132Z" fill="url(#moon)" opacity=".9"/>
+  <path d="M746 97c48 10 81 52 85 104 4 50-22 94-64 114 55-13 95-63 91-119-4-58-52-103-112-99Z" fill="#202743" opacity=".72"/>
+  <path d="m677 163 101-45m-82 106 124-55m-86 113 92-42" stroke="#d7e6ee" stroke-width="3" opacity=".24"/>
+
+  <!-- far Erebus layers -->
+  <path d="M94 383c123-99 217-117 315-76 61 26 98 70 149 73 71 4 116-79 203-103 69-19 126 1 174 41l31 339-791 142Z" fill="#111a26"/>
+  <path d="M84 435c107-84 203-103 287-57 58 31 94 87 157 89 72 2 133-63 218-70 75-7 137 28 201 92l19 168-791 142Z" fill="#0b1720"/>
+  <path d="M126 486c102-59 192-65 273-17 61 36 116 90 194 79 68-9 109-71 184-78 60-6 115 22 168 69l17 118-787 142Z" fill="#0a151b"/>
+  <path d="M144 511c118-50 218-37 301 39 66 61 134 74 204 37 68-37 123-47 187-25" fill="none" stroke="#2f5e5a" stroke-width="10" opacity=".28"/>
+  <path d="M175 560c93-29 174-12 244 50 51 45 115 59 185 33 87-32 167-22 242 32" fill="none" stroke="#33575a" stroke-width="6" opacity=".35"/>
+
+  <!-- massive Crossroads tree anchors left foreground -->
+  <path d="M35 76c86 41 126 109 120 203-5 74-34 125-19 202 12 66 57 114 53 196-3 54-25 102-57 140H34Z" fill="#04080c" opacity=".62"/>
+  <path d="M18 58c101 40 151 111 145 214-5 81-38 136-20 220 15 73 67 121 63 210-2 47-17 86-40 115H0V70Z" fill="url(#bark)" stroke="#070b10" stroke-width="7"/>
+  <path d="M86 97c48 62 58 128 29 199-29 72-27 134 5 186 31 52 45 109 31 171" fill="none" stroke="#505365" stroke-width="9" opacity=".58"/>
+  <path d="M42 110c39 72 43 137 12 194-28 52-25 108 10 168 31 54 38 112 20 173" fill="none" stroke="#171f28" stroke-width="13"/>
+  <path d="m9 232 108-76 88-16 92-93 41 15-112 113-105 27-91 85Z" fill="#141b24" stroke="#070b10" stroke-width="6"/>
+  <path d="m117 158 79-134 35-13-58 148Z" fill="#1b222c" stroke="#070b10" stroke-width="5"/>
+  <path d="m195 141 115-93 58-7-106 111Z" fill="#202631" stroke="#070b10" stroke-width="5"/>
+  <path d="M37 321c53-45 99-57 138-35m-150 94c45-36 91-43 138-20" fill="none" stroke="#41504b" stroke-width="6" opacity=".55"/>
+  <!-- leaves clustered, not ornamental dots -->
+  <path d="M167 87c-35-22-62-19-82 8 23 30 52 35 86 13Z" fill="#355d52" stroke="#0a1215" stroke-width="4"/>
+  <path d="M217 63c-12-35-36-50-71-44-8 36 9 61 50 75Z" fill="#274d45" stroke="#0a1215" stroke-width="4"/>
+  <path d="M278 77c22-33 53-42 91-27-6 37-31 56-76 56Z" fill="#386b59" stroke="#0a1215" stroke-width="4"/>
+  <path d="M301 112c36-18 67-12 92 18-20 33-51 42-93 25Z" fill="#2d5a4d" stroke="#0a1215" stroke-width="4"/>
+  <path d="M104 177c-36-12-63-2-79 29 27 25 57 25 90 0Z" fill="#315e50" stroke="#0a1215" stroke-width="4"/>
+  <path d="m169 104-25-10m66-16-13-19m90 37 18-18m-3 49 23 10m-212 51-24 8" stroke="#7eaa8f" stroke-width="3" opacity=".65"/>
+
+  <!-- elevated Crossroads landing -->
+  <path d="m105 331 301-61 155 97-329 84Z" fill="#080c13" opacity=".48"/>
+  <path d="m89 308 302-61 154 97-329 84Z" fill="url(#rock)" stroke="#080b12" stroke-width="6"/>
+  <path d="m123 314 254-51 120 74-275 70Z" fill="#373a4d"/>
+  <path d="m152 321 210-43 85 52-225 57Z" fill="#4d4e62"/>
+  <path d="m107 317 44 10 27-20 35 12 30-24 37 12 31-26 35 10 28-25" fill="none" stroke="#77758b" stroke-width="4"/>
+  <path d="m171 357 62-13m19-4 47-10m25-5 72-15" stroke="#a6a3b5" stroke-width="3" opacity=".45"/>
+
+  <!-- diagonal carved descent -->
+  <path d="m375 337 224 50-38 66-234-46Z" fill="#090d14" opacity=".5"/>
+  <path d="m349 320 222 49-36 64-235-45Z" fill="url(#rock-light)" stroke="#080b12" stroke-width="6"/>
+  <path d="m328 392 251 51-42 70-262-45Z" fill="url(#rock)" stroke="#080b12" stroke-width="6"/>
+  <path d="m286 474 277 49-47 73-288-40Z" fill="url(#rock-light)" stroke="#080b12" stroke-width="6"/>
+  <path d="m240 561 301 42-52 77-312-31Z" fill="url(#rock)" stroke="#080b12" stroke-width="6"/>
+  <path d="m189 655 324 31-58 82-333-20Z" fill="url(#rock-light)" stroke="#080b12" stroke-width="6"/>
+  <path d="m371 343 160 35m-177 42 166 33m-197 50 178 31m-213 57 192 27m-230 66 210 20" stroke="#a4a6b7" stroke-width="4" opacity=".43"/>
+  <path d="m439 356-14 40m33-32-14 40m-38 76-16 43m37-36-16 43m-43 73-17 47m39-40-17 47m-46 71-18 50" stroke="#171b27" stroke-width="5" opacity=".72"/>
+  <!-- broken route inlays -->
+  <path d="m489 369 42 9-13 24-42-8Zm-75 92 43 8-15 25-44-8Zm-83 91 48 7-17 27-48-7Zm-93 101 52 5-20 29-52-5Z" fill="#284f4e"/>
+  <path d="m494 378 24 5m-99 87 24 5m-106 85 28 4m-120 98 31 3" stroke="#63e6d2" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- waystones explain the route rhythm -->
+  <path d="m259 302 48-10 28 48-28 61-58 15-31-45Z" fill="#080b12" opacity=".5"/>
+  <path d="m248 286 48-10 28 47-28 61-58 15-31-45Z" fill="#2b3242" stroke="#080b12" stroke-width="5"/>
+  <path d="m262 302 25-5 14 24-14 34-30 8-15-22Z" fill="#3e4a5d"/>
+  <path d="m267 315 13-3 7 11-7 17-15 4-7-11Z" fill="#63e6d2"/>
+  <path d="m514 480 47-10 29 45-24 60-57 14-33-42Z" fill="#080b12" opacity=".48"/>
+  <path d="m503 464 47-10 29 45-24 60-57 14-33-42Z" fill="#2a3042" stroke="#080b12" stroke-width="5"/>
+  <path d="m516 481 24-5 15 22-12 33-30 7-16-20Z" fill="#3a4056"/>
+  <path d="m522 494 12-3 7 11-6 16-15 4-8-10Z" fill="#8d7be5"/>
+
+  <!-- hanging witchfire lantern -->
+  <path d="m184 166 1 129" stroke="#a87845" stroke-width="5"/>
+  <path d="m169 281 34-7 21 27-9 58-45 12-25-38 7-37Z" fill="#1b222d" stroke="#080b12" stroke-width="5"/>
+  <path d="m175 294 22-5 12 18-6 36-27 7-15-23 5-23Z" fill="#163b44"/>
+  <path d="M186 334c-18-22-17-43 3-64 25 18 29 40 11 66-5 8-10 8-14-2Z" fill="url(#teal-fire)"/>
+  <path d="M190 323c-7-12-6-24 4-36 10 13 11 26 3 38-3 4-5 3-7-2Z" fill="#effffb"/>
+  <path d="m164 276 45-10 7 13-47 10Z" fill="#8f6338" stroke="#080b12" stroke-width="4"/>
+  <path d="m174 363 39-10 9 14-42 11Z" fill="#8f6338" stroke="#080b12" stroke-width="4"/>
+
+  <!-- broken Erebus arch at lower right -->
+  <path d="m569 466 254-51 130 208-304 73Z" fill="#05080d" opacity=".52"/>
+  <path d="m603 435 199-40 122 191-84 20-74-116-79 16-26 137-92 22Z" fill="#1d2431" stroke="#080b12" stroke-width="7"/>
+  <path d="m629 444 161-33 29 44-161 34Z" fill="#4a4c63"/>
+  <path d="m650 451 125-25 12 18-126 26Z" fill="#707088" opacity=".72"/>
+  <path d="m678 486 89-18 65 106-41 10-40-64-39 8-16 81-47 11Z" fill="#0b121b"/>
+  <path d="m613 457 38 17 26-20 35 14 25-24 31 13 22-30" fill="none" stroke="#8a819e" stroke-width="4"/>
+  <path d="m600 500 45-9m158-32 43-9m-253 92 44-9m188-38 48-10" stroke="#63e6d2" stroke-width="3" opacity=".42"/>
+  <path d="m836 421 51-11 34 52-19 60-56 14-34-46Z" fill="#282d42" stroke="#080b12" stroke-width="5"/>
+  <path d="M856 486c-19-22-17-44 4-66 26 19 30 41 11 68-6 8-11 8-15-2Z" fill="url(#violet-fire)"/>
+  <path d="M861 474c-8-12-7-25 4-38 11 14 12 27 3 40-3 4-5 3-7-2Z" fill="#f4f0ff"/>
+
+  <!-- foreground roots and route closure -->
+  <path d="M0 697c84-56 165-68 241-35 74 31 117 94 204 100 82 6 147-42 233-41 98 0 202 35 322 99H0Z" fill="#05090e"/>
+  <path d="M31 734c68-39 134-45 198-19 74 31 127 63 201 62 72 0 142-35 212-30 81 5 157 29 230 73" fill="none" stroke="#24443f" stroke-width="8" opacity=".55"/>
+  <path d="M102 808c57-78 115-107 174-88 38 12 69 39 109 47M675 820c28-73 75-105 141-96 42 6 83 27 122 62" fill="none" stroke="#151d23" stroke-width="22"/>
+  <path d="m122 742 60-12m449 43 70-13m40-7 46-8" stroke="#52736a" stroke-width="4" opacity=".62"/>
+  <!-- sparse fireflies follow the route, no ambient field -->
+  <path d="m334 429 9-2m66 81 8-2m-73 112 10-2m174-15 8-2m92 47 10-2" stroke="#b5fff2" stroke-width="5" stroke-linecap="round"/>
+  <path d="m333 432 7-2m68 81 6-1m-71 113 8-2m176-16 7-2m91 48 8-2" stroke="#63e6d2" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+</svg>

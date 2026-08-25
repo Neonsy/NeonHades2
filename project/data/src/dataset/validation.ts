@@ -332,6 +332,12 @@ function validateGuide(domains: NormalizedDomains, issues: DatasetValidationIssu
     ["prophecies", guide.prophecies], ["narrative", guide.narrative], ["outros", guide.outros],
     ["achievements", guide.achievements], ["namedRequirements", guide.namedRequirements],
     ["runClearMessages", guide.runClearMessages],
+    ["gatheringTools", guide.gatheringTools], ["fish", guide.fish],
+    ["cultivation", guide.cultivation], ["marketOffers", guide.marketOffers], ["runRewards", guide.runRewards],
+    ["openingStates", guide.openingStates], ["godAppearances", guide.godAppearances.map((appearance) => ({ id: appearance.godId }))],
+    ["encounterFriends", guide.encounterFriends], ["encounterAids", guide.encounterAids],
+    ["encounterAidEffects", guide.encounterAidEffects],
+    ["strifeCurses", guide.strifeCurses], ["surfacePenalties", guide.surfacePenalties],
   ] as const;
   for (const [path, records] of collections) {
     requireNonempty("guide", path, records, issues);
@@ -349,6 +355,8 @@ function validateGuide(domains: NormalizedDomains, issues: DatasetValidationIssu
   const encounterIds = ids(guide.encounters);
   const enemyIds = ids(guide.enemies);
   const rewardIds = new Set([...guide.rewards, ...guide.consumables, ...guide.resources].map((record) => record.id));
+  const resourceIds = ids(guide.resources);
+  const statusElementIds = ids(guide.statusElements);
   for (const route of guide.routes) validateReferences("guide", `routes.${route.id}.regionIds`, route.regionIds, regionIds, issues);
   for (const region of guide.regions) {
     if (region.routeId !== null) {
@@ -388,6 +396,98 @@ function validateGuide(domains: NormalizedDomains, issues: DatasetValidationIssu
   for (const [index, priority] of guide.outroPriorities.entries()) {
     validateReferences("guide", `outroPriorities[${index}]`, typeof priority === "string" ? [priority] : priority, outroIds, issues);
   }
+  for (const tool of guide.gatheringTools) {
+    validateCosts("guide", `gatheringTools.${tool.id}.costs`, tool.costs, resourceIds, issues);
+    if (tool.elementYield !== null) {
+      validateReferences(
+        "guide",
+        `gatheringTools.${tool.id}.elementYield.elementId`,
+        [tool.elementYield.elementId],
+        statusElementIds,
+        issues,
+      );
+    }
+  }
+  for (const fish of guide.fish) {
+    validateReferences("guide", `fish.${fish.id}.resourceId`, [fish.resourceId, fish.sellCurrencyId], resourceIds, issues);
+    validateReferences("guide", `fish.${fish.id}.regionId`, [fish.regionId], regionIds, issues);
+  }
+  for (const cultivation of guide.cultivation) {
+    validateReferences("guide", `cultivation.${cultivation.id}.resources`, [
+      cultivation.seedResourceId,
+      cultivation.outputResourceId,
+      ...(cultivation.bonusSeedResourceId === null ? [] : [cultivation.bonusSeedResourceId]),
+    ], resourceIds, issues);
+  }
+  for (const offer of guide.marketOffers) {
+    validateReferences("guide", `marketOffers.${offer.id}.outputResourceId`, [offer.outputResourceId], resourceIds, issues);
+    validateCosts("guide", `marketOffers.${offer.id}.costs`, offer.costs, resourceIds, issues);
+  }
+  for (const reward of guide.runRewards) {
+    if (reward.resourceId !== null) {
+      validateReferences("guide", `runRewards.${reward.id}.resourceId`, [reward.resourceId], resourceIds, issues);
+    }
+  }
+  const boonIds = ids(domains.boons.boons);
+  const godNames = new Set(domains.boons.gods.map((god) => god.name));
+  for (const opening of guide.openingStates) {
+    validateReferences("guide", `openingStates.${opening.id}.encounterId`, [opening.encounterId], encounterIds, issues);
+    validateReferences("guide", `openingStates.${opening.id}.boonIds`, opening.boonIds, boonIds, issues);
+    if (!godNames.has(opening.godId)) issue(issues, "reference", "guide", `openingStates.${opening.id}.godId`, `Unknown god ${opening.godId}.`);
+  }
+  for (const appearance of guide.godAppearances) {
+    if (!godNames.has(appearance.godId)) issue(issues, "reference", "guide", `godAppearances.${appearance.godId}`, `Unknown god ${appearance.godId}.`);
+  }
+  const aidIds = ids(guide.encounterAids);
+  const friendIds = ids(guide.encounterFriends);
+  for (const friend of guide.encounterFriends) {
+    for (const appearance of friend.appearances) {
+      validateReferences("guide", `encounterFriends.${friend.id}.appearances.regionId`, [appearance.regionId], regionIds, issues);
+      validateReferences("guide", `encounterFriends.${friend.id}.appearances.encounterId`, [appearance.encounterId], encounterIds, issues);
+    }
+    validateReferences("guide", `encounterFriends.${friend.id}.aidIds`, friend.aidIds, aidIds, issues);
+  }
+  for (const aid of guide.encounterAids) {
+    validateReferences("guide", `encounterAids.${aid.id}.providerId`, [aid.providerId], friendIds, issues);
+  }
+  const aidById = new Map(guide.encounterAids.map((aid) => [aid.id, aid]));
+  for (const effect of guide.encounterAidEffects) {
+    validateReferences("guide", `encounterAidEffects.${effect.id}`, [effect.id], aidIds, issues);
+    if (typeof effect.data !== "object" || effect.data === null || Array.isArray(effect.data)) {
+      issue(issues, "invalid-range", "guide", `encounterAidEffects.${effect.id}.data`, "Encounter-aid effect data must be an object.");
+      continue;
+    }
+    const effectData = effect.data as Readonly<Record<string, JsonValue>>;
+    const providerId = effectData.providerId;
+    const expectedProviderId = aidById.get(effect.id)?.providerId;
+    if (typeof providerId !== "string" || providerId !== expectedProviderId) {
+      issue(issues, "reference", "guide", `encounterAidEffects.${effect.id}.data.providerId`, "Runtime and source-derived encounter-aid providers disagree.");
+    }
+    if (!Array.isArray(effectData.samples) || effectData.samples.length === 0) {
+      issue(issues, "empty-collection", "guide", `encounterAidEffects.${effect.id}.data.samples`, "Processed encounter-aid samples are empty.");
+      continue;
+    }
+    for (const [sampleIndex, sample] of effectData.samples.entries()) {
+      const samplePath = `encounterAidEffects.${effect.id}.data.samples[${sampleIndex}]`;
+      if (typeof sample !== "object" || sample === null || Array.isArray(sample)) {
+        issue(issues, "invalid-range", "guide", samplePath, "Processed encounter-aid sample must be an object.");
+        continue;
+      }
+      const result = sample.result;
+      if (typeof result !== "object" || result === null || Array.isArray(result) || result.status !== "ok") {
+        issue(issues, "invalid-range", "guide", `${samplePath}.result`, "Processed encounter-aid sample must have a successful result.");
+      } else if (!Array.isArray(result.values)) {
+        issue(issues, "invalid-range", "guide", `${samplePath}.result.values`, "Successful encounter-aid sample values must be an array.");
+      }
+    }
+  }
+  for (const curse of guide.strifeCurses) {
+    for (const stage of curse.stages) {
+      validateReferences("guide", `strifeCurses.${curse.id}.stages.regionId`, [stage.regionId], regionIds, issues);
+      validateReferences("guide", `strifeCurses.${curse.id}.stages.roomId`, [stage.roomId], roomIds, issues);
+      validateCosts("guide", `strifeCurses.${curse.id}.stages.compensation`, [stage.compensation], resourceIds, issues);
+    }
+  }
   for (const [path, records] of collections) {
     for (const record of records) {
       if ("data" in record) inspectPresentationData(record.data, `${path}.${record.id}.data`, issues);
@@ -422,6 +522,10 @@ export function validateNormalizedDomains(domains: NormalizedDomains): DatasetVa
       domains.guide.statusElements, domains.guide.oathConditions, domains.guide.bounties,
       domains.guide.relationships, domains.guide.prophecies, domains.guide.narrative, domains.guide.outros,
       domains.guide.achievements, domains.guide.namedRequirements, domains.guide.runClearMessages,
+      domains.guide.gatheringTools, domains.guide.fish, domains.guide.cultivation,
+      domains.guide.marketOffers, domains.guide.runRewards, domains.guide.openingStates, domains.guide.godAppearances,
+      domains.guide.encounterFriends, domains.guide.encounterAids, domains.guide.encounterAidEffects, domains.guide.strifeCurses,
+      domains.guide.surfacePenalties,
     ].reduce((count, records) => count + records.length, 0),
     loadouts:
       domains.loadouts.keepsakes.length + domains.loadouts.familiars.length +

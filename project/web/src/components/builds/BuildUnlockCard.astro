@@ -1,0 +1,62 @@
+---
+import { recordHref, type PublicationRecord } from '../../lib/publication';
+import RecordLink from '../RecordLink.astro';
+
+type Reference = {
+    id: string;
+    recordType: string;
+};
+
+type Props = {
+    hiddenAspectSpeaker?: string;
+    isBaseAspect: boolean;
+    rankOneCosts: Array<{ amount: number; resource: Reference }>;
+    aspectIncantation: PublicationRecord;
+};
+
+const { hiddenAspectSpeaker, isBaseAspect, rankOneCosts, aspectIncantation } = Astro.props;
+---
+
+<aside class='build-unlock-card' aria-labelledby='build-unlock-title'>
+    <div>
+        <span>{hiddenAspectSpeaker ? 'Hidden aspect' : isBaseAspect ? 'Starting aspect' : 'Standard aspect'}</span>
+        <h2 id='build-unlock-title'>When this build becomes available</h2>
+    </div>
+    {
+        hiddenAspectSpeaker ? (
+            <ol>
+                <li>Forge all three standard aspects for this weapon.</li>
+                <li>Raise one non-Melinoë aspect for this weapon to Rank V.</li>
+                <li>Keep speaking with {hiddenAspectSpeaker} until they give the Waking Phrase.</li>
+                <li>Use the phrase at this weapon's Waking Pool, then forge Rank I.</li>
+            </ol>
+        ) : isBaseAspect ? (
+            <p>
+                The Aspect of Melinoë is available as soon as you unlock its weapon. Brew the linked Incantation when
+                you want to reveal the aspect menu and invest in ranks.
+            </p>
+        ) : (
+            <p>
+                Receive the recipe from Hecate, brew the linked Incantation at the Crossroads Cauldron, then forge Rank
+                I at the Silver Pool.
+            </p>
+        )
+    }
+    <nav aria-label='Aspect unlock references'>
+        {
+            rankOneCosts.length > 0 && (
+                <div class='build-unlock-cost'>
+                    <strong>Rank I forge cost</strong>
+                    <ul>
+                        {rankOneCosts.map((cost) => (
+                            <li>
+                                <span>{cost.amount} ×</span> <RecordLink reference={cost.resource} />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )
+        }
+        <a href={recordHref(aspectIncantation)}> Aspects of Night and Darkness </a>
+    </nav>
+</aside>

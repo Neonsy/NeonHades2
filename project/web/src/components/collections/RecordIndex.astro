@@ -1,0 +1,56 @@
+---
+import SubjectArtwork from '../SubjectArtwork.astro';
+import { getRecordName, recordHref, recordTypeLabel } from '../../lib/publication';
+import { recordSummary } from '../../lib/presentation';
+import { getRecordSubjectArt, requireSubjectArt } from '../../lib/subject-art';
+import type { CollectionViewModel } from '../../lib/collection-view-model';
+
+type Props = Pick<CollectionViewModel, 'indexedRecords' | 'virtualizeIndex' | 'slug'> & { title: string };
+const { indexedRecords, virtualizeIndex, slug, title } = Astro.props;
+const balancesCardGrid = ['arcana', 'keepsakes', 'hexes', 'familiars'].includes(slug);
+const balancedCardMinimum = slug === 'familiars' ? '28rem' : '26rem';
+---
+
+<div
+    class='record-index-viewport'
+    data-virtual-record-index={virtualizeIndex ? '' : undefined}
+    data-virtual-label={virtualizeIndex ? `${title} records` : undefined}>
+    <ol
+        class:list={[
+            'record-index',
+            'record-index-v2',
+            `record-index--${slug}`,
+            slug === 'relationships' && 'record-index--relationships',
+        ]}
+        data-record-index
+        data-balanced-grid={balancesCardGrid ? '' : undefined}
+        data-balanced-grid-layout={balancesCardGrid ? 'justified' : undefined}
+        data-balanced-grid-min={balancesCardGrid ? balancedCardMinimum : undefined}
+        data-balanced-grid-max={balancesCardGrid ? '4' : undefined}>
+        {
+            indexedRecords.map((record, index) => {
+                const summary = recordSummary(record);
+                const name = getRecordName(record);
+                const subjectArt = slug === 'resources' ? requireSubjectArt(name) : getRecordSubjectArt(record);
+                const type = recordTypeLabel(record.recordType);
+                return (
+                    <li
+                        data-record-row
+                        data-record-tone={index % 4}
+                        data-record-type={type}
+                        data-filter={`${name} ${type}`.toLowerCase()}>
+                        <a class='record-index-link--illustrated' href={recordHref(record)}>
+                            <SubjectArtwork subject={subjectArt} size='row' />
+                            <span class='record-index-copy'>
+                                <strong>{name}</strong>
+                                {summary && <span>{summary}</span>}
+                            </span>
+                            <span class='record-type'>{type}</span>
+                            <i class='ph ph-arrow-right' aria-hidden='true' />
+                        </a>
+                    </li>
+                );
+            })
+        }
+    </ol>
+</div>

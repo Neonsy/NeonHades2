@@ -1,0 +1,77 @@
+{
+    "schema": 1,
+    "generator": "scripts/artwork/generate-supplemental-enemy-art.py",
+    "opencvVersion": "5.0.0",
+    "subjects": [
+        {
+            "recordKey": "world-progression/enemy:Eagle",
+            "recordType": "world-progression/enemy",
+            "publicName": "Aetos",
+            "id": "aetos",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "Portraits/Prometheus:PrometheusBird",
+            "sourceFile": "art-source/raster/game-derived/story-portraits/prometheus.png",
+            "sourceNote": "Aetos-only detail cropped from the extracted game portrait.",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/aetos.webp",
+                "master": "art-source/raster/game-derived/characters/enemies/aetos.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:Jellyfish",
+            "recordType": "world-progression/enemy",
+            "publicName": "Hellifishie",
+            "id": "hellifishie",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GR2/JellyFish_Color:ReconstructedSilhouette",
+            "sourceFile": ".local/reference/game-assets/BiomeG-full/textures/atlases/JellyFish_Color.png",
+            "sourceNote": "Reconstructed silhouette using the extracted game model texture.",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/hellifishie.webp",
+                "master": "art-source/raster/game-derived/characters/enemies/hellifishie.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SirenDrummer",
+            "recordType": "world-progression/enemy",
+            "publicName": "Roxy",
+            "id": "roxy",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GameplayCapture:SirenDrummer",
+            "sourceFile": ".local/reference/external-official-images/roxy.png",
+            "sourceUrl": "https://mudae.net/uploads/8011521/Rbp-BQN~OjcEffx.png",
+            "sourceNote": "Cut out from an unmodified in-game capture.",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/roxy.webp",
+                "master": "art-source/raster/game-derived/characters/enemies/roxy.png"
+            }
+        },
+        {
+            "recordKey": "world-progression/enemy:SirenKeytarist",
+            "recordType": "world-progression/enemy",
+            "publicName": "Jetty",
+            "id": "jetty",
+            "kind": "character",
+            "tone": "night",
+            "route": "opencv-raster",
+            "canonicalAsset": "GameplayCapture:SirenKeytarist",
+            "sourceFile": ".local/reference/external-official-images/jetty.png",
+            "sourceUrl": "https://mudae.net/uploads/3924733/QltZMf-~dqu22Am.png",
+            "sourceNote": "Cut out from an unmodified in-game capture.",
+            "delivery": {
+                "media": "webp",
+                "source": "/art/characters/enemies/jetty.webp",
+                "master": "art-source/raster/game-derived/characters/enemies/jetty.png"
+            }
+        }
+    ]
+}

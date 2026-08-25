@@ -12,7 +12,7 @@ export interface ObservationTargetSet {
   readonly targets: readonly ObservationTarget[];
 }
 
-export type ObservationSavePolicy = "offline" | "profile2-mutation-permission-required";
+export type ObservationSavePolicy = "offline" | "dedicated-test-save-mutation-permission-required";
 
 export interface ObservationSession {
   readonly id: string;
@@ -43,7 +43,7 @@ const sessions = [
     title: "Training-ground combat",
     objective: "Verify core actions and every weapon aspect in controlled combat.",
     gameRequired: true,
-    savePolicy: "profile2-mutation-permission-required",
+    savePolicy: "dedicated-test-save-mutation-permission-required",
   },
   {
     id: "spoiler-review",

@@ -1,12 +1,23 @@
 export { createEditorialArtifact } from "./artifact.js";
 export { compileEditorialDataset, createContentReport } from "./compiler.js";
-export { arcanaProfiles, aspectProfiles, familiarProfiles, hexProfiles, pageDefinitions, preferredHammersByAspect, progressionStages } from "./content.js";
+export {
+  arcanaProfiles,
+  aspectProfiles,
+  familiarProfiles,
+  hexProfiles,
+  pageDefinitions,
+  preferredHammersByAspect,
+  progressionStages,
+} from "./content.js";
 export type {
+  AspectBuildPlan,
+  AspectBuildVariantRecord,
   AspectGuideRecord,
   AspectProfile,
   ArcanaRecommendation,
   BuildInteraction,
   BoonRatingRecord,
+  BuildGoal,
   CombatFocus,
   ContentReport,
   ContextRating,

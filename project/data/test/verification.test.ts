@@ -34,7 +34,7 @@ function dataset(namedRequirements: CombinedDataset["domains"]["guide"]["namedRe
     },
     domains: {
       guide: {
-        schema: "neodes2-guide-data-1",
+        schema: "neodes2-guide-data-2",
         source: { acquisitionId: "sha256:source", exporterVersion: "1.0.0", steamBuildId: "1", executableVersion: "2", packageVersion: "3" },
         routes: [], regions: [], rooms: [], encounters: [], enemies: [], rewards: [], consumables: [], resources: [],
         statusElements: [], oathConditions: [], bounties: [], bountyOrder: [], relationships: [], prophecies: [],
@@ -172,6 +172,11 @@ describe("calculation verification", () => {
       Override: 1.5,
       value: 1.2,
     }), 50);
+    assert.equal(evaluateFormula("value * max(HealingMultiplier, 1)", {
+      HealingMultiplier: 0.5,
+      value: 4,
+    }), 4);
+    assert.equal(evaluateFormula("FinalBoss", { FinalBoss: "SyntheticBoss" }), "SyntheticBoss");
   });
 
   it("recalculates resolved values and exercises every selector variant", () => {
@@ -218,6 +223,10 @@ describe("calculation verification", () => {
     ]);
     assert.ok(report.manualTasks.every((task) => task.claimKind !== "editorial"));
     assert.deepEqual(report.observationPlan.sessions.map((session) => session.id), ["training-combat", "spoiler-review"]);
+    assert.equal(
+      report.observationPlan.sessions.find((session) => session.id === "training-combat")?.savePolicy,
+      "dedicated-test-save-mutation-permission-required",
+    );
     assert.equal(report.manualEvidence.requiredCheckCount, 15);
     assert.equal(report.manualEvidence.pendingCheckCount, report.observationPlan.assignments.length);
     assert.equal(report.sourceDatasetAcquisitionId, "sha256:combined-dataset");

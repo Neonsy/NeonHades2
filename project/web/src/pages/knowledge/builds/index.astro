@@ -1,0 +1,210 @@
+---
+import RatingMark from '../../../components/RatingMark.astro';
+import ContentLayout from '../../../layouts/ContentLayout.astro';
+import {
+    getFieldBySuffix,
+    getPublication,
+    getRecordName,
+    recordHref,
+    slugify,
+    type JsonValue,
+    type PublicationRecord,
+} from '../../../lib/publication';
+import { cleanReaderText, isObject, isReference } from '../../../lib/presentation';
+import { getSteamPatch } from '../../../lib/steam-patches';
+
+type AspectSummary = {
+    guide: PublicationRecord;
+    name: string;
+    rating: string;
+    reason: string;
+    limitation: string;
+    difficulty: number;
+};
+
+const publication = getPublication();
+const steamPatch = getSteamPatch(publication.source.steamBuildId);
+const aspectIncantation = publication.records.find(
+    (record) => record.key === 'mechanics/incantation:WorldUpgradeWeaponUpgradeSystem'
+);
+if (!aspectIncantation) throw new Error('Aspect overview requires the published Aspects of Night and Darkness record.');
+const weaponUnlockOrder = [
+    "Witch's Staff",
+    'Sister Blades',
+    'Umbral Flames',
+    'Moonstone Axe',
+    'Argent Skull',
+    'Black Coat',
+] as const;
+const weaponUnlockPosition = new Map<string, number>(weaponUnlockOrder.map((name, index) => [name, index]));
+const aspectGuides = publication.records.filter((record) => record.recordType === 'editorial/aspect-guide');
+const byId = new Map(aspectGuides.map((record) => [record.id, record]));
+const summaryFor = (guide: PublicationRecord): AspectSummary => {
+    const ranks = getFieldBySuffix<JsonValue>(guide, 'rank-evaluations');
+    const shape = getFieldBySuffix<JsonValue>(guide, 'strengths-weaknesses');
+    const overallReason = isObject(ranks) && typeof ranks.overallReason === 'string' ? ranks.overallReason : '';
+    const overallLimitation =
+        isObject(ranks) && typeof ranks.overallLimitation === 'string' ? ranks.overallLimitation : '';
+    return {
+        guide,
+        name: getRecordName(guide),
+        rating: isObject(ranks) && typeof ranks.overallRating === 'string' ? ranks.overallRating : '',
+        reason: cleanReaderText(overallReason),
+        limitation: cleanReaderText(overallLimitation),
+        difficulty: isObject(shape) && typeof shape.beginnerDifficulty === 'number' ? shape.beginnerDifficulty : 0,
+    };
+};
+const weapons = publication.records
+    .filter((record) => record.recordType === 'editorial/weapon-guide')
+    .map((guide) => {
+        const subjects = getFieldBySuffix<JsonValue>(guide, 'subject-aspects');
+        const aspectRefs =
+            isObject(subjects) && Array.isArray(subjects.aspects) ? subjects.aspects.filter(isReference) : [];
+        return {
+            guide,
+            name: getRecordName(guide),
+            aspects: aspectRefs.flatMap((reference) => {
+                const aspect = byId.get(reference.id);
+                return aspect ? [summaryFor(aspect)] : [];
+            }),
+        };
+    })
+    .sort((a, b) => {
+        const aPosition = weaponUnlockPosition.get(a.name);
+        const bPosition = weaponUnlockPosition.get(b.name);
+        if (aPosition === undefined || bPosition === undefined) {
+            throw new Error(`Missing public weapon unlock order for ${aPosition === undefined ? a.name : b.name}.`);
+        }
+        return aPosition - bPosition;
+    });
+---
+
+<ContentLayout
+    title='Aspect builds'
+    documentTitle={`Hades 2 Builds (${steamPatch.releasedOn.slice(0, 4)}): Every Weapon & Aspect`}
+    description='Hades 2 builds for post-v1.0: choose a weapon aspect, then follow a Strongest or Safest plan with Boons, Arcana, Hammers, Keepsakes, Familiars and Hexes.'
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Knowledge', href: '/knowledge/' },
+        { name: 'Aspect builds', href: '/knowledge/builds/' },
+    ]}
+    surface='builds'>
+    <header class='builds-workshop'>
+        <div class='builds-workshop-copy'>
+            <span class='builds-kicker'>Crossroads field guide</span>
+            <h1>Pick your weapon.</h1>
+            <p>Choose an aspect, then follow its combat sequence and build.</p>
+            <nav class='build-weapon-picks' aria-label='Choose a weapon'>
+                {
+                    weapons.map((weapon, index) => (
+                        <a href={`#${slugify(weapon.name)}`}>
+                            <span>{String(index + 1).padStart(2, '0')}</span>
+                            {weapon.name}
+                        </a>
+                    ))
+                }
+            </nav>
+        </div>
+        <figure
+            class='builds-workshop-art'
+            aria-label='A witchcraft workbench prepared with the Nocturnal Arms, Arcana, and Keepsakes'>
+            <img
+                src='/art/scenes/build-workbench.svg'
+                alt=''
+                width='1100'
+                height='860'
+                loading='eager'
+                fetchpriority='high'
+                decoding='async'
+            />
+            <figcaption>Weapon, core Boon, then every support system.</figcaption>
+        </figure>
+        <ol class='build-method' aria-label='Read a build in this order'>
+            <li>
+                <span>01</span><strong>Learn the attack pattern</strong><small
+                    >Know which move deals damage and which action creates safety.</small
+                >
+            </li>
+            <li>
+                <span>02</span><strong>Choose the main damage Boon</strong><small
+                    >Strengthen the move you use most and answer any Magick requirement.</small
+                >
+            </li>
+            <li>
+                <span>03</span><strong>Protect it</strong><small
+                    >Add Arcana, Keepsake, Familiar, Hex, and route choices that preserve the plan.</small
+                >
+            </li>
+        </ol>
+    </header>
+
+    <div class='weapon-lines weapon-lines-v2'>
+        {
+            weapons.map((weapon) => (
+                <section id={slugify(weapon.name)} class='weapon-line weapon-line-v2'>
+                    <header>
+                        <div>
+                            <h2>{weapon.name}</h2>
+                            <p>Compare the weapon's aspects by attack pattern, consistency, and learning demand.</p>
+                        </div>
+                    </header>
+                    <ol
+                        class='aspect-catalogue'
+                        data-balanced-grid
+                        data-balanced-grid-min='18rem'
+                        data-balanced-grid-max='4'>
+                        {weapon.aspects.map((aspect) => (
+                            <li>
+                                <a class='aspect-card' href={recordHref(aspect.guide)}>
+                                    <span class='aspect-copy'>
+                                        <strong>{aspect.name}</strong>
+                                        <span>{aspect.reason}</span>
+                                        {aspect.limitation && <small>{aspect.limitation}</small>}
+                                        {aspect.difficulty > 0 && (
+                                            <small class='aspect-learning-demand'>
+                                                {aspect.difficulty <= 2
+                                                    ? 'Easy to learn'
+                                                    : aspect.difficulty === 3
+                                                      ? 'Moderate learning demand'
+                                                      : 'High learning demand'}
+                                            </small>
+                                        )}
+                                    </span>
+                                    {aspect.rating && <RatingMark rating={aspect.rating} />}
+                                    <i class='ph ph-arrow-right' aria-hidden='true' />
+                                </a>
+                            </li>
+                        ))}
+                    </ol>
+                </section>
+            ))
+        }
+    </div>
+
+    <section class='aspect-unlock-overview' aria-labelledby='aspect-unlock-overview-title'>
+        <header>
+            <h2 id='aspect-unlock-overview-title'>Reach the aspect tier you need.</h2>
+        </header>
+        <div>
+            <article><strong>Starting</strong><p>Each weapon begins with its Aspect of Melinoë.</p></article>
+            <article>
+                <strong>Standard</strong><p>
+                    Brew Aspects of Night and Darkness, then forge Rank I at the Silver Pool.
+                </p>
+            </article>
+            <article>
+                <strong>Hidden</strong><p>
+                    Forge the three standard aspects, rank a non-Melinoë aspect to V, then obtain its Waking Phrase.
+                </p>
+            </article>
+        </div>
+        <a href={recordHref(aspectIncantation)}>See the Incantation trigger, cost, and effect</a>
+    </section>
+
+    <script>
+        import { startBuildIndexRuntime } from '../../../scripts/build-index-runtime';
+
+        startBuildIndexRuntime();
+    </script>
+</ContentLayout>

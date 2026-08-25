@@ -1,0 +1,50 @@
+---
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import BaseLayout from './BaseLayout.astro';
+import { titleForMetadata, type Breadcrumb } from '../lib/seo';
+
+type Props = {
+    title: string;
+    documentTitle?: string;
+    description: string;
+    steamBuildId?: string;
+    surface?: string;
+    breadcrumbs?: Breadcrumb[];
+    mainClass?: string;
+    robots?: string;
+};
+
+const {
+    title,
+    documentTitle,
+    description,
+    steamBuildId,
+    surface = 'knowledge',
+    breadcrumbs = [],
+    mainClass,
+    robots,
+} = Astro.props;
+const [surfaceDomain = 'knowledge', surfaceVariant = surfaceDomain] = surface.trim().split(/\s+/u);
+---
+
+<BaseLayout
+    title={titleForMetadata(documentTitle ?? title)}
+    description={description}
+    surface={surface}
+    breadcrumbs={breadcrumbs}
+    robots={robots}>
+    <a class='skip-link' href='#main-content'>Skip to the main content</a>
+    <div class:list={['content-shell', `surface-${surfaceDomain}`, `surface-${surfaceVariant}`]}>
+        <SiteHeader />
+        <main id='main-content' class:list={['content-main', mainClass]} tabindex='-1'>
+            <slot />
+        </main>
+        <SiteFooter steamBuildId={steamBuildId} />
+    </div>
+</BaseLayout>
+
+<script>
+    import { startContentRuntime } from '../scripts/content-runtime';
+    startContentRuntime();
+</script>

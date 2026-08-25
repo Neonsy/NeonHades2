@@ -118,4 +118,31 @@ describe("guide runtime report", () => {
     requirements[0]!.data = { Cue: "/VO/Storyteller_0001" };
     assert.throws(() => validateRuntimeGuideReport(report), /contains excluded presentation data/u);
   });
+
+  it("validates processed encounter-aid samples", () => {
+    const report = runtimeReport();
+    report.encounterAidTraits = [{
+      id: "ArachneArmorBoon",
+      displayName: "Silken Sash",
+      description: "Gain armor.",
+      data: {
+        providerId: "Arachne",
+        trait: {},
+        samples: [{
+          rarity: "Common",
+          endpoint: "fixed",
+          level: 1,
+          context: { mode: "player-independent", elementCounts: [] },
+          result: { status: "ok", values: [] },
+        }],
+      },
+      omissions: [],
+      evidence: { runtimePath: "TraitData.ArachneArmorBoon", localizationPath: "TraitText.en.sjson" },
+    }];
+
+    assert.equal(validateRuntimeGuideReport(report).encounterAidTraits.length, 1);
+    const records = report.encounterAidTraits as { data: { samples: unknown[] } }[];
+    records[0]!.data.samples = [{}];
+    assert.throws(() => validateRuntimeGuideReport(report), /context must be an object/u);
+  });
 });

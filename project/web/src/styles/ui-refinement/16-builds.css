@@ -1,0 +1,82 @@
+/* Build pages use one rhythm for method, loadout, and supporting systems. */
+.builds-workshop,
+.tier-hall {
+    padding-block: var(--space-7) var(--space-8);
+}
+
+.build-method,
+.build-catalogue,
+.tier-catalogue {
+    gap: var(--space-4);
+}
+
+.build-method li,
+.tier-principles > div,
+.tier-catalogue > a {
+    box-shadow: var(--depth-low);
+}
+
+.build-detail-hero {
+    padding-block: var(--space-6) 0;
+}
+
+.build-plan-overview,
+.build-breakpoints {
+    margin-top: var(--section-space-compact);
+}
+
+.weapon-lines-v2 {
+    gap: var(--section-space);
+    padding-bottom: 0;
+}
+
+.aspect-unlock-overview {
+    margin-top: var(--section-space);
+}
+
+.build-title-line {
+    gap: var(--space-6);
+    margin-top: var(--space-7);
+}
+
+.build-jump,
+.tier-jump,
+.resource-jump-nav {
+    gap: var(--space-2);
+}
+
+.build-jump a,
+.tier-jump a,
+.resource-jump-nav a {
+    min-height: var(--control-height);
+    padding: var(--space-2) var(--space-4);
+}
+
+.build-loop,
+.build-section,
+.build-route,
+.build-support,
+.build-synergy {
+    margin-top: var(--section-space);
+}
+
+.build-section .plain-list {
+    width: min(100%, var(--reading-compact));
+    margin-inline: auto;
+}
+
+.build-loop ol,
+.strength-line,
+.boon-lanes,
+.rare-targets,
+.companion-plan > div {
+    gap: var(--space-4);
+}
+
+.build-loop ol > li,
+.boon-lanes > article,
+.rare-targets > div,
+.recommendation-list > li,
+.keepsake-route > li {
+    box-shadow: var(--depth-low);
+}

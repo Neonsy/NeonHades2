@@ -9,6 +9,7 @@ export interface JsonObject {
 export type BoonKind = "duo" | "infusion" | "legendary" | "normal";
 
 export type RuntimeStaticBaseType =
+  | "ConsumableData"
   | "EffectData"
   | "EffectLuaData"
   | "HeroData"
@@ -248,6 +249,7 @@ function asJsonObject(value: unknown, label: string): JsonObject {
 }
 
 const staticBaseTypes = [
+  "ConsumableData",
   "EffectData",
   "EffectLuaData",
   "HeroData",

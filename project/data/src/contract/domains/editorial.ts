@@ -1,15 +1,20 @@
 import { editorial } from "../field.js";
 import type { DomainContract } from "../types.js";
 
-const observedEditorial = ["editorial-analysis", "in-game-observation"] as const;
+const observedEditorial = [
+  "editorial-analysis",
+  "in-game-observation",
+] as const;
 
 export const editorialDomain = {
   id: "editorial",
-  description: "Project-owned progression, build, aspect, rating, and completion guidance.",
+  description:
+    "Project-owned progression, build, aspect, rating, and completion guidance.",
   records: [
     {
       id: "page-definition",
-      description: "One committed progression, reference, or tier-list page required by publication.",
+      description:
+        "One committed progression, reference, or tier-list page required by publication.",
       stableId: "project-owned page identifier",
       sourcePatterns: ["Committed NeonHades2 page definitions"],
       fields: [
@@ -22,10 +27,15 @@ export const editorialDomain = {
         }),
         editorial({
           id: "aliases-spoiler-level",
-          description: "Reviewed search aliases and spoiler level for the page.",
+          description:
+            "Reviewed search aliases and spoiler level for the page.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
-          requirementIds: ["publication.page-definitions", "foundation.search-aliases", "foundation.spoilers"],
+          requirementIds: [
+            "publication.page-definitions",
+            "foundation.search-aliases",
+            "foundation.spoilers",
+          ],
         }),
       ],
     },
@@ -33,11 +43,15 @@ export const editorialDomain = {
       id: "progression-stage",
       description: "One ordered milestone in the fresh-save progression guide.",
       stableId: "project-owned progression stage identifier",
-      sourcePatterns: ["Committed NeonHades2 progression records", "Normalized factual records"],
+      sourcePatterns: [
+        "Committed NeonHades2 progression records",
+        "Normalized factual records",
+      ],
       fields: [
         editorial({
           id: "milestone",
-          description: "Current and next milestone with required and optional objectives distinguished.",
+          description:
+            "Current and next milestone with required and optional objectives distinguished.",
           spoilerLevel: "progression",
           requirementIds: [
             "progression.stage-structure",
@@ -46,28 +60,40 @@ export const editorialDomain = {
             "progression.true-ending",
             "progression.postgame",
             "progression.exhaustive-completion",
+            "progression.complete-quests-unlocks",
           ],
         }),
         editorial({
           id: "reader-knowledge",
           description: "Concepts the reader must understand at this stage.",
-          requirementIds: ["progression.stage-structure", "progression.combat-basics"],
+          requirementIds: [
+            "progression.stage-structure",
+            "progression.combat-basics",
+            "progression.crossroads-orientation",
+          ],
         }),
         editorial({
           id: "next-objective",
-          description: "The next required action and why it advances progression.",
+          description:
+            "The next required action and why it advances progression.",
           requirementIds: ["progression.stage-structure"],
         }),
         editorial({
           id: "action-sequence",
-          description: "Ordered actions for completing the milestone with reliable growth and minimal duplicate runs.",
+          description:
+            "Ordered actions for completing the milestone with reliable growth and minimal duplicate runs.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
-          requirementIds: ["progression.stage-structure", "progression.beginner-builds"],
+          requirementIds: [
+            "progression.stage-structure",
+            "progression.beginner-builds",
+            "progression.crossroads-orientation",
+          ],
         }),
         editorial({
           id: "purchase-upgrade-priorities",
-          description: "Ordered purchases, crafts, weapons, aspects, Arcana Cards, Grasp, and upgrades.",
+          description:
+            "Ordered purchases, crafts, weapons, aspects, Arcana Cards, Grasp, and upgrades.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           requirementIds: [
@@ -78,7 +104,8 @@ export const editorialDomain = {
         }),
         editorial({
           id: "ordered-priority-references",
-          description: "Exact systems, unlocks, prophecies, relationships, Oath conditions, Testaments, and milestones ordered by when the reader should pursue them.",
+          description:
+            "Exact systems, unlocks, prophecies, relationships, Oath conditions, Testaments, and milestones ordered by when the reader should pursue them.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           validations: ["references-exist"],
@@ -95,14 +122,21 @@ export const editorialDomain = {
           description: "Resources to spend, reserve, or target at the stage.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
-          requirementIds: ["progression.stage-structure", "progression.resources"],
+          requirementIds: [
+            "progression.stage-structure",
+            "progression.resources",
+          ],
         }),
         editorial({
           id: "loadout",
-          description: "Recommended weapon, aspect, Arcana Cards, keepsake, Familiar, and Hex.",
+          description:
+            "Recommended weapon, aspect, Arcana Cards, keepsake, Familiar, and Hex.",
           normalization: "references",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized factual records", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized factual records",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
           requirementIds: [
             "progression.stage-structure",
@@ -113,16 +147,26 @@ export const editorialDomain = {
         }),
         editorial({
           id: "boon-encounter-priorities",
-          description: "Preferred boons and encounter rewards with one useful fallback.",
+          description:
+            "Preferred boons and encounter rewards with one useful fallback.",
           normalization: "ordered-values",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized factual records", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized factual records",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
-          requirementIds: ["progression.stage-structure", "progression.boons", "progression.beginner-builds"],
+          requirementIds: [
+            "progression.stage-structure",
+            "progression.boons",
+            "progression.beginner-builds",
+            "progression.run-reward-priorities",
+          ],
         }),
         editorial({
           id: "parallel-objectives",
-          description: "Conversations, gifts, incantations, relationships, and prophecies that can advance at the same time.",
+          description:
+            "Conversations, gifts, incantations, relationships, and prophecies that can advance at the same time.",
           normalization: "references",
           cardinality: "zero-or-more",
           validations: ["references-exist"],
@@ -136,59 +180,111 @@ export const editorialDomain = {
         }),
         editorial({
           id: "route-late-game",
-          description: "Underworld, Surface, Oath, Fear, Testament, Nightmare, and late-game direction.",
+          description:
+            "Underworld, Surface, Oath, Fear, Testament, Nightmare, and late-game direction.",
           normalization: "ordered-values",
           spoilerLevel: "progression",
           requirementIds: ["progression.routes", "progression.oath"],
         }),
         editorial({
           id: "completion-checklist",
-          description: "Post-run actions and observable evidence that the stage is complete.",
+          description:
+            "Post-run actions and observable evidence that the stage is complete.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized milestone records", "Dedicated test-save evidence"],
+          sourcePatterns: [
+            "Normalized milestone records",
+            "Dedicated test-save evidence",
+          ],
           validations: ["references-exist", "observation-required"],
           spoilerLevel: "progression",
-          requirementIds: ["progression.stage-structure", "progression.completion-cleanup"],
+          requirementIds: [
+            "progression.stage-structure",
+            "progression.completion-cleanup",
+            "progression.complete-quests-unlocks",
+          ],
         }),
       ],
     },
     {
       id: "aspect-guide",
-      description: "Context-specific guide and evaluation for one weapon aspect.",
+      description:
+        "Context-specific guide and evaluation for one weapon aspect.",
       stableId: "project-owned guide identifier keyed by aspect identifier",
-      sourcePatterns: ["Committed NeonHades2 aspect guide records", "Normalized weapon and build facts"],
+      sourcePatterns: [
+        "Committed NeonHades2 aspect guide records",
+        "Normalized weapon and build facts",
+      ],
       fields: [
         editorial({
+          id: "build-variants",
+          description:
+            "Exactly one strongest and one safest high-Fear plan. Each plan independently defines its combat sequence, five ordered core slots, Boons, Arcana, keepsakes, Familiar, Hex, Hammers, rewards, interactions, ratings, and route considerations.",
+          normalization: "ordered-values",
+          cardinality: "exactly-one",
+          sourceClasses: observedEditorial,
+          sourcePatterns: [
+            "Normalized aspect and combat facts",
+            "Documented NeonHades2 evaluation",
+          ],
+          validations: ["references-exist", "observation-required"],
+          requirementIds: [
+            "weapon.playstyle",
+            "weapon.combat-sequence",
+            "weapon.arcana",
+            "weapon.keepsake-route",
+            "weapon.familiar-hex",
+            "weapon.boon-priorities",
+            "weapon.hammers",
+            "weapon.context-ratings",
+          ],
+        }),
+        editorial({
           id: "rank-evaluations",
-          description: "Separate Rank I and maximum-rank evaluations with reasons and limitations, plus an overall aspect rating with its reason.",
+          description:
+            "Separate Rank I and maximum-rank evaluations with reasons and limitations, plus an overall aspect rating with its reason.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized rank series", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized rank series",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["observation-required"],
           requirementIds: ["weapon.rank-evaluation"],
         }),
         editorial({
           id: "strengths-weaknesses",
-          description: "Material strengths, weaknesses, and beginner difficulty.",
+          description:
+            "Material strengths, weaknesses, and beginner difficulty.",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized aspect facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized aspect facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["observation-required"],
-          requirementIds: ["weapon.strengths-weaknesses", "weapon.beginner-difficulty"],
+          requirementIds: [
+            "weapon.strengths-weaknesses",
+            "weapon.beginner-difficulty",
+          ],
         }),
         editorial({
           id: "playstyle-combat-sequence",
-          description: "Intended playstyle and a basic repeatable combat sequence.",
+          description:
+            "Intended playstyle and a basic repeatable combat sequence.",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized attack patterns", "Documented in-game evaluation"],
+          sourcePatterns: [
+            "Normalized attack patterns",
+            "Documented in-game evaluation",
+          ],
           validations: ["observation-required"],
           requirementIds: ["weapon.playstyle", "weapon.combat-sequence"],
         }),
         editorial({
           id: "arcana-loadout",
-          description: "Recommended Arcana Cards with core and support roles, reasons, limitations, total Grasp cost, and the fallback order when capacity is insufficient.",
+          description:
+            "Recommended Arcana Cards with core and support roles, reasons, limitations, total Grasp cost, and the fallback order when capacity is insufficient.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
           validations: ["references-exist"],
@@ -196,7 +292,8 @@ export const editorialDomain = {
         }),
         editorial({
           id: "keepsake-route",
-          description: "Opening, later-region, final-region, and fallback keepsakes with lifecycle type and exact switch conditions after limited, timed, decaying, or depleted effects become inactive.",
+          description:
+            "Opening, later-region, final-region, and fallback keepsakes with lifecycle type and exact switch conditions after limited, timed, decaying, or depleted effects become inactive.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           validations: ["references-exist"],
@@ -204,7 +301,8 @@ export const editorialDomain = {
         }),
         editorial({
           id: "familiar-hex",
-          description: "Recommended Familiar and Hex with an aspect-specific rating, reason, and limitation.",
+          description:
+            "Recommended Familiar and Hex with an aspect-specific rating, reason, and limitation.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
           validations: ["references-exist"],
@@ -212,27 +310,40 @@ export const editorialDomain = {
         }),
         editorial({
           id: "boon-priorities",
-          description: "Attack, Special, Cast, Sprint, and Magick Boon priorities with each slot marked as core or support and every choice carrying a reason, limitation, and exact Boon prerequisites.",
+          description:
+            "Attack, Special, Cast, Sprint, and Magick Boon priorities with each slot marked as core or support and every choice carrying a reason, limitation, and exact Boon prerequisites.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized boon facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized boon facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
           requirementIds: ["weapon.boon-priorities", "ratings.aspect-boons"],
         }),
         editorial({
           id: "boon-rankings",
-          description: "Every Boon ranked for the aspect with a reason, limitation, and exact Boon prerequisites tied to its relationship with the build.",
+          description:
+            "Every Boon ranked for the aspect with a reason, limitation, and exact Boon prerequisites tied to its relationship with the build.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized boon facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized boon facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
-          requirementIds: ["ratings.aspect-boons", "ratings.contexts", "ratings.evidence"],
+          requirementIds: [
+            "ratings.aspect-boons",
+            "ratings.contexts",
+            "ratings.evidence",
+          ],
         }),
         editorial({
           id: "duo-legendary-targets",
-          description: "Compatible Duo and Legendary targets with a valid choice from every prerequisite set, all exact prerequisite references, a reason that names the matching choices, and a pursuit limitation.",
+          description:
+            "Compatible Duo and Legendary targets with a valid choice from every prerequisite set, all exact prerequisite references, a reason that names the matching choices, and a pursuit limitation.",
           normalization: "authored-rating",
           cardinality: "zero-or-more",
           validations: ["references-exist"],
@@ -240,83 +351,138 @@ export const editorialDomain = {
         }),
         editorial({
           id: "hammer-rankings",
-          description: "Compatible Daedalus Hammer rankings with authored top choices, effect-specific reasons, limitations, and aspect prerequisites.",
+          description:
+            "Compatible Daedalus Hammer rankings with authored top choices, effect-specific reasons, limitations, and aspect prerequisites.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized hammer facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized hammer facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
           requirementIds: ["weapon.hammers"],
         }),
         editorial({
           id: "reward-priorities",
-          description: "Aspect-specific order for core Boons, Magick recovery, Hammers, maximum Life, Poms, and Duo or Legendary targets.",
+          description:
+            "Aspect-specific order for core Boons, Magick recovery, Hammers, maximum Life, Poms, and Duo or Legendary targets.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized reward facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized reward facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["observation-required"],
-          requirementIds: ["progression.boons", "progression.beginner-builds", "weapon.hammers"],
+          requirementIds: [
+            "progression.boons",
+            "progression.beginner-builds",
+            "weapon.hammers",
+          ],
         }),
         editorial({
           id: "build-interactions",
-          description: "Explicit Boon packages, Arcana support, Familiar and Hex combinations, and same-slot conflicts for the aspect.",
+          description:
+            "Explicit Boon packages, Arcana support, Familiar and Hex combinations, and same-slot conflicts for the aspect.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized build facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized build facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
-          requirementIds: ["weapon.arcana", "weapon.familiar-hex", "weapon.boon-priorities", "weapon.fallbacks-conflicts", "ratings.aspect-boons"],
+          requirementIds: [
+            "weapon.arcana",
+            "weapon.familiar-hex",
+            "weapon.boon-priorities",
+            "weapon.fallbacks-conflicts",
+            "ratings.aspect-boons",
+          ],
         }),
         editorial({
           id: "reward-decision-rules",
-          description: "Conditional choices among core Boons, Magick recovery, Hammers, maximum Life, Poms, rare targets, and permanent resources.",
+          description:
+            "Conditional choices among core Boons, Magick recovery, Hammers, maximum Life, Poms, rare targets, and permanent resources.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized reward facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized reward facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["observation-required"],
-          requirementIds: ["progression.resources", "progression.boons", "progression.beginner-builds", "weapon.hammers"],
+          requirementIds: [
+            "progression.resources",
+            "progression.boons",
+            "progression.beginner-builds",
+            "weapon.hammers",
+          ],
         }),
         editorial({
           id: "fallbacks-conflicts",
-          description: "Fallback choices, strategic conflicts, exact Hammer exclusions, and incompatible Hammer pairs.",
+          description:
+            "Fallback choices, strategic conflicts, exact Hammer exclusions, and incompatible Hammer pairs.",
           normalization: "ordered-values",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized compatibility facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized compatibility facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
-          requirementIds: ["weapon.fallbacks-conflicts", "progression.beginner-builds"],
+          requirementIds: [
+            "weapon.fallbacks-conflicts",
+            "progression.beginner-builds",
+          ],
         }),
         editorial({
           id: "boss-route-considerations",
-          description: "Boss, Underworld, Surface, and high-Fear considerations.",
+          description:
+            "Boss, Underworld, Surface, and high-Fear considerations.",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized world facts", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized world facts",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["observation-required"],
           requirementIds: ["weapon.boss-route"],
         }),
         editorial({
           id: "context-ratings",
-          description: "Consistency, speed, safety, and high-Fear ratings with a separate reason and limitation for each context.",
+          description:
+            "Consistency, speed, safety, and high-Fear ratings with a separate reason and limitation for each context.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized factual records", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized factual records",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["observation-required"],
-          requirementIds: ["weapon.context-ratings", "ratings.contexts", "ratings.evidence"],
+          requirementIds: [
+            "weapon.context-ratings",
+            "ratings.contexts",
+            "ratings.evidence",
+          ],
         }),
       ],
     },
     {
       id: "weapon-guide",
-      description: "Context ratings and Boon rankings for one weapon across all of its aspects.",
+      description:
+        "Context ratings and Boon rankings for one weapon across all of its aspects.",
       stableId: "weapon identifier",
-      sourcePatterns: ["Committed NeonHades2 aspect guides", "Normalized weapon and boon facts"],
+      sourcePatterns: [
+        "Committed NeonHades2 aspect guides",
+        "Normalized weapon and boon facts",
+      ],
       fields: [
         editorial({
           id: "subject-aspects",
-          description: "Rated weapon and the aspect guides included in its evaluation.",
+          description:
+            "Rated weapon and the aspect guides included in its evaluation.",
           normalization: "references",
           cardinality: "one-or-more",
           validations: ["references-exist"],
@@ -324,7 +490,8 @@ export const editorialDomain = {
         }),
         editorial({
           id: "boon-rankings",
-          description: "Every Boon ranked by its preferred, fallback, or unselected relationship to the weapon's aspects with a reason, limitation, and exact Boon prerequisites.",
+          description:
+            "Every Boon ranked by its preferred, fallback, or unselected relationship to the weapon's aspects with a reason, limitation, and exact Boon prerequisites.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
           validations: ["references-exist"],
@@ -332,10 +499,15 @@ export const editorialDomain = {
         }),
         editorial({
           id: "context-ratings-guidance",
-          description: "Overall, consistency, speed, safety, and high-Fear ratings with a reason and limitation for each context, recommended starting aspect, and fallback.",
+          description:
+            "Overall, consistency, speed, safety, and high-Fear ratings with a reason and limitation for each context, recommended starting aspect, and fallback.",
           normalization: "authored-rating",
           cardinality: "one-or-more",
-          requirementIds: ["ratings.weapons", "ratings.contexts", "ratings.evidence"],
+          requirementIds: [
+            "ratings.weapons",
+            "ratings.contexts",
+            "ratings.evidence",
+          ],
         }),
       ],
     },
@@ -343,18 +515,23 @@ export const editorialDomain = {
       id: "arcana-rating",
       description: "New-player value rating for one Arcana Card.",
       stableId: "Arcana Card identifier",
-      sourcePatterns: ["Committed NeonHades2 aspect guides", "Normalized Arcana facts"],
+      sourcePatterns: [
+        "Committed NeonHades2 aspect guides",
+        "Normalized Arcana facts",
+      ],
       fields: [
         editorial({
           id: "subject-context",
-          description: "Rated Arcana Card, progression state, and evaluation dimension.",
+          description:
+            "Rated Arcana Card, progression state, and evaluation dimension.",
           normalization: "references",
           validations: ["references-exist"],
           requirementIds: ["ratings.arcana", "ratings.contexts"],
         }),
         editorial({
           id: "rating-guidance",
-          description: "Rating, recommendation, reason, limitation, fallback, and authored-build selection count.",
+          description:
+            "Rating, recommendation, reason, limitation, fallback, and authored-build selection count.",
           normalization: "authored-rating",
           requirementIds: ["ratings.arcana", "ratings.evidence"],
         }),
@@ -362,20 +539,26 @@ export const editorialDomain = {
     },
     {
       id: "familiar-rating",
-      description: "New-player value rating and choice guidance for one Familiar.",
+      description:
+        "New-player value rating and choice guidance for one Familiar.",
       stableId: "Familiar identifier",
-      sourcePatterns: ["Committed NeonHades2 Familiar profiles", "Normalized Familiar facts"],
+      sourcePatterns: [
+        "Committed NeonHades2 Familiar profiles",
+        "Normalized Familiar facts",
+      ],
       fields: [
         editorial({
           id: "subject-context",
-          description: "Rated Familiar, progression state, and evaluation dimension.",
+          description:
+            "Rated Familiar, progression state, and evaluation dimension.",
           normalization: "references",
           validations: ["references-exist"],
           requirementIds: ["ratings.familiars", "ratings.contexts"],
         }),
         editorial({
           id: "rating-choice-guidance",
-          description: "Rating, when to choose the Familiar, reason, limitation, and fallback.",
+          description:
+            "Rating, when to choose the Familiar, reason, limitation, and fallback.",
           normalization: "authored-rating",
           requirementIds: ["ratings.familiars", "ratings.evidence"],
         }),
@@ -385,18 +568,23 @@ export const editorialDomain = {
       id: "hex-rating",
       description: "New-player value rating and choice guidance for one Hex.",
       stableId: "Hex identifier",
-      sourcePatterns: ["Committed NeonHades2 Hex profiles", "Normalized Hex facts"],
+      sourcePatterns: [
+        "Committed NeonHades2 Hex profiles",
+        "Normalized Hex facts",
+      ],
       fields: [
         editorial({
           id: "subject-context",
-          description: "Rated Hex, progression state, and evaluation dimension.",
+          description:
+            "Rated Hex, progression state, and evaluation dimension.",
           normalization: "references",
           validations: ["references-exist"],
           requirementIds: ["ratings.hexes", "ratings.contexts"],
         }),
         editorial({
           id: "rating-choice-guidance",
-          description: "Rating, when to choose the Hex, reason, limitation, and fallback.",
+          description:
+            "Rating, when to choose the Hex, reason, limitation, and fallback.",
           normalization: "authored-rating",
           requirementIds: ["ratings.hexes", "ratings.evidence"],
         }),
@@ -404,32 +592,53 @@ export const editorialDomain = {
     },
     {
       id: "boon-rating",
-      description: "A general or aspect-specific boon rating in one explicit context.",
-      stableId: "project-owned rating identifier keyed by boon, context, and optional aspect",
-      sourcePatterns: ["Committed NeonHades2 rating records", "Normalized boon facts"],
+      description:
+        "A general or aspect-specific boon rating in one explicit context.",
+      stableId:
+        "project-owned rating identifier keyed by boon, context, and optional aspect",
+      sourcePatterns: [
+        "Committed NeonHades2 rating records",
+        "Normalized boon facts",
+      ],
       fields: [
         editorial({
           id: "subject-context",
-          description: "Rated boon, optional aspect, progression state, route, and evaluation dimension.",
+          description:
+            "Rated boon, optional aspect, progression state, route, and evaluation dimension.",
           normalization: "references",
           cardinality: "one-or-more",
           validations: ["references-exist"],
-          requirementIds: ["ratings.contexts", "ratings.general-boons", "ratings.aspect-boons"],
+          requirementIds: [
+            "ratings.contexts",
+            "ratings.general-boons",
+            "ratings.aspect-boons",
+          ],
         }),
         editorial({
           id: "rating",
           description: "Rating value within the declared context.",
           normalization: "authored-rating",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized factual records", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized factual records",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["observation-required"],
-          requirementIds: ["ratings.general-boons", "ratings.aspect-boons", "ratings.evidence"],
+          requirementIds: [
+            "ratings.general-boons",
+            "ratings.aspect-boons",
+            "ratings.evidence",
+          ],
         }),
         editorial({
           id: "reason-prerequisites-limitation",
-          description: "Reason, important prerequisites, and main limitation supporting the rating.",
+          description:
+            "Reason, important prerequisites, and main limitation supporting the rating.",
           sourceClasses: observedEditorial,
-          sourcePatterns: ["Normalized factual records", "Documented NeonHades2 evaluation"],
+          sourcePatterns: [
+            "Normalized factual records",
+            "Documented NeonHades2 evaluation",
+          ],
           validations: ["references-exist", "observation-required"],
           requirementIds: ["ratings.evidence"],
         }),

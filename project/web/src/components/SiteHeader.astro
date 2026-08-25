@@ -1,0 +1,187 @@
+---
+const path = Astro.url.pathname;
+const links = [
+    { href: '/guide/', label: 'A-Z guide', shortLabel: 'A-Z guide' },
+    { href: '/knowledge/', label: 'Knowledge', shortLabel: 'Knowledge' },
+    { href: '/knowledge/builds/', label: 'Builds', shortLabel: 'Builds' },
+    { href: '/knowledge/tier-lists/', label: 'Tier lists', shortLabel: 'Tiers' },
+];
+
+const isCurrent = (href: string): boolean => {
+    if (href === '/knowledge/') {
+        return (
+            path.startsWith('/knowledge/') &&
+            !path.startsWith('/knowledge/builds/') &&
+            !path.startsWith('/knowledge/tier-lists/')
+        );
+    }
+    return path === href || path.startsWith(href);
+};
+---
+
+<header class='world-header'>
+    <a class='world-wordmark' href='/' aria-label='NeonHades2 home'>
+        <img src='/neonhades2-mark.svg' width='44' height='44' alt='' loading='eager' decoding='async' />
+        <strong>NeonHades2</strong>
+    </a>
+
+    <nav id='world-primary-navigation' class='world-primary-nav' aria-label='Primary navigation'>
+        {
+            links.map((link) => (
+                <a
+                    href={link.href}
+                    data-short-label={link.shortLabel}
+                    aria-current={isCurrent(link.href) ? 'page' : undefined}>
+                    <span class='world-nav-label world-nav-label--full'>{link.label}</span>
+                    <span class='world-nav-label world-nav-label--short'>{link.shortLabel}</span>
+                </a>
+            ))
+        }
+    </nav>
+
+    <a class='world-search' href='/knowledge/#search'>
+        <i class='ph ph-magnifying-glass world-search-icon' aria-hidden='true'></i>
+        <span class='world-search-label world-search-label--full'>Find an answer</span><kbd>Ctrl K</kbd>
+        <span class='world-search-label world-search-label--short'>Search</span>
+    </a>
+
+    <div class='world-nav-scrim' aria-hidden='true'></div>
+    <button
+        class='world-menu-toggle'
+        type='button'
+        aria-expanded='false'
+        aria-controls='world-primary-navigation'
+        aria-label='Open navigation'>
+        <span class='world-menu-icon' aria-hidden='true'>
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </button>
+</header>
+
+<script>
+    import { queueFragmentScroll } from '../scripts/view-fragment-navigation';
+
+    const worldHeader = document.querySelector<HTMLElement>('.world-header');
+    const primaryNavigation = worldHeader?.querySelector<HTMLElement>('.world-primary-nav');
+    const menuToggle = worldHeader?.querySelector<HTMLButtonElement>('.world-menu-toggle');
+    const compactHeader = window.matchMedia('(max-width: 1100px)');
+    const reduceHeaderMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (worldHeader && primaryNavigation && menuToggle) {
+        let compactNavigationOpen = false;
+
+        const setCompactNavigation = (open: boolean, restoreToggleFocus = false) => {
+            const nextOpen = compactHeader.matches && open;
+            compactNavigationOpen = nextOpen;
+            worldHeader.classList.toggle('is-navigation-open', nextOpen);
+            menuToggle.setAttribute('aria-expanded', String(nextOpen));
+            menuToggle.setAttribute('aria-label', nextOpen ? 'Close navigation' : 'Open navigation');
+            document.documentElement.classList.toggle('has-navigation-open', nextOpen);
+
+            if (compactHeader.matches) {
+                primaryNavigation.inert = !nextOpen;
+                primaryNavigation.setAttribute('aria-hidden', String(!nextOpen));
+            } else {
+                primaryNavigation.inert = false;
+                primaryNavigation.removeAttribute('aria-hidden');
+            }
+
+            if (nextOpen) {
+                worldHeader.classList.remove('is-retracted');
+                primaryNavigation.querySelector<HTMLAnchorElement>('a')?.focus({ preventScroll: true });
+            } else if (restoreToggleFocus) {
+                menuToggle.focus({ preventScroll: true });
+            }
+        };
+
+        menuToggle.addEventListener('click', () => setCompactNavigation(!compactNavigationOpen));
+
+        primaryNavigation.addEventListener('click', (event) => {
+            if (event.target instanceof Element && event.target.closest('a')) setCompactNavigation(false);
+        });
+
+        primaryNavigation.addEventListener('focusout', () => {
+            window.requestAnimationFrame(() => {
+                if (compactNavigationOpen && !primaryNavigation.contains(document.activeElement)) {
+                    setCompactNavigation(false);
+                }
+            });
+        });
+
+        document.addEventListener('pointerdown', (event) => {
+            if (!compactNavigationOpen || !(event.target instanceof Node)) return;
+            if (!primaryNavigation.contains(event.target) && !menuToggle.contains(event.target)) {
+                setCompactNavigation(false);
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && compactNavigationOpen) {
+                event.preventDefault();
+                setCompactNavigation(false, true);
+            }
+        });
+
+        compactHeader.addEventListener('change', () => setCompactNavigation(false));
+        setCompactNavigation(false);
+    }
+
+    if (worldHeader && !reduceHeaderMotion.matches) {
+        let previousY = window.scrollY;
+        let directionDistance = 0;
+        let frame = 0;
+
+        const updateHeader = () => {
+            const currentY = Math.max(0, window.scrollY);
+            const delta = currentY - previousY;
+
+            if (currentY < worldHeader.offsetHeight) {
+                directionDistance = 0;
+                worldHeader.classList.remove('is-retracted');
+            } else if (delta !== 0) {
+                directionDistance =
+                    Math.sign(delta) === Math.sign(directionDistance) ? directionDistance + delta : delta;
+
+                if (directionDistance < -12) {
+                    worldHeader.classList.remove('is-retracted');
+                } else if (directionDistance > 12 && !worldHeader.contains(document.activeElement)) {
+                    worldHeader.classList.add('is-retracted');
+                }
+            }
+
+            previousY = currentY;
+            frame = 0;
+        };
+
+        window.addEventListener(
+            'scroll',
+            () => {
+                if (!frame) frame = window.requestAnimationFrame(updateHeader);
+            },
+            { passive: true }
+        );
+
+        worldHeader.addEventListener('focusin', () => worldHeader.classList.remove('is-retracted'));
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (!event.ctrlKey || event.key.toLowerCase() !== 'k') return;
+
+        event.preventDefault();
+        const search = document.querySelector<HTMLInputElement>('#knowledge-query');
+        if (search) {
+            search.focus({ preventScroll: true });
+            queueFragmentScroll('#search');
+            return;
+        }
+
+        try {
+            window.sessionStorage.setItem('neodes2-focus-search', 'true');
+        } catch {
+            /* The search fragment also requests focus without storage. */
+        }
+        window.location.assign('/knowledge/#search');
+    });
+</script>

@@ -1,0 +1,167 @@
+---
+import RecordLink from './RecordLink.astro';
+import type { AnyProgressionTable, ProgressionMetric } from '../lib/progression';
+
+type Props = {
+    progression: AnyProgressionTable;
+};
+
+const { progression } = Astro.props;
+const hasCosts = progression.kind === 'rows' && progression.rows.some((row) => row.costs.length > 0);
+const hasEffects = progression.kind === 'rows' && progression.rows.some((row) => row.effects.length > 0);
+const hasSingleMatrixValue = progression.kind === 'matrix' && progression.columns.length === 1;
+const metricKey = (metric: ProgressionMetric): string =>
+    `${metric.name}\u0000${metric.value}\u0000${metric.note ?? ''}`;
+const matrixCells =
+    progression.kind === 'matrix'
+        ? progression.rows.flatMap((row) => progression.columns.map((column) => row.values[column] ?? []))
+        : [];
+const sharedMatrixEffects =
+    matrixCells.length > 0
+        ? (matrixCells[0] ?? []).filter((candidate) =>
+              matrixCells.every((effects) => effects.some((effect) => metricKey(effect) === metricKey(candidate)))
+          )
+        : [];
+const sharedMatrixEffectKeys = new Set(sharedMatrixEffects.map(metricKey));
+const variableMatrixEffects = matrixCells.flatMap((effects) =>
+    effects.filter((effect) => !sharedMatrixEffectKeys.has(metricKey(effect)))
+);
+const variableMatrixMetricNames = [...new Set(variableMatrixEffects.map((effect) => effect.name))];
+const singleMatrixMetricName = variableMatrixMetricNames.length === 1 ? variableMatrixMetricNames[0] : undefined;
+const hasMatrixComparisons = variableMatrixEffects.length > 0 || sharedMatrixEffects.length === 0;
+const effectsForMatrixCell = (effects: ProgressionMetric[]): ProgressionMetric[] =>
+    effects.filter((effect) => !sharedMatrixEffectKeys.has(metricKey(effect)));
+---
+
+{
+    progression.kind === 'matrix' ? (
+        <div class='progression-matrix'>
+            {sharedMatrixEffects.length > 0 && (
+                <dl class='progression-shared-effects' aria-label='Values shared by every Pom level and rarity'>
+                    {sharedMatrixEffects.map((effect) => (
+                        <div>
+                            <dt>{effect.name}</dt>
+                            <dd>
+                                {effect.value}
+                                {effect.note && <small>{effect.note}</small>}
+                            </dd>
+                        </div>
+                    ))}
+                </dl>
+            )}
+            {hasMatrixComparisons && (
+                <div class='progression-table-wrap progression-table-wrap--matrix'>
+                    <table
+                        class:list={[
+                            'progression-table',
+                            'progression-table--matrix',
+                            hasSingleMatrixValue && 'progression-table--matrix-compact',
+                            singleMatrixMetricName && 'progression-table--single-metric',
+                        ]}
+                        aria-label='Pom scaling values by level and rarity'>
+                        {singleMatrixMetricName && <caption>{singleMatrixMetricName} by Pom level and rarity</caption>}
+                        <thead>
+                            <tr>
+                                <th scope='col'>Pom level</th>
+                                {progression.columns.map((rarity) => (
+                                    <th scope='col'>{rarity}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {progression.rows.map((row) => (
+                                <tr>
+                                    <th scope='row'>{row.label}</th>
+                                    {progression.columns.map((rarity) => {
+                                        const originalEffects = row.values[rarity] ?? [];
+                                        const effects = effectsForMatrixCell(originalEffects);
+                                        return (
+                                            <td>
+                                                {singleMatrixMetricName && effects.length === 1 ? (
+                                                    <strong class='progression-matrix-value'>
+                                                        {effects[0].value}
+                                                        {effects[0].note && <small>{effects[0].note}</small>}
+                                                    </strong>
+                                                ) : effects.length > 0 ? (
+                                                    <dl class='progression-effects'>
+                                                        {effects.map((effect) => (
+                                                            <div>
+                                                                <dt>{effect.name}</dt>
+                                                                <dd>
+                                                                    {effect.value}
+                                                                    {effect.note && <small>{effect.note}</small>}
+                                                                </dd>
+                                                            </div>
+                                                        ))}
+                                                    </dl>
+                                                ) : originalEffects.length > 0 ? (
+                                                    <span class='progression-empty'>No additional change</span>
+                                                ) : (
+                                                    <span class='progression-empty'>Not applicable</span>
+                                                )}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    ) : (
+        <div class='progression-table-wrap'>
+            <table class='progression-table' aria-label='Upgrade progression'>
+                <thead>
+                    <tr>
+                        <th scope='col'>Step</th>
+                        {hasEffects && <th scope='col'>Effect</th>}
+                        {hasCosts && <th scope='col'>Cost</th>}
+                    </tr>
+                </thead>
+                <tbody>
+                    {progression.rows.map((row) => (
+                        <tr>
+                            <th scope='row'>
+                                {row.label}
+                                {row.note && <small>{row.note}</small>}
+                            </th>
+                            {hasEffects && (
+                                <td>
+                                    {row.effects.length > 0 ? (
+                                        <dl class='progression-effects'>
+                                            {row.effects.map((effect) => (
+                                                <div>
+                                                    <dt>{effect.name}</dt>
+                                                    <dd>{effect.value}</dd>
+                                                </div>
+                                            ))}
+                                        </dl>
+                                    ) : (
+                                        <span class='progression-empty'>Not applicable</span>
+                                    )}
+                                </td>
+                            )}
+                            {hasCosts && (
+                                <td>
+                                    {row.costs.length > 0 ? (
+                                        <div class='progression-costs'>
+                                            {row.costs.map((cost) => (
+                                                <span>
+                                                    <b>{cost.amount}</b>
+                                                    <RecordLink reference={cost.resource} />
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span class='progression-empty'>Included</span>
+                                    )}
+                                </td>
+                            )}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )
+}

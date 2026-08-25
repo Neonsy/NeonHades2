@@ -1,0 +1,141 @@
+[data-balanced-grid-orphan='center'] > [data-balanced-grid-orphan-item] {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(100%, var(--balanced-grid-item-width));
+}
+
+[data-balanced-grid-layout='justified'] {
+    display: flex !important;
+    flex-wrap: wrap;
+}
+
+[data-balanced-grid-justified-item] {
+    flex: none;
+    min-width: 0;
+}
+
+/* Shared reading tools; composition belongs to the page family. */
+:where(
+        .home-hero-intro,
+        .guide-threshold-copy,
+        .knowledge-hero,
+        .collection-purpose,
+        .record-title-block,
+        .record-field,
+        .build-title-copy,
+        .build-loop,
+        .build-section,
+        .tier-list-hero,
+        .chapter-composition
+    )
+    :where(p, li, dd) {
+    max-width: var(--reading-wide);
+}
+
+.chapter-terms {
+    position: relative;
+    margin-block: var(--space-6) var(--space-8);
+    padding: 0;
+    background: none;
+    clip-path: none;
+    box-shadow: none;
+}
+
+.chapter-terms h2 {
+    margin: 0 0 var(--space-5);
+    font-size: var(--type-subsection);
+}
+
+.chapter-terms dd {
+    color: var(--paper-soft);
+}
+
+.chapter-terms dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-3);
+    align-items: stretch;
+    margin: 0;
+}
+
+.chapter-terms dl > div {
+    min-width: 0;
+    height: 100%;
+    padding: var(--space-4);
+    border-top: 2px solid color-mix(in srgb, var(--thread) 64%, transparent);
+    background:
+        radial-gradient(circle at 100% 0, color-mix(in srgb, var(--projection) 12%, transparent), transparent 44%),
+        color-mix(in srgb, var(--ink) 95%, transparent);
+    box-shadow: var(--depth-low);
+}
+
+.chapter-terms dt {
+    margin-bottom: var(--space-2);
+    color: var(--thread-bright);
+    font-weight: 800;
+}
+
+.chapter-terms dd {
+    margin: 0;
+}
+
+.guide-direct-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-5);
+    margin-top: var(--space-4);
+}
+
+.guide-direct-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-height);
+    padding: 0.7rem 1rem;
+    color: var(--thread-bright);
+    font-weight: 750;
+    text-decoration: none;
+    background: color-mix(in srgb, var(--thread-bright) 9%, var(--ink));
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--thread-bright) 42%, transparent),
+        inset 0 -1px 0 color-mix(in srgb, var(--thread-bright) 26%, transparent);
+    clip-path: polygon(0 0, calc(100% - 0.55rem) 0, 100% 0.55rem, 100% 100%, 0.55rem 100%, 0 calc(100% - 0.55rem));
+    transition:
+        color 180ms ease,
+        background-color 180ms ease,
+        transform 180ms ease;
+}
+
+.guide-direct-links a:hover {
+    color: var(--paper);
+    background: color-mix(in srgb, var(--thread-bright) 16%, var(--ink));
+    transform: translateY(-1px);
+}
+
+.guide-direct-links a:focus-visible {
+    outline: 3px solid var(--thread-bright);
+    outline-offset: 3px;
+}
+
+.guide-direct-links a i {
+    font-size: 1.1em;
+    transition: transform 180ms ease;
+}
+
+.guide-direct-links a:hover i,
+.guide-direct-links a:focus-visible i {
+    transform: translateX(0.2rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .guide-direct-links a,
+    .guide-direct-links a i {
+        transition: none;
+    }
+
+    .guide-direct-links a:hover,
+    .guide-direct-links a:hover i,
+    .guide-direct-links a:focus-visible i {
+        transform: none;
+    }
+}

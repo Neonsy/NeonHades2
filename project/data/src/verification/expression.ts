@@ -181,6 +181,7 @@ function evaluate(node: FormulaNode, context: Readonly<Record<string, FormulaVal
   const arguments_ = node.arguments.map((argument) => evaluate(argument, context));
   if (node.name === "abs" && arguments_.length === 1) return Math.abs(numberValue(arguments_[0]!, "abs argument"));
   if (node.name === "min" && arguments_.length >= 1) return Math.min(...arguments_.map((value) => numberValue(value, "min argument")));
+  if (node.name === "max" && arguments_.length >= 1) return Math.max(...arguments_.map((value) => numberValue(value, "max argument")));
   if (node.name === "round" && arguments_.length === 2) {
     const precision = numberValue(arguments_[1]!, "round precision");
     if (!Number.isSafeInteger(precision) || precision < 0) throw new Error("round precision must be a nonnegative integer.");

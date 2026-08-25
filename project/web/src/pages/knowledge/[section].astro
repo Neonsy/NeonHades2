@@ -1,0 +1,29 @@
+---
+import CollectionPresentation from '../../components/collections/CollectionPresentation.astro';
+import {
+    getPublication,
+    getRecord,
+    isReaderFacingRecord,
+    type PublicationPage,
+    type PublicationRecord,
+} from '../../lib/publication';
+
+type Props = { page: PublicationPage; records: PublicationRecord[] };
+
+export function getStaticPaths() {
+    const publication = getPublication();
+    return publication.pages
+        .filter((page) => page.pageKind === 'reference')
+        .flatMap((page) => {
+            const records = page.recordKeys.flatMap((key) => {
+                const record = getRecord(key);
+                return record && isReaderFacingRecord(record) ? [record] : [];
+            });
+            return records.length > 0 ? [{ params: { section: page.id.split('/')[1] }, props: { page, records } }] : [];
+        });
+}
+
+const { page, records } = Astro.props;
+---
+
+<CollectionPresentation page={page} records={records} />

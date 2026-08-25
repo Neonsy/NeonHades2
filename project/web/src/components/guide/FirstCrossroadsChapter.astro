@@ -1,0 +1,226 @@
+---
+import type { GuideChapter } from '../../content/guide';
+import BackLink from '../BackLink.astro';
+import GuideChecklist from '../GuideChecklist.astro';
+import { getChapterPresentation } from '../../content/guide-presentation';
+import RecordLink from '../RecordLink.astro';
+import ChapterTerms from './ChapterTerms.astro';
+import ChapterActionPlan from './ChapterActionPlan.astro';
+import ChapterContents from './ChapterContents.astro';
+import GuideLinks from './GuideLinks.astro';
+
+type Props = { chapter: GuideChapter };
+const { chapter } = Astro.props;
+const presentation = getChapterPresentation(chapter.id);
+const contentSections = [
+    { href: '#chapter-action-plan-title', label: 'Do these first' },
+    ...(chapter.terms?.length ? [{ href: '#chapter-terms', label: 'Recognize these first' }] : []),
+    { href: '#first-return', label: 'Keep the first return separate' },
+    { href: '#available-now', label: 'What is available right now' },
+    { href: '#first-return-circuit', label: 'Walk the first-return circuit' },
+    ...(chapter.loadout ? [{ href: '#departure', label: chapter.loadout.title }] : []),
+    { href: '#progress', label: presentation.headings.checklist },
+];
+---
+
+<div class='proof-chapter first-crossroads'>
+    <header class='crossroads-hero'>
+        <div class='crossroads-intro'>
+            <BackLink class='chapter-return-link' href='/guide/' label='All chapters' />
+            <h1>{chapter.title}</h1>
+            <p>{chapter.objective}</p>
+        </div>
+
+        <figure class='crossroads-map' aria-labelledby='crossroads-map-title crossroads-map-caption'>
+            <img
+                class='crossroads-map-environment'
+                src='/art/scenes/the-crossroads-landscape.webp'
+                srcset='/art-responsive/640/scenes/the-crossroads-landscape.webp 640w, /art-responsive/1024/scenes/the-crossroads-landscape.webp 1024w, /art/scenes/the-crossroads-landscape.webp 1600w'
+                sizes='(max-width: 760px) calc(100vw - 2.8rem), min(52vw, 45rem)'
+                alt=''
+                width='1600'
+                height='900'
+                loading='eager'
+                fetchpriority='high'
+                decoding='async'
+            />
+            <svg viewBox='0 0 720 640' role='img'>
+                <defs>
+                    <radialGradient id='crossroads-ground'>
+                        <stop offset='0' stop-color='#132543' stop-opacity='.86'></stop>
+                        <stop offset='.58' stop-color='#091427' stop-opacity='.5'></stop>
+                        <stop offset='1' stop-color='#050813' stop-opacity='0'></stop>
+                    </radialGradient>
+                    <filter id='crossroads-glow' x='-60%' y='-60%' width='220%' height='220%'>
+                        <feGaussianBlur stdDeviation='6' result='blur'></feGaussianBlur>
+                        <feMerge
+                            ><feMergeNode in='blur'></feMergeNode><feMergeNode in='SourceGraphic'
+                            ></feMergeNode></feMerge
+                        >
+                    </filter>
+                </defs>
+                <ellipse cx='360' cy='320' rx='318' ry='286' fill='url(#crossroads-ground)'></ellipse>
+                <path
+                    class='crossroads-route-base'
+                    d='M360 318 C245 260 168 184 201 111 C329 67 527 108 552 218 C575 342 509 499 369 537 C232 517 123 432 148 318 C173 258 248 252 360 318Z'
+                ></path>
+                <path
+                    class='crossroads-route-active'
+                    d='M360 318 C245 260 168 184 201 111 C329 67 527 108 552 218 C575 342 509 499 369 537 C232 517 123 432 148 318 C173 258 248 252 360 318Z'
+                ></path>
+                <g class='crossroads-center' transform='translate(360 318)'>
+                    <path d='M0-58 50-29 50 29 0 58-50 29-50-29Z'></path>
+                    <path d='M0-24V24M-22 0H22'></path>
+                </g>
+                <g class='hub-stop dialogue-stop' transform='translate(201 111)'>
+                    <circle r='33'></circle><path d='M-16-5H16M-16 7H8'></path>
+                </g>
+                <g class='hub-stop altar-stop' transform='translate(552 218)'>
+                    <circle r='33'></circle><path d='M0-18 17 15H-17Z'></path>
+                </g>
+                <g class='hub-stop cauldron-stop' transform='translate(510 452)'>
+                    <circle r='33'></circle><path d='M-18-8H18M-14-8C-12 16 12 16 14-8M-8-18C-3-28 3-28 8-18'></path>
+                </g>
+                <g class='hub-stop pool-stop' transform='translate(369 537)'>
+                    <circle r='33'></circle><path d='M-18 8C-8-4 8-4 18 8M-12-5C-5-14 5-14 12-5'></path>
+                </g>
+                <g class='hub-stop training-stop' transform='translate(148 318)'>
+                    <circle r='33'></circle><path d='M-17 17 17-17M-14-20 20 14'></path>
+                </g>
+                <circle class='crossroads-traveler' r='7'>
+                    <animateMotion
+                        dur='12s'
+                        repeatCount='indefinite'
+                        path='M360 318 C245 260 168 184 201 111 C329 67 527 108 552 218 C575 342 509 499 369 537 C232 517 123 432 148 318 C173 258 248 252 360 318Z'
+                    ></animateMotion>
+                </circle>
+            </svg>
+            <ol aria-hidden='true'>
+                <li class='label-dialogue'>Conversations</li>
+                <li class='label-altar'>Altar</li>
+                <li class='label-cauldron'>Cauldron · purifying</li>
+                <li class='label-pool'>Silver Pool</li>
+                <li class='label-training'>Training Grounds</li>
+            </ol>
+            <figcaption>
+                <strong id='crossroads-map-title'>Use what is open on the first return</strong>
+                <span id='crossroads-map-caption'
+                    >Talk first, use the Altar and Silver Pool, then leave the purifying Cauldron for the next return.</span
+                >
+            </figcaption>
+        </figure>
+    </header>
+
+    <ChapterActionPlan chapter={chapter} />
+
+    <div class='chapter-reading-shell'>
+        <ChapterContents items={contentSections} />
+        <div class='chapter-reading'>
+            <ChapterTerms terms={chapter.terms} />
+
+            <section id='first-return' class='crossroads-context' aria-labelledby='crossroads-context-title'>
+                <h2 id='crossroads-context-title'>Keep the first return separate from the second</h2>
+                <p>{chapter.why}</p>
+            </section>
+
+            <section id='available-now' class='resource-chain' aria-labelledby='resource-chain-title'>
+                <header>
+                    <h2 id='resource-chain-title'>What is available right now</h2>
+                    <p>
+                        This visit is for conversations, the Altar, the Silver Pool, and practice. The Cauldron is still
+                        being purified. It opens when you return after the second night.
+                    </p>
+                </header>
+                <ol>
+                    <li class='dialogue-link'>
+                        <span>Available now</span>
+                        <strong>Marked conversations</strong>
+                        <p>Process every speech-bubble marker before spending or leaving.</p>
+                    </li>
+                    <li class='altar-link'>
+                        <span>Available now</span>
+                        <strong>Altar of Ashes</strong>
+                        <p>Reveal and activate The Sorceress when 1 Ash is available.</p>
+                    </li>
+                    <li class='pool-link'>
+                        <span>Available now</span>
+                        <strong>Silver Pool</strong>
+                        <p>Inspect weapons now. Gathering tools arrive after Night's Craftwork.</p>
+                    </li>
+                    <li class='cauldron-link'>
+                        <span>Next return</span>
+                        <strong>Cauldron</strong>
+                        <p>It is purifying during this visit and cannot brew an Incantation yet.</p>
+                    </li>
+                </ol>
+            </section>
+
+            <section id='first-return-circuit' class='crossroads-circuit' aria-labelledby='crossroads-circuit-title'>
+                <header>
+                    <h2 id='crossroads-circuit-title'>Walk the first-return circuit</h2>
+                    <p>{chapter.entry}</p>
+                </header>
+                <ol>
+                    {
+                        chapter.steps.map((step) => (
+                            <li>
+                                <div class='circuit-marker' aria-hidden='true' />
+                                <div>
+                                    <h3>{step.title}</h3>
+                                    <p>{step.body}</p>
+                                    {step.references && (
+                                        <div class='chapter-links'>
+                                            {step.references.map((reference) => (
+                                                <RecordLink reference={reference} />
+                                            ))}
+                                        </div>
+                                    )}
+                                    <GuideLinks links={step.links} />
+                                </div>
+                            </li>
+                        ))
+                    }
+                </ol>
+            </section>
+
+            {
+                chapter.loadout && (
+                    <section id='departure' class='crossroads-departure' aria-labelledby='crossroads-departure-title'>
+                        <header>
+                            <h2 id='crossroads-departure-title'>{chapter.loadout.title}</h2>
+                            <p>{chapter.loadout.summary}</p>
+                        </header>
+                        <div>
+                            {chapter.loadout.items.map((item) => (
+                                <article>
+                                    <span>{item.label}</span>
+                                    <h3>{item.value}</h3>
+                                    <p>{item.reason}</p>
+                                    {item.references && (
+                                        <div class='chapter-links'>
+                                            {item.references.map((reference) => (
+                                                <RecordLink reference={reference} />
+                                            ))}
+                                        </div>
+                                    )}
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )
+            }
+
+            <aside class='crossroads-fallback'>
+                <i class='ph ph-moon-stars' aria-hidden='true'></i>
+                <div>
+                    <p>{chapter.fallback}</p>
+                    <GuideLinks links={chapter.fallbackLinks} />
+                </div>
+            </aside>
+
+            <section id='progress' class='chapter-checklist-section'>
+                <GuideChecklist chapter={chapter} title={presentation.headings.checklist} />
+            </section>
+        </div>
+    </div>
+</div>

@@ -33,4 +33,6 @@ export {
   renderLoadoutSourceAudit,
   type LoadoutSourceAudit,
   type LoadoutSourceAuditIssue,
+  type IncantationRevealCategory,
+  type IncantationRevealPolicy,
 } from "./source-audit.js";

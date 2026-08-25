@@ -1,0 +1,190 @@
+---
+import type { GuideChapter } from '../../content/guide';
+import BackLink from '../BackLink.astro';
+import GuideChecklist from '../GuideChecklist.astro';
+import { getChapterPresentation } from '../../content/guide-presentation';
+import RecordLink from '../RecordLink.astro';
+import SubjectArtwork from '../SubjectArtwork.astro';
+import { getRecord } from '../../lib/publication';
+import { getRecordSubjectArt, requireSubjectArt } from '../../lib/subject-art';
+import ChapterTerms from './ChapterTerms.astro';
+import ChapterActionPlan from './ChapterActionPlan.astro';
+import ChapterContents from './ChapterContents.astro';
+import GuideLinks from './GuideLinks.astro';
+
+type Props = { chapter: GuideChapter };
+const { chapter } = Astro.props;
+const presentation = getChapterPresentation(chapter.id);
+const nova = chapter.loadout?.items[0];
+const loop = chapter.loadout?.items[1];
+const door = chapter.loadout?.items[2];
+const apollo = getRecord('mechanics/god:ApolloUpgrade');
+if (!apollo) throw new Error('The first-night guide requires the published Apollo record.');
+const apolloArt = getRecordSubjectArt(apollo);
+const ashesArt = requireSubjectArt('Ashes');
+const heartArt = requireSubjectArt('Centaur Heart');
+const contentSections = [
+    { href: '#chapter-action-plan-title', label: 'Do these first' },
+    ...(chapter.terms?.length ? [{ href: '#chapter-terms', label: 'Recognize these first' }] : []),
+    { href: '#nova-strike', label: 'Choose Nova Strike' },
+    { href: '#safe-sequence', label: 'Practice one safe sequence' },
+    { href: '#next-door', label: 'Read the next door' },
+    { href: '#room-by-room', label: 'Room by room' },
+    ...(chapter.choices?.length ? [{ href: '#run-does-not-cooperate', label: 'When the run does not cooperate' }] : []),
+    { href: '#progress', label: presentation.headings.checklist },
+];
+---
+
+<div class='proof-chapter first-night'>
+    <header class='first-night-hero'>
+        <div class='first-night-intro'>
+            <BackLink class='chapter-return-link' href='/guide/' label='All chapters' />
+            <h1>{chapter.title}</h1>
+            <p>{chapter.objective}</p>
+        </div>
+
+        <figure class='night-route' aria-labelledby='night-route-title night-route-caption'>
+            <img
+                src='/art/scenes/first-night-route.svg'
+                alt=''
+                width='1000'
+                height='820'
+                loading='eager'
+                fetchpriority='high'
+                decoding='async'
+            />
+            <figcaption>
+                <strong id='night-route-title'>One night, one clear lesson</strong>
+                <span id='night-route-caption'
+                    >Take the fixed Apollo opening, follow safe rooms, then turn the return into permanent progress.</span
+                >
+            </figcaption>
+        </figure>
+    </header>
+
+    <ChapterActionPlan chapter={chapter} />
+
+    <div class='chapter-reading-shell'>
+        <ChapterContents items={contentSections} />
+        <div class='chapter-reading'>
+            <ChapterTerms terms={chapter.terms} />
+
+            <section id='nova-strike' class='night-opening' aria-labelledby='night-opening-title'>
+                <SubjectArtwork subject={apolloArt} size='stage' feather />
+                <div>
+                    <h2 id='night-opening-title'>Choose Nova Strike</h2>
+                    <p>{chapter.why}</p>
+                    {
+                        nova && (
+                            <div class='night-opening-detail'>
+                                <strong>{nova.value}</strong>
+                                <span>{nova.reason}</span>
+                                {nova.references?.map((reference) => (
+                                    <RecordLink reference={reference} />
+                                ))}
+                            </div>
+                        )
+                    }
+                </div>
+            </section>
+
+            <section id='safe-sequence' class='combat-constellation' aria-labelledby='combat-loop-title'>
+                <header>
+                    <h2 id='combat-loop-title'>Practice one safe sequence</h2>
+                    <p>{loop?.reason}</p>
+                </header>
+                <ol>
+                    <li>
+                        <span class='combat-glyph cast-glyph' aria-hidden='true'></span>
+                        <strong>Cast</strong>
+                        <p>Hold the closest normal enemies in place.</p>
+                    </li>
+                    <li>
+                        <span class='combat-glyph attack-glyph' aria-hidden='true'></span>
+                        <strong>Attack twice</strong>
+                        <p>Use Nova Strike during the opening you created.</p>
+                    </li>
+                    <li>
+                        <span class='combat-glyph sprint-glyph' aria-hidden='true'></span>
+                        <strong>Sprint out</strong>
+                        <p>Leave before the enemies recover and turn toward you.</p>
+                    </li>
+                </ol>
+            </section>
+
+            <section id='next-door' class='door-reading' aria-labelledby='door-reading-title'>
+                <div class='door-reading-copy'>
+                    <h2 id='door-reading-title'>Let the next door solve the next problem</h2>
+                    <p>{door?.reason}</p>
+                </div>
+                <div class='door-choices'>
+                    <article class='ash-door'>
+                        <SubjectArtwork subject={ashesArt} size='row' />
+                        <h3>Ashes</h3>
+                        <p>Take them while your Life is comfortable. Ashes return with you after the night.</p>
+                    </article>
+                    <article class='heart-door'>
+                        <SubjectArtwork subject={heartArt} size='row' />
+                        <h3>Centaur Heart</h3>
+                        <p>Take it when ordinary rooms are already draining you. It adds Life for this night.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id='room-by-room' class='first-night-steps' aria-labelledby='first-night-steps-title'>
+                <header>
+                    <h2 id='first-night-steps-title'>Room by room</h2>
+                    <p>{chapter.entry}</p>
+                </header>
+                <ol>
+                    {
+                        chapter.steps.map((step) => (
+                            <li>
+                                <div>
+                                    <h3>{step.title}</h3>
+                                    <p>{step.body}</p>
+                                    {step.references && (
+                                        <div class='chapter-links'>
+                                            {step.references.map((reference) => (
+                                                <RecordLink reference={reference} />
+                                            ))}
+                                        </div>
+                                    )}
+                                    <GuideLinks links={step.links} />
+                                </div>
+                            </li>
+                        ))
+                    }
+                </ol>
+            </section>
+
+            {
+                chapter.choices && (
+                    <section
+                        id='run-does-not-cooperate'
+                        class='night-decisions'
+                        aria-labelledby='night-decisions-title'>
+                        <h2 id='night-decisions-title'>When the run does not cooperate</h2>
+                        <div>
+                            {chapter.choices.map((choice) => (
+                                <article>
+                                    <h3>{choice.situation}</h3>
+                                    <strong>{choice.choice}</strong>
+                                    <p>{choice.reason}</p>
+                                </article>
+                            ))}
+                        </div>
+                        <div class='night-fallback'>
+                            <p>{chapter.fallback}</p>
+                            <GuideLinks links={chapter.fallbackLinks} />
+                        </div>
+                    </section>
+                )
+            }
+
+            <section id='progress' class='chapter-checklist-section'>
+                <GuideChecklist chapter={chapter} title={presentation.headings.checklist} />
+            </section>
+        </div>
+    </div>
+</div>

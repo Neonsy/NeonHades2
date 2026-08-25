@@ -1,0 +1,182 @@
+---
+import DivineSignature from '../DivineSignature.astro';
+import RecordLink from '../RecordLink.astro';
+import SubjectArtwork from '../SubjectArtwork.astro';
+import { divineThemeStyle } from '../../lib/divine-theme';
+import { getRecordName, recordHref, recordTypeLabel } from '../../lib/publication';
+import { recordSummary } from '../../lib/presentation';
+import { getRecordSubjectArt } from '../../lib/subject-art';
+import type { CollectionViewModel } from '../../lib/collection-view-model';
+
+type Props = Pick<CollectionViewModel, 'divineGroups' | 'sharedBoonRecords' | 'legendaryBoons' | 'duoBoons'>;
+const { divineGroups, sharedBoonRecords, legendaryBoons, duoBoons } = Astro.props;
+---
+
+<div class='boon-pantheon'>
+    <nav class='divine-index' aria-label='Browse Boons by god'>
+        {
+            divineGroups.map(({ theme }) => (
+                <a href={`#${theme.slug}`} style={divineThemeStyle(theme)}>
+                    <span aria-hidden='true' />
+                    {theme.name}
+                </a>
+            ))
+        }
+    </nav>
+
+    <div class='divine-houses'>
+        {
+            divineGroups.map(({ god, theme, boons }) => (
+                <details id={theme.slug} class='divine-house' style={divineThemeStyle(theme)} data-record-group>
+                    <summary>
+                        <DivineSignature theme={theme} compact />
+                        <span class='divine-house-copy'>
+                            <strong>{theme.name}</strong>
+                            <span>{recordSummary(god)}</span>
+                        </span>
+                        <span class='divine-house-command'>
+                            <span class='divine-house-action'>Open {theme.name}'s Boons</span>
+                            <i class='ph ph-caret-right' aria-hidden='true' />
+                        </span>
+                    </summary>
+                    <ol class='record-index record-index-v2' data-record-index>
+                        {[god, ...boons].map((record, index) => {
+                            const name = getRecordName(record);
+                            const summary = recordSummary(record);
+                            const subjectArt = getRecordSubjectArt(record);
+                            const type =
+                                record.recordType === 'mechanics/god'
+                                    ? `${theme.name} overview`
+                                    : recordTypeLabel(record.recordType);
+                            return (
+                                <li
+                                    data-record-row
+                                    data-record-tone={index % 4}
+                                    data-record-type={type}
+                                    data-filter={`${name} ${type}`.toLowerCase()}>
+                                    <a
+                                        class:list={[
+                                            'record-index-link--illustrated',
+                                            record.recordType === 'mechanics/god' &&
+                                                'record-index-link--divine-overview',
+                                        ]}
+                                        data-visible-artwork={record.recordType === 'mechanics/god' ? '' : undefined}
+                                        href={recordHref(record)}>
+                                        <SubjectArtwork subject={subjectArt} size='row' />
+                                        <span class='record-index-copy'>
+                                            <strong>{name}</strong>
+                                            {summary && <span>{summary}</span>}
+                                        </span>
+                                        <span class='record-type'>{type}</span>
+                                        <i class='ph ph-arrow-right' aria-hidden='true' />
+                                    </a>
+                                </li>
+                            );
+                        })}
+                    </ol>
+                </details>
+            ))
+        }
+    </div>
+
+    {
+        sharedBoonRecords.length > 0 && (
+            <details class='divine-house divine-house--shared' data-record-group>
+                <summary>
+                    <span class='shared-boon-mark' aria-hidden='true'>
+                        <img
+                            src='/art/gods/symbols/shared.webp'
+                            alt=''
+                            width='64'
+                            height='64'
+                            loading='lazy'
+                            decoding='async'
+                        />
+                    </span>
+                    <span class='divine-house-copy'>
+                        <strong>Shared combat rules</strong>
+                        <span>Status effects and elemental rules that connect more than one god.</span>
+                    </span>
+                    <span class='divine-house-command'>
+                        <span class='divine-house-action'>Open shared rules</span>
+                        <i class='ph ph-caret-right' aria-hidden='true' />
+                    </span>
+                </summary>
+                <ol class='record-index record-index-v2' data-record-index>
+                    {sharedBoonRecords.map((record, index) => {
+                        const name = getRecordName(record);
+                        const summary = recordSummary(record);
+                        const type = recordTypeLabel(record.recordType);
+                        const subjectArt = getRecordSubjectArt(record);
+                        return (
+                            <li
+                                data-record-row
+                                data-record-tone={index % 4}
+                                data-record-type={type}
+                                data-filter={`${name} ${type}`.toLowerCase()}>
+                                <a class='record-index-link--illustrated' href={recordHref(record)}>
+                                    <SubjectArtwork subject={subjectArt} size='row' />
+                                    <span class='record-index-copy'>
+                                        <strong>{name}</strong>
+                                        {summary && <span>{summary}</span>}
+                                    </span>
+                                    <span class='record-type'>{type}</span>
+                                    <i class='ph ph-arrow-right' aria-hidden='true' />
+                                </a>
+                            </li>
+                        );
+                    })}
+                </ol>
+            </details>
+        )
+    }
+</div>
+
+<section class='boon-eligibility-guide' aria-labelledby='boon-eligibility-title'>
+    <header>
+        <span>Offer requirements</span>
+        <h2 id='boon-eligibility-title'>Make rare Boons eligible on purpose.</h2>
+        <p>
+            Prerequisites make a Legendary or Duo Boon eligible to appear. They do not guarantee the next offering. Open
+            a Boon above to see every acceptable prerequisite with its icon.
+        </p>
+    </header>
+    <div>
+        <article id='legendary-boon-requirements'>
+            <span>Legendary</span>
+            <h3>Meet every prerequisite group.</h3>
+            <p>
+                Hold one qualifying Boon from each group shown on that Legendary Boon's record. Some Legendaries require
+                more than two groups, so check the exact record before routing a night around one.
+            </p>
+            <details>
+                <summary>Browse {legendaryBoons.length} Legendary Boons</summary>
+                <div class='reference-cloud'>
+                    {
+                        legendaryBoons.map((record) => (
+                            <RecordLink reference={{ id: record.id, recordType: record.recordType }} />
+                        ))
+                    }
+                </div>
+            </details>
+        </article>
+        <article id='duo-boon-requirements'>
+            <span>Duo</span>
+            <h3>Satisfy both prerequisite sides.</h3>
+            <p>
+                Hold one qualifying Boon from each prerequisite group shown on that Duo Boon's record. The eligible
+                choices differ by Duo, so the two gods alone are not enough.
+            </p>
+            <details>
+                <summary>Browse {duoBoons.length} Duo Boons</summary>
+                <div class='reference-cloud'>
+                    {
+                        duoBoons.map((record) => (
+                            <RecordLink reference={{ id: record.id, recordType: record.recordType }} />
+                        ))
+                    }
+                </div>
+            </details>
+        </article>
+    </div>
+</section>

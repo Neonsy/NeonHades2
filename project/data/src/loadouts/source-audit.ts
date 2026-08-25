@@ -50,6 +50,7 @@ export interface LoadoutSourceAuditIssue {
   readonly code:
     | "duplicate-record"
     | "invalid-familiar-upgrades"
+    | "invalid-incantation-reveal-policy"
     | "invalid-membership-count"
     | "missing-description"
     | "missing-record"
@@ -59,8 +60,19 @@ export interface LoadoutSourceAuditIssue {
   readonly detail: string;
 }
 
+export interface IncantationRevealCategory {
+  readonly id: string;
+  readonly oneRevealPassPerRun: boolean;
+  readonly orderedIncantationIds: readonly string[];
+}
+
+export interface IncantationRevealPolicy {
+  readonly maxNewRevealsPerRun: number;
+  readonly categories: readonly IncantationRevealCategory[];
+}
+
 export interface LoadoutSourceAudit {
-  readonly schema: "neodes2-loadout-source-audit-1";
+  readonly schema: "neodes2-loadout-source-audit-2";
   readonly sourceAcquisitionDirectory: string;
   readonly keepsakeIds: readonly string[];
   readonly familiarIds: readonly string[];
@@ -68,6 +80,7 @@ export interface LoadoutSourceAudit {
   readonly hexes: readonly { readonly id: string; readonly traitId: string; readonly talentIds: readonly string[] }[];
   readonly incantationIds: readonly string[];
   readonly automaticWorldUpgradeIds: readonly string[];
+  readonly incantationRevealPolicy: IncantationRevealPolicy;
   readonly extractionFormats: readonly string[];
   readonly extractionBaseTypes: readonly string[];
   readonly issues: readonly LoadoutSourceAuditIssue[];
@@ -224,6 +237,26 @@ function luaRecords(source: string, anchor: RegExp): readonly LuaRecord[] {
   return records;
 }
 
+function topLevelTableSources(source: string, anchor: RegExp): readonly string[] {
+  const table = tableSource(source, anchor);
+  const masked = maskLua(table);
+  const output: string[] = [];
+  let depth = 0;
+  for (let index = 0; index < masked.length; index += 1) {
+    const current = masked[index] as string;
+    if (current === "{") {
+      depth += 1;
+      if (depth === 2) {
+        const end = closingBrace(masked, index);
+        output.push(table.slice(index, end + 1));
+        index = end;
+        depth -= 1;
+      }
+    } else if (current === "}") depth -= 1;
+  }
+  return output;
+}
+
 function quotedField(source: string, field: string): string | undefined {
   return new RegExp(`\\b${field}\\s*=\\s*\"((?:\\\\.|[^\"])*)\"`, "u").exec(source)?.[1];
 }
@@ -313,6 +346,9 @@ export async function auditLoadoutSources(sourceAcquisitionDirectory: string): P
     spellTraitSource,
     talentTraitSource,
     worldUpgradeSource,
+    ghostAdminSource,
+    ghostAdminItemsSource,
+    ghostAdminLogicSource,
     ...localizationSources
   ] = await Promise.all([
     readFile(join(scripts, "KeepsakeData.lua"), "utf8"),
@@ -323,6 +359,9 @@ export async function auditLoadoutSources(sourceAcquisitionDirectory: string): P
     readFile(join(scripts, "TraitData_Spell.lua"), "utf8"),
     readFile(join(scripts, "TraitData_Talent.lua"), "utf8"),
     readFile(join(scripts, "WorldUpgradeData.lua"), "utf8"),
+    readFile(join(scripts, "GhostAdminData.lua"), "utf8"),
+    readFile(join(scripts, "GhostAdminData_Items.lua"), "utf8"),
+    readFile(join(scripts, "GhostAdminLogic.lua"), "utf8"),
     ...[
       "HelpText.en.sjson",
       "TraitText.en.sjson",
@@ -337,7 +376,9 @@ export async function auditLoadoutSources(sourceAcquisitionDirectory: string): P
     keepsakeSource === undefined || keepsakeTraitSource === undefined ||
     familiarSource === undefined || familiarShopSource === undefined ||
     spellSource === undefined || spellTraitSource === undefined ||
-    talentTraitSource === undefined || worldUpgradeSource === undefined
+    talentTraitSource === undefined || worldUpgradeSource === undefined ||
+    ghostAdminSource === undefined || ghostAdminItemsSource === undefined ||
+    ghostAdminLogicSource === undefined
   ) {
     throw new Error("Loadout source acquisition is incomplete.");
   }
@@ -393,6 +434,77 @@ export async function auditLoadoutSources(sourceAcquisitionDirectory: string): P
     automaticTable,
     /"([A-Za-z_][A-Za-z0-9_]*)"/gu,
   ).filter((id) => incantationIds.includes(id));
+  const maxNewRevealsPerRun = Number(
+    /\bAllowedRevealsPerRun\s*=\s*(\d+)/u.exec(stripLuaComments(ghostAdminSource))?.[1] ?? "0",
+  );
+  const revealCategorySources = topLevelTableSources(
+    ghostAdminItemsSource,
+    /\bScreenData\.GhostAdmin\.ItemCategories\s*=/u,
+  );
+  const revealCategories = revealCategorySources.map((categorySource, index) => ({
+    id: quotedField(categorySource, "Name") ?? `category-${index + 1}`,
+    oneRevealPassPerRun: /\bOneRevealPerRun\s*=\s*true\b/u.test(stripLuaComments(categorySource)),
+    orderedIncantationIds: [...stripLuaComments(categorySource).matchAll(
+      /^[ \t]*"([A-Za-z_][A-Za-z0-9_]*)"\s*,?\s*$/gmu,
+    )].map((match) => match[1] as string),
+  }));
+  const categorizedIncantationIds = revealCategories.flatMap((category) => category.orderedIncantationIds);
+  const categorizedCounts = new Map<string, number>();
+  for (const id of categorizedIncantationIds) {
+    categorizedCounts.set(id, (categorizedCounts.get(id) ?? 0) + 1);
+  }
+  if (!Number.isSafeInteger(maxNewRevealsPerRun) || maxNewRevealsPerRun <= 0) {
+    issues.push({
+      code: "invalid-incantation-reveal-policy",
+      recordId: "GhostAdmin",
+      detail: "AllowedRevealsPerRun must be a positive integer.",
+    });
+  }
+  const revealLogic = stripLuaComments(ghostAdminLogicSource);
+  if (
+    !/\bscreen\.AllowedRevealsPerRun\b/u.test(revealLogic) ||
+    !/\bcategory\.OneRevealPerRun\b/u.test(revealLogic)
+  ) {
+    issues.push({
+      code: "invalid-incantation-reveal-policy",
+      recordId: "GhostAdminLogic",
+      detail: "Cauldron logic no longer applies the configured reveal cap and one-pass category policy.",
+    });
+  }
+  if (
+    revealCategories.length === 0 ||
+    revealCategories.some((category) => category.orderedIncantationIds.length === 0) ||
+    revealCategorySources.some((categorySource) => quotedField(categorySource, "Name") === undefined)
+  ) {
+    issues.push({
+      code: "invalid-incantation-reveal-policy",
+      recordId: "GhostAdmin.ItemCategories",
+      detail: "Every Cauldron category must have an identifier and at least one ordered Incantation.",
+    });
+  }
+  for (const id of incantationIds) {
+    const count = categorizedCounts.get(id) ?? 0;
+    if (count !== 1) {
+      issues.push({
+        code: "invalid-incantation-reveal-policy",
+        recordId: id,
+        detail: `Expected one Cauldron reveal-order entry, found ${count}.`,
+      });
+    }
+  }
+  for (const id of categorizedCounts.keys()) {
+    if (!incantationIds.includes(id)) {
+      issues.push({
+        code: "invalid-incantation-reveal-policy",
+        recordId: id,
+        detail: "Cauldron reveal order references an Incantation outside the localized source inventory.",
+      });
+    }
+  }
+  const incantationRevealPolicy: IncantationRevealPolicy = {
+    maxNewRevealsPerRun,
+    categories: revealCategories,
+  };
   if (keepsakeIds.length !== 33) {
     issues.push({ code: "invalid-membership-count", recordId: "keepsakes", detail: `Expected 33 keepsakes, found ${keepsakeIds.length}.` });
   }
@@ -443,7 +555,7 @@ export async function auditLoadoutSources(sourceAcquisitionDirectory: string): P
     (left, right) => compareStrings(left.recordId, right.recordId) || compareStrings(left.code, right.code),
   );
   return {
-    schema: "neodes2-loadout-source-audit-1",
+    schema: "neodes2-loadout-source-audit-2",
     sourceAcquisitionDirectory: acquisitionDirectory,
     keepsakeIds,
     familiarIds,
@@ -451,6 +563,7 @@ export async function auditLoadoutSources(sourceAcquisitionDirectory: string): P
     hexes,
     incantationIds,
     automaticWorldUpgradeIds,
+    incantationRevealPolicy,
     extractionFormats,
     extractionBaseTypes,
     issues,
@@ -470,6 +583,8 @@ export function renderLoadoutSourceAudit(audit: LoadoutSourceAudit): string {
     `- Path of Stars talents: ${new Set(audit.hexes.flatMap((hex) => hex.talentIds)).size}`,
     `- Incantations: ${audit.incantationIds.length}`,
     `- Automatic incantations: ${audit.automaticWorldUpgradeIds.length}`,
+    `- Cauldron reveal categories: ${audit.incantationRevealPolicy.categories.length}`,
+    `- Maximum new reveals per category and night: ${audit.incantationRevealPolicy.maxNewRevealsPerRun}`,
     `- Issues: ${audit.issues.length}`,
     "",
     "## Extraction vocabulary",

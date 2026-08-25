@@ -1,0 +1,327 @@
+---
+import { crossroadsKnowledge } from '../content/crossroads';
+import { guideFacts } from '../content/guide-facts';
+
+const returnPhases = [
+    {
+        id: 'first-return',
+        label: 'First return',
+        title: 'Use the open hub systems and leave the Cauldron alone',
+        summary:
+            'The Altar and Silver Pool are available. The Cauldron is still being purified and opens only after the second night.',
+        tasks: crossroadsKnowledge.firstReturnChecklist,
+    },
+    {
+        id: 'later-returns',
+        label: 'Second return and later',
+        title: 'Add the Cauldron to the complete return circuit',
+        summary:
+            'From the second return onward, process conversations before checking recipes, permanent upgrades, and the next-night target.',
+        tasks: crossroadsKnowledge.laterReturnChecklist,
+    },
+] as const;
+---
+
+<section class='crossroads-knowledge' aria-labelledby='crossroads-return-title'>
+    <header>
+        <span>Match the state of your save</span>
+        <h2 id='crossroads-return-title'>Use the circuit your return has opened</h2>
+        <p>
+            The first return and the second return do not offer the same systems. Follow the matching circuit, process
+            new information first, then leave with one purpose for the next night.
+        </p>
+    </header>
+
+    <div class='crossroads-return-phases'>
+        {
+            returnPhases.map((phase) => (
+                <section class='crossroads-return-phase' aria-labelledby={`crossroads-${phase.id}-title`}>
+                    <header>
+                        <span>{phase.label}</span>
+                        <h3 id={`crossroads-${phase.id}-title`}>{phase.title}</h3>
+                        <p>{phase.summary}</p>
+                    </header>
+                    <ol class='crossroads-return-list'>
+                        {phase.tasks.map((task, index) => (
+                            <li>
+                                <span>{String(index + 1).padStart(2, '0')}</span>
+                                <div>
+                                    <h3>{task.title}</h3>
+                                    <p>{task.body}</p>
+                                    {task.links && (
+                                        <nav aria-label={`${task.title} references`}>
+                                            {task.links.map((link) => (
+                                                <a href={link.href}>
+                                                    {link.label}
+                                                    <i class='ph ph-arrow-right' aria-hidden='true' />
+                                                </a>
+                                            ))}
+                                        </nav>
+                                    )}
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+                </section>
+            ))
+        }
+    </div>
+
+    <aside class='crossroads-reveal-note' aria-labelledby='crossroads-reveal-title'>
+        <i class='ph ph-magic-wand' aria-hidden='true'></i>
+        <div>
+            <h3 id='crossroads-reveal-title'>Why a Cauldron recipe may be missing</h3>
+            <p>The Cauldron first becomes usable on the second return.</p>
+            <p>{guideFacts.incantations.revealPolicy}</p>
+            <p>
+                Talk to newly available characters after each return. Conversations and recipes are conditional, so a
+                missing next step can mean another run, encounter, or conversation is required.
+            </p>
+        </div>
+    </aside>
+
+    <section class='crossroads-services' aria-labelledby='crossroads-services-title'>
+        <header>
+            <span>Hub directory</span>
+            <h2 id='crossroads-services-title'>Know what each stop is for</h2>
+        </header>
+        <div>
+            {
+                crossroadsKnowledge.services.map((service) => (
+                    <article>
+                        <span>{service.when}</span>
+                        <h3>{service.title}</h3>
+                        <p>{service.body}</p>
+                        <nav aria-label={`${service.title} references`}>
+                            {service.links.map((link) => (
+                                <a href={link.href}>
+                                    {link.label}
+                                    <i class='ph ph-arrow-right' aria-hidden='true' />
+                                </a>
+                            ))}
+                        </nav>
+                    </article>
+                ))
+            }
+        </div>
+    </section>
+
+    <aside class='crossroads-pinning' aria-labelledby='crossroads-pinning-title'>
+        <i class='ph ph-map-trifold' aria-hidden='true'></i>
+        <div>
+            <h3 id='crossroads-pinning-title'>What Forget-Me-Not means on a door</h3>
+            <p>
+                After unlocking Forget-Me-Not, pin an unfinished purchase. A small Forget-Me-Not symbol can appear on a
+                visible reward door when that room advertises, or can yield, a resource still needed by a pinned
+                non-Boon purchase. It is a lead, not a guarantee. Some resource sources are not marked.
+            </p>
+            <a href='/knowledge/records/incantations/forget-me-not/'>
+                See Forget-Me-Not requirements
+                <i class='ph ph-arrow-right' aria-hidden='true'></i>
+            </a>
+        </div>
+    </aside>
+</section>
+
+<style is:inline>
+    .crossroads-knowledge {
+        display: grid;
+        gap: clamp(2rem, 4vw, 4rem);
+        margin-block: clamp(2.5rem, 6vw, 6rem);
+    }
+
+    .crossroads-knowledge > header {
+        display: grid;
+        grid-template-columns: minmax(0, 0.72fr) minmax(18rem, 1fr);
+        gap: 0.75rem clamp(2rem, 7vw, 8rem);
+        align-items: end;
+    }
+
+    .crossroads-knowledge > header > span,
+    .crossroads-services > header > span {
+        grid-column: 1 / -1;
+        color: var(--thread);
+        font-size: var(--type-label);
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .crossroads-knowledge h2 {
+        margin: 0;
+        color: var(--paper);
+        font-size: clamp(2rem, 4vw, 4rem);
+        line-height: 1;
+    }
+
+    .crossroads-knowledge > header p {
+        max-width: 58ch;
+        margin: 0;
+        color: var(--paper-soft);
+        font-size: var(--type-body);
+        line-height: 1.55;
+    }
+
+    .crossroads-return-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1px;
+        margin: 0;
+        padding: 1px;
+        background: color-mix(in srgb, var(--thread) 26%, transparent);
+        list-style: none;
+    }
+
+    .crossroads-return-phases {
+        display: grid;
+        gap: clamp(2rem, 4vw, 4rem);
+    }
+
+    .crossroads-return-phase {
+        display: grid;
+        gap: var(--space-4);
+    }
+
+    .crossroads-return-phase > header {
+        display: grid;
+        gap: 0.6rem;
+        max-width: 76rem;
+    }
+
+    .crossroads-return-phase > header > span {
+        color: var(--thread);
+        font-size: var(--type-label);
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .crossroads-return-phase > header > p {
+        max-width: 66ch;
+        margin: 0;
+        color: var(--paper-soft);
+        font-size: var(--type-support);
+        line-height: 1.55;
+    }
+
+    .crossroads-return-list > li {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: var(--space-3);
+        align-content: start;
+        min-width: 0;
+        padding: clamp(1.4rem, 3vw, 2.5rem);
+        background: color-mix(in srgb, var(--thread) 5%, var(--ink-deep));
+    }
+
+    .crossroads-return-list > li > span {
+        color: var(--thread);
+        font-size: var(--type-support);
+        font-weight: 900;
+        letter-spacing: 0.08em;
+    }
+
+    .crossroads-return-list h3,
+    .crossroads-services h3,
+    .crossroads-reveal-note h3,
+    .crossroads-pinning h3 {
+        margin: 0;
+        color: var(--paper);
+        font-size: clamp(1.35rem, 2vw, 1.8rem);
+        line-height: 1.18;
+    }
+
+    .crossroads-return-list p,
+    .crossroads-services p,
+    .crossroads-reveal-note p,
+    .crossroads-pinning p {
+        margin: 0.7rem 0 0;
+        color: var(--paper-soft);
+        font-size: var(--type-support);
+        line-height: 1.55;
+    }
+
+    .crossroads-knowledge nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem 1rem;
+        margin-top: var(--space-3);
+    }
+
+    .crossroads-knowledge nav a,
+    .crossroads-pinning a {
+        display: inline-flex;
+        gap: 0.45rem;
+        align-items: center;
+        min-height: 2.75rem;
+        color: var(--thread);
+        font-size: var(--type-support);
+        font-weight: 800;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.22em;
+    }
+
+    .crossroads-reveal-note,
+    .crossroads-pinning {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: var(--space-4);
+        max-width: 86rem;
+        padding: clamp(1.5rem, 3vw, 2.75rem);
+        border-top: 1px solid color-mix(in srgb, var(--thread) 52%, transparent);
+        background: linear-gradient(105deg, color-mix(in srgb, var(--thread) 12%, var(--ink-deep)), var(--ink-deep));
+    }
+
+    .crossroads-reveal-note > i,
+    .crossroads-pinning > i {
+        color: var(--thread);
+        font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+
+    .crossroads-services {
+        display: grid;
+        gap: var(--space-4);
+    }
+
+    .crossroads-services > header {
+        display: grid;
+        gap: 0.6rem;
+    }
+
+    .crossroads-services > div {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+        gap: var(--space-3);
+    }
+
+    .crossroads-services article {
+        display: grid;
+        align-content: start;
+        min-width: 0;
+        padding: clamp(1.35rem, 2.5vw, 2.25rem);
+        border-top: 1px solid color-mix(in srgb, var(--thread) 45%, transparent);
+        background: color-mix(in srgb, var(--projection) 7%, var(--ink-deep));
+    }
+
+    .crossroads-services article > span {
+        margin-bottom: 0.65rem;
+        color: var(--thread);
+        font-size: var(--type-label);
+        font-weight: 850;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    @media (max-width: 760px) {
+        .crossroads-knowledge > header,
+        .crossroads-return-list {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .crossroads-return-list > li,
+        .crossroads-reveal-note,
+        .crossroads-pinning {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+</style>

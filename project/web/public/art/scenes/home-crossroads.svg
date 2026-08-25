@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 860" role="img" aria-labelledby="title desc">
+  <title id="title">Open Crossroads field case</title>
+  <desc id="desc">An open, worn field case viewed at an angle, packed with folded route sheets, a crescent pruning blade, herbarium samples, a mortar, glass vessels, cord and small ritual tools.</desc>
+  <defs>
+    <linearGradient id="leather" x1="115" y1="145" x2="969" y2="743" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#724251"/>
+      <stop offset=".38" stop-color="#422638"/>
+      <stop offset=".72" stop-color="#261827"/>
+      <stop offset="1" stop-color="#130f19"/>
+    </linearGradient>
+    <linearGradient id="leather-edge" x1="191" y1="612" x2="927" y2="813" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4c2937"/>
+      <stop offset=".5" stop-color="#241522"/>
+      <stop offset="1" stop-color="#0e0b12"/>
+    </linearGradient>
+    <linearGradient id="lining" x1="174" y1="245" x2="925" y2="665" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2f3243"/>
+      <stop offset=".55" stop-color="#1c2130"/>
+      <stop offset="1" stop-color="#111620"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="373" y1="289" x2="739" y2="592" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f0eadb"/>
+      <stop offset=".55" stop-color="#c9c1b1"/>
+      <stop offset="1" stop-color="#98948e"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#e2e6ec"/>
+      <stop offset=".2" stop-color="#8d98aa"/>
+      <stop offset=".5" stop-color="#344052"/>
+      <stop offset=".76" stop-color="#8b96a7"/>
+      <stop offset="1" stop-color="#202633"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d5fff7" stop-opacity=".88"/>
+      <stop offset=".24" stop-color="#5dd7c2" stop-opacity=".7"/>
+      <stop offset=".7" stop-color="#245862" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#0b222b" stop-opacity=".95"/>
+    </linearGradient>
+    <linearGradient id="bronze" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f4cb74"/>
+      <stop offset=".32" stop-color="#a9693a"/>
+      <stop offset=".7" stop-color="#593029"/>
+      <stop offset="1" stop-color="#24171b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- grounded cast shadow -->
+  <path d="m62 720 663-151 325 113-724 175Z" fill="#020409" opacity=".72"/>
+
+  <!-- lid behind the case -->
+  <path d="m103 223 621-141 237 208-676 152Z" fill="#090c13" opacity=".52"/>
+  <path d="m91 194 618-141 238 207-676 153Z" fill="url(#leather)" stroke="#080a11" stroke-width="7" stroke-linejoin="round"/>
+  <path d="m126 208 570-130 201 173-614 139Z" fill="#1a1c28" stroke="#0b0e16" stroke-width="5"/>
+  <path d="m151 218 535-121 170 144-569 129Z" fill="#272a3a"/>
+  <path d="m184 229 477-108 23 19-484 110Z" fill="#3e4051" opacity=".62"/>
+  <path d="m275 187 268-61 149 126-287 65Z" fill="#161a25" stroke="#0b0e16" stroke-width="4"/>
+  <path d="m309 193 224-51 113 95-239 54Z" fill="#202637"/>
+  <path d="m337 197 176-40 81 67-188 43Z" fill="#121722"/>
+  <!-- stitched lid channels -->
+  <path d="m120 198 160 139m79-204 165 140m91-181 171 143m76-104-625 142" fill="none" stroke="#b06f64" stroke-width="3" stroke-dasharray="12 10" opacity=".66"/>
+  <path d="m145 188 119-27m365-83 66-15m-397 272 112-26m358-81 72-16" stroke="#e6a16e" stroke-width="3" opacity=".52"/>
+  <!-- lid pockets -->
+  <path d="m153 242 164-37 70 59-174 39Z" fill="#202534" stroke="#090c13" stroke-width="4"/>
+  <path d="m173 248 132-30 48 39-139 32Z" fill="#303747"/>
+  <path d="m172 252 153 24" stroke="#9b5b61" stroke-width="5" opacity=".64"/>
+  <path d="m672 137 116-26 78 64-124 28Z" fill="#202534" stroke="#090c13" stroke-width="4"/>
+  <path d="m692 142 85-19 54 44-91 21Z" fill="#303747"/>
+  <path d="m697 151 102 16" stroke="#9b5b61" stroke-width="4" opacity=".62"/>
+
+  <!-- case body -->
+  <path d="m143 379 672-153 211 318-737 176Z" fill="#080b12" opacity=".58"/>
+  <path d="m118 348 674-153 211 317-738 176Z" fill="url(#leather)" stroke="#080a11" stroke-width="8" stroke-linejoin="round"/>
+  <path d="m154 357 617-140 177 273-669 159Z" fill="url(#lining)" stroke="#0b0e16" stroke-width="5"/>
+  <path d="m184 368 576-131 149 235-621 148Z" fill="#141924"/>
+  <path d="m265 688 738-176-20 92-682 158Z" fill="url(#leather-edge)" stroke="#080a11" stroke-width="7"/>
+  <path d="m302 710 670-158 2 31-662 153Z" fill="#17111a" opacity=".82"/>
+  <path d="m154 355 42 11m576-146 34-7m-534 434 46 18m613-166 37-9" stroke="#d1916a" stroke-width="4" opacity=".62"/>
+  <!-- stitched rim -->
+  <path d="m139 354 651-148 198 298-714 170" fill="none" stroke="#b56a62" stroke-width="4" stroke-dasharray="18 12"/>
+  <path d="m175 383 579-132 154 232-626 149" fill="none" stroke="#6f4050" stroke-width="5"/>
+
+  <!-- route papers, layered -->
+  <path d="m365 335 325-74 133 207-351 84Z" fill="#070a10" opacity=".45"/>
+  <path d="m337 314 326-74 133 207-352 84Z" fill="url(#paper)" stroke="#141720" stroke-width="5"/>
+  <path d="m361 330 285-65 115 177-305 73Z" fill="none" stroke="#77727a" stroke-width="2"/>
+  <path d="m390 346 221-50m-199 87 231-53m-208 91 238-55m-215 94 246-58" fill="none" stroke="#79747a" stroke-width="2" opacity=".32"/>
+  <path d="M405 477c55-84 105-85 148-16 38 60 82 45 132-46" fill="none" stroke="#4d7f78" stroke-width="5"/>
+  <path d="m407 477 17-28 21 13 18-31 25 14 27-35 25 17 27-28 23 12 27-35 26 15 24-25 20 12" fill="none" stroke="#63e6d2" stroke-width="3" opacity=".82"/>
+  <path d="m405 358 42-10 26 29-35 32-44-16Z" fill="#24283a" stroke="#77727a" stroke-width="3"/>
+  <path d="m413 366 23-5 15 16-19 17-24-8Z" fill="#7a66c9"/>
+  <path d="m690 397 38-9 24 25-31 29-40-14Z" fill="#2d443e" stroke="#77727a" stroke-width="3"/>
+  <path d="m699 404 20-5 12 13-16 15-21-8Z" fill="#74b99b"/>
+  <!-- folded translucent overlay -->
+  <path d="m525 275 138-31 133 203-152 36Z" fill="#d8d2c4" opacity=".36"/>
+  <path d="m525 275 119 208m19-239-19 239" fill="none" stroke="#7e7880" stroke-width="3" opacity=".58"/>
+
+  <!-- pruning sickle laid across lower case -->
+  <path d="M255 549c66-123 174-189 324-202-58 30-99 72-120 126-18 47-17 94 4 140-89-2-158-24-208-64Z" fill="#04070d" opacity=".5" transform="translate(12 16)"/>
+  <path d="M242 531c66-123 174-189 324-202-58 30-99 72-120 126-18 47-17 94 4 140-89-2-158-24-208-64Z" fill="url(#steel)" stroke="#080b12" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M276 520c54-88 131-141 231-159-45 36-76 77-91 124-11 34-12 66-4 94-56-7-101-27-136-59Z" fill="#d8d4c7" opacity=".9"/>
+  <path d="M305 508c40-60 94-99 162-119-29 33-49 68-60 107-7 25-9 48-5 68-39-10-71-29-97-56Z" fill="#f2eee5" opacity=".62"/>
+  <path d="M259 525c59-102 153-163 282-184" fill="none" stroke="#eef4f2" stroke-width="4" stroke-linecap="round" opacity=".72"/>
+  <path d="m438 586 63-15 31 43-47 43-62-25Z" fill="#2e2a58" stroke="#080b12" stroke-width="5"/>
+  <path d="m458 591 33-8 18 25-26 23-34-14Z" fill="#63e6d2"/>
+  <path d="m504 643 274-65 21 43-278 66Z" fill="#05070d" opacity=".45"/>
+  <path d="m492 624 273-65 20 42-277 66Z" fill="#402438" stroke="#080b12" stroke-width="5"/>
+  <path d="m520 626 220-53" stroke="#b9677f" stroke-width="5" opacity=".55"/>
+  <path d="m528 635 42-10m-3-8 13 18m11-24 13 18m11-24 13 18m11-24 13 18m11-24 13 18m11-24 13 18m11-24 13 18" fill="none" stroke="#c18d55" stroke-width="4"/>
+  <path d="m755 556 42-10 28 43-40 37-28-25Z" fill="url(#bronze)" stroke="#080b12" stroke-width="5"/>
+
+  <!-- herbarium compartment -->
+  <path d="m164 414 169-38 70 178-183 44Z" fill="#0b1018" stroke="#080b12" stroke-width="5"/>
+  <path d="m183 423 139-32 55 146-151 36Z" fill="#202735"/>
+  <path d="m244 534 9-95" stroke="#6ca389" stroke-width="8"/>
+  <path d="M249 470c-28-8-48-23-59-46 35-3 57 10 66 38Z" fill="#366b5c" stroke="#0b1517" stroke-width="3"/>
+  <path d="M250 483c30-24 58-30 84-18-10 29-36 41-80 36Z" fill="#4f8d73" stroke="#0b1517" stroke-width="3"/>
+  <path d="M247 512c-29-4-50-17-64-38 30-8 55 3 71 31Z" fill="#2d604f" stroke="#0b1517" stroke-width="3"/>
+  <path d="M251 521c28-19 51-21 70-8-14 23-36 31-67 25Z" fill="#5a9b79" stroke="#0b1517" stroke-width="3"/>
+  <path d="m196 545 147-35" stroke="#a9cbb7" stroke-width="3" opacity=".45"/>
+  <path d="m189 438 36-8m92-22 14-3m-135 153 34-8m94-22 19-5" stroke="#f2bd57" stroke-width="3" opacity=".44"/>
+
+  <!-- glass vessels and mortar -->
+  <path d="m802 354 81-19 35 107-88 21Z" fill="#04070d" opacity=".5"/>
+  <path d="m803 323 64-15 8 29-67 16Z" fill="#ccd4db" stroke="#080b12" stroke-width="4"/>
+  <path d="m815 349 58-14 30 92c-12 18-49 27-68 15Z" fill="url(#glass)" stroke="#080b12" stroke-width="5"/>
+  <path d="m822 379 60-14 19 57c-13 13-43 20-62 14Z" fill="#3db4a2" opacity=".72"/>
+  <path d="m825 359 11-3 16 65" stroke="#e1fff9" stroke-width="4" opacity=".68"/>
+  <path d="m823 305 39-9 8 14-42 10Z" fill="#8d603e" stroke="#080b12" stroke-width="4"/>
+
+  <path d="m728 278 114-26 58 44-25 66-106 25-58-51Z" fill="#05080d" opacity=".45"/>
+  <path d="m715 263 114-26 58 44-25 66-106 25-58-51Z" fill="url(#steel)" stroke="#080b12" stroke-width="5"/>
+  <path d="m732 275 90-20 40 29-15 40-82 19-44-32Z" fill="#343d50"/>
+  <path d="m749 283 62-14 26 18-10 20-55 13-31-21Z" fill="#848fa2"/>
+  <path d="m788 228 104 68" stroke="#573143" stroke-width="16"/>
+  <path d="m789 228 101 66" stroke="#b16878" stroke-width="5" opacity=".62"/>
+  <path d="m779 218 27-7 19 25-18 25-31-13Z" fill="url(#bronze)" stroke="#080b12" stroke-width="4"/>
+
+  <!-- cord, seal kit, fasteners -->
+  <path d="M844 491c35-32 74-40 117-24 33 12 47 36 41 71-7 37-34 63-81 76-39 11-70 3-91-23 27 5 54 2 82-10 30-13 47-31 49-54 1-17-8-28-27-34-29-9-59-3-90 17Z" fill="none" stroke="#a76e4f" stroke-width="12"/>
+  <path d="M846 490c34-26 69-31 103-17" fill="none" stroke="#e0a45f" stroke-width="4" opacity=".64"/>
+  <path d="m843 559 76-18 46 31-24 53-75 18-48-35Z" fill="#1a202d" stroke="#080b12" stroke-width="5"/>
+  <path d="m862 567 45-11 30 20-15 30-45 11-30-21Z" fill="#5b3c31"/>
+  <path d="m879 574 18-4 13 10-7 13-19 5-12-10Z" fill="#f2bd57"/>
+  <path d="m314 602 21-5 12 14-16 15-23-8Zm31-8 18-4 12 12-14 14-20-7Zm28-7 19-4 11 12-14 14-21-8Z" fill="#aa7545" stroke="#080b12" stroke-width="3"/>
+
+  <!-- wear, repaired seams and quiet detail -->
+  <path d="m151 318 39-9m725-165 33-8M130 610l63-15m712-170 58-14" stroke="#f2bd57" stroke-width="3" opacity=".48"/>
+  <path d="m315 277 42-10m15-3 31-7m472 207 35-8m-614 206 51-12m17-4 29-7" stroke="#d09a73" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+  <path d="m239 710 29-7 12 12-20 15-29-8Z" fill="#151923" stroke="#63e6d2" stroke-width="3"/>
+  <path d="m247 715 13-3 5 5-9 6-13-4Z" fill="#b5fff2"/>
+  <path d="m739 677 27-6m17-4 44-11m-610 69 37-9" stroke="#8d7be5" stroke-width="3" stroke-linecap="round"/>
+</svg>

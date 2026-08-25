@@ -1,0 +1,417 @@
+---
+import BuildUnlockCard from '../../../components/builds/BuildUnlockCard.astro';
+import BuildVariantPanel from '../../../components/builds/BuildVariantPanel.astro';
+import ProgressionTable from '../../../components/ProgressionTable.astro';
+import PreparationChoice from '../../../components/builds/PreparationChoice.astro';
+import SubjectArtwork from '../../../components/SubjectArtwork.astro';
+import ContentLayout from '../../../layouts/ContentLayout.astro';
+import { BUILD_GOALS, parseBuildVariants } from '../../../lib/build-guide';
+import {
+    aspectGuideSlug,
+    getFieldBySuffix,
+    getPublication,
+    getRecord,
+    getRecordName,
+    recordHref,
+    type JsonValue,
+    type PublicationRecord,
+} from '../../../lib/publication';
+import { isObject, isReference } from '../../../lib/presentation';
+import { progressionTable } from '../../../lib/progression';
+import { getRecordSubjectArt } from '../../../lib/subject-art';
+
+type Props = {
+    guide: PublicationRecord;
+};
+
+export function getStaticPaths() {
+    return getPublication()
+        .records.filter((record) => record.recordType === 'editorial/aspect-guide')
+        .map((guide) => ({ params: { aspect: aspectGuideSlug(guide) }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+const publication = getPublication();
+const name = getRecordName(guide);
+const aspectReference = { id: guide.id, recordType: 'mechanics/weapon-aspect' };
+const aspectRecord = getRecord(`${aspectReference.recordType}:${aspectReference.id}`);
+if (!aspectRecord) throw new Error(`Aspect guide has no published aspect record: ${guide.id}`);
+const aspectArt = getRecordSubjectArt(aspectRecord);
+const aspectDescription = getFieldBySuffix<string>(aspectRecord, 'description');
+const variants = parseBuildVariants(getFieldBySuffix<JsonValue>(guide, 'build-variants'));
+const preparationSignatures = BUILD_GOALS.map((goal) =>
+    JSON.stringify({
+        openingKeepsake: variants[goal].keepsakeRoute.find((step) => step.stage === 'opening'),
+        arcanaLoadout: variants[goal].arcanaLoadout,
+        familiarHex: variants[goal].familiarHex,
+    })
+);
+const sharedPreparation = preparationSignatures[0] === preparationSignatures[1];
+const preparationGoals = sharedPreparation ? (['strongest'] as const) : BUILD_GOALS;
+
+const weaponGuide = publication.records.find((record) => {
+    if (record.recordType !== 'editorial/weapon-guide') return false;
+    const subjects = getFieldBySuffix<JsonValue>(record, 'subject-aspects');
+    return (
+        isObject(subjects) &&
+        Array.isArray(subjects.aspects) &&
+        subjects.aspects.some((value) => isReference(value) && value.id === guide.id)
+    );
+});
+const weaponName = weaponGuide ? getRecordName(weaponGuide) : 'weapon';
+
+const aspectIncantation = getRecord('mechanics/incantation:WorldUpgradeWeaponUpgradeSystem');
+if (!aspectIncantation) throw new Error('Aspect pages require the published Aspects of Night and Darkness record.');
+const baseAspectIds = new Set([
+    'BaseStaffAspect',
+    'BaseSuitAspect',
+    'DaggerBackstabAspect',
+    'TorchSpecialDurationAspect',
+    'AxeRecoveryAspect',
+    'LobAmmoBoostAspect',
+]);
+const hiddenAspectSpeakers: Readonly<Record<string, string>> = {
+    StaffRaiseDeadAspect: 'Circe',
+    DaggerTripleAspect: 'Artemis',
+    TorchAutofireAspect: 'Moros',
+    AxeRallyAspect: 'Charon',
+    LobGunAspect: 'Medea',
+    SuitComboAspect: 'Selene',
+};
+const rankCosts = getFieldBySuffix<JsonValue>(aspectRecord, 'rank-costs');
+const rankEffects = getFieldBySuffix<JsonValue>(aspectRecord, 'rank-effects');
+const aspectProgression = rankCosts ? progressionTable('rank-costs', rankCosts, rankEffects) : undefined;
+const rankOne = Array.isArray(rankCosts) ? rankCosts.find((value) => isObject(value) && value.rank === 1) : undefined;
+const rankOneCosts =
+    isObject(rankOne) && Array.isArray(rankOne.costs)
+        ? rankOne.costs.flatMap((value) => {
+              if (!isObject(value) || typeof value.amount !== 'number' || !isReference(value.resource)) return [];
+              return [{ amount: value.amount, resource: value.resource }];
+          })
+        : [];
+
+const shape = getFieldBySuffix<JsonValue>(guide, 'strengths-weaknesses');
+const difficulty = isObject(shape) && typeof shape.beginnerDifficulty === 'number' ? shape.beginnerDifficulty : 0;
+const difficultyLabel =
+    difficulty <= 2 ? 'Easy to learn' : difficulty === 3 ? 'Moderate learning demand' : 'High learning demand';
+const buildDescription = `${name} ${weaponName} build in Hades II. Compare Strongest and Safest plans, with Boons, Arcana, Hammers and Keepsakes.`;
+const modeDescriptions = {
+    setup: 'Prepare the aspect, starting Keepsake, Arcana, Familiar, Hex, and ranks before choosing a run goal.',
+    strongest: 'Highest practical damage while exploiting the aspect mechanic under high-Fear conditions.',
+    safest: 'Highest clear reliability under high Fear without giving up the aspect’s damage mechanic.',
+} as const;
+---
+
+<ContentLayout
+    title={`${name} build for ${weaponName}`}
+    description={buildDescription}
+    steamBuildId={publication.source.steamBuildId}
+    breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Knowledge', href: '/knowledge/' },
+        { name: 'Aspect builds', href: '/knowledge/builds/' },
+        { name: `${name} build`, href: recordHref(guide) },
+    ]}
+    surface='build-detail'>
+    <header class='build-detail-hero build-detail-hero-v2 build-detail-hero-modes'>
+        <div class='build-breadcrumb'>
+            <a href='/knowledge/builds/'>Aspect builds</a>
+            <i class='ph ph-caret-right' aria-hidden='true'></i>
+            <span>{weaponName}</span>
+        </div>
+        <div class='build-title-line'>
+            <div class='build-title-copy'>
+                <h1>{name}</h1>
+                <p>Choose the goal for this run. Every mode is a complete, aspect-specific build.</p>
+            </div>
+        </div>
+        <div class='build-hero-instrument'>
+            <SubjectArtwork subject={aspectArt} size='hero' />
+            {difficulty > 0 && <strong class='build-difficulty'>{difficultyLabel}</strong>}
+        </div>
+        <section class='build-view-control' aria-labelledby='build-view-title'>
+            <div class='build-view-copy'>
+                <h2 id='build-view-title'>Choose the run goal</h2>
+                <p id='build-view-description' data-build-view-description>{modeDescriptions.setup}</p>
+            </div>
+            <nav class='build-view-tabs' aria-label='Build goal' aria-describedby='build-view-description'>
+                <a
+                    id='setup-tab'
+                    href='#setup-build'
+                    aria-controls='setup-build'
+                    data-build-description={modeDescriptions.setup}
+                    data-build-view-button='setup'>
+                    <i class='ph ph-sliders-horizontal' aria-hidden='true'></i>
+                    <span><strong>Setup</strong><small>Before the run</small></span>
+                </a>
+                <a
+                    id='strongest-tab'
+                    href='?view=strongest#strongest-breakpoints'
+                    aria-controls='strongest-build'
+                    data-build-description={modeDescriptions.strongest}
+                    data-build-view-button='strongest'>
+                    <i class='ph ph-lightning' aria-hidden='true'></i>
+                    <span><strong>Strongest</strong><small>Practical damage ceiling</small></span>
+                </a>
+                <a
+                    id='safest-tab'
+                    href='?view=safest#safest-breakpoints'
+                    aria-controls='safest-build'
+                    data-build-description={modeDescriptions.safest}
+                    data-build-view-button='safest'>
+                    <i class='ph ph-shield-check' aria-hidden='true'></i>
+                    <span><strong>Safest</strong><small>Clear reliability</small></span>
+                </a>
+            </nav>
+        </section>
+    </header>
+
+    <section id='setup-build' class='build-setup-panel' data-build-panel='setup' aria-labelledby='setup-tab'>
+        <header class='build-setup-intro'>
+            <div>
+                <span>Pre-run preparation</span>
+                <h2>Understand the aspect before funding a plan</h2>
+                {aspectDescription && <p>{aspectDescription}</p>}
+            </div>
+            <p>
+                Set your ranks and pre-run tools here. Then choose Strongest or Safest for the combat decisions you make
+                during the run.
+            </p>
+        </header>
+
+        <BuildUnlockCard
+            hiddenAspectSpeaker={hiddenAspectSpeakers[guide.id]}
+            isBaseAspect={baseAspectIds.has(guide.id)}
+            rankOneCosts={rankOneCosts}
+            aspectIncantation={aspectIncantation}
+        />
+
+        <section
+            id='setup-loadouts'
+            class:list={[
+                'build-section',
+                'build-setup-loadouts',
+                { 'build-setup-loadouts--shared': sharedPreparation },
+            ]}>
+            <header>
+                <div>
+                    <span>Choose a goal</span><h2>Leave the Crossroads with a complete setup</h2><p>
+                        {
+                            sharedPreparation
+                                ? 'Both run goals use the same pre-run equipment. Prepare it once, then choose your combat plan.'
+                                : 'Compare the opening Keepsake, Arcana, Familiar, and Hex for each run goal.'
+                        }
+                    </p>
+                </div>
+            </header>
+            <div>
+                {
+                    preparationGoals.map((goal) => {
+                        const variant = variants[goal];
+                        const label = goal === 'strongest' ? 'Strongest' : 'Safest';
+                        const openingKeepsake = variant.keepsakeRoute.find((step) => step.stage === 'opening');
+                        return (
+                            <article>
+                                <header>
+                                    <>
+                                        <span>{sharedPreparation ? 'Shared preparation' : `${label} preparation`}</span>
+                                        <nav
+                                            aria-label={`${sharedPreparation ? 'Shared' : label} preparation run plans`}>
+                                            {(sharedPreparation ? BUILD_GOALS : [goal]).map((plan) => (
+                                                <a
+                                                    href={`?view=${plan}#${plan}-breakpoints`}
+                                                    data-build-plan-link={plan}>
+                                                    {plan === 'strongest' ? 'Strongest plan' : 'Safest plan'}
+                                                </a>
+                                            ))}
+                                        </nav>
+                                    </>
+                                </header>
+                                {openingKeepsake && (
+                                    <section>
+                                        <h3>Start with</h3>
+                                        <PreparationChoice
+                                            reference={openingKeepsake.reference}
+                                            reason={openingKeepsake.reason}
+                                        />
+                                        <small>{openingKeepsake.switchCondition}</small>
+                                    </section>
+                                )}
+                                <section>
+                                    <h3>{variant.arcanaLoadout.graspCost} Grasp Arcana</h3>
+                                    <ul>
+                                        {variant.arcanaLoadout.cards.map((item) => (
+                                            <li>
+                                                <PreparationChoice reference={item.reference} reason={item.reason} />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <p>{variant.arcanaLoadout.constraint}</p>
+                                </section>
+                                <section>
+                                    <h3>Familiar and Hex</h3>
+                                    <ul>
+                                        {variant.familiarHex.map((item) => (
+                                            <li>
+                                                <PreparationChoice reference={item.reference} reason={item.reason} />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </section>
+                            </article>
+                        );
+                    })
+                }
+            </div>
+        </section>
+
+        {
+            aspectProgression && (
+                <section id='setup-aspect-ranks' class='build-section build-aspect-progression'>
+                    <header>
+                        <div>
+                            <>
+                                <h2>Aspect rank progression</h2>
+                                <p>Each rank lists its forge cost and the exact value it gives this Aspect.</p>
+                            </>
+                        </div>
+                    </header>
+                    <ProgressionTable progression={aspectProgression} />
+                </section>
+            )
+        }
+    </section>
+
+    {BUILD_GOALS.map((goal) => <BuildVariantPanel variant={variants[goal]} />)}
+
+    <script>
+        import {
+            captureInitialFragment,
+            fragmentTarget,
+            queueFragmentScroll,
+            restoreInitialFragment,
+        } from '../../../scripts/view-fragment-navigation';
+
+        type BuildView = 'setup' | 'strongest' | 'safest';
+        const initialFragment = captureInitialFragment();
+        const buildViews: BuildView[] = ['setup', 'strongest', 'safest'];
+        const tablist = document.querySelector<HTMLElement>('.build-view-tabs');
+        const buttons = [...document.querySelectorAll<HTMLAnchorElement>('[data-build-view-button]')];
+        const planLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-build-plan-link]')];
+        const panels = [...document.querySelectorAll<HTMLElement>('[data-build-panel]')];
+        const description = document.querySelector<HTMLElement>('[data-build-view-description]');
+        const requirementCards = [...document.querySelectorAll<HTMLElement>('.rare-target-popover[popover]')];
+
+        tablist?.setAttribute('role', 'tablist');
+        buttons.forEach((button) => button.setAttribute('role', 'tab'));
+        panels.forEach((panel) => panel.setAttribute('role', 'tabpanel'));
+
+        const closeRequirementCards = (): void => {
+            requirementCards.forEach((card) => {
+                if (card.matches(':popover-open')) card.hidePopover();
+            });
+        };
+
+        const viewFromHash = (hash = window.location.hash): BuildView | null => {
+            const id = fragmentTarget(hash)?.id ?? '';
+            return buildViews.find((view) => id === `${view}-build` || id.startsWith(`${view}-`)) ?? null;
+        };
+
+        const correspondingHash = (view: BuildView): string => {
+            const current = fragmentTarget(window.location.hash)?.id ?? '';
+            const sourceView = buildViews.find((candidate) => current.startsWith(`${candidate}-`));
+            if (!sourceView || sourceView === 'setup' || view === 'setup') return '';
+            const candidate = `${view}-${current.slice(sourceView.length + 1)}`;
+            return document.getElementById(candidate) ? `#${candidate}` : '';
+        };
+
+        const setBuildView = (
+            view: BuildView,
+            options: { updateUrl?: boolean; replace?: boolean; focus?: boolean } = {}
+        ): void => {
+            closeRequirementCards();
+            buttons.forEach((button) => {
+                const selected = button.dataset.buildViewButton === view;
+                button.setAttribute('aria-selected', String(selected));
+                button.tabIndex = selected ? 0 : -1;
+                if (selected && options.focus) button.focus();
+            });
+            panels.forEach((panel) => {
+                panel.hidden = panel.dataset.buildPanel !== view;
+            });
+            document.dispatchEvent(new Event('balanced-grid:change'));
+            if (description) {
+                description.textContent =
+                    buttons.find((button) => button.dataset.buildViewButton === view)?.dataset.buildDescription ?? '';
+            }
+            if (options.updateUrl) {
+                const url = new URL(window.location.href);
+                if (view === 'setup') url.searchParams.delete('view');
+                else url.searchParams.set('view', view);
+                url.hash = correspondingHash(view);
+                history[options.replace ? 'replaceState' : 'pushState'](null, '', url);
+            }
+        };
+
+        buttons.forEach((button, index) => {
+            button.addEventListener('click', (event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                const view = button.dataset.buildViewButton;
+                if (view === 'setup' || view === 'strongest' || view === 'safest') {
+                    setBuildView(view, { updateUrl: true });
+                    queueFragmentScroll();
+                }
+            });
+            button.addEventListener('keydown', (event) => {
+                let target: number;
+                if (event.key === 'ArrowRight' || event.key === 'ArrowDown') target = (index + 1) % buttons.length;
+                else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp')
+                    target = (index - 1 + buttons.length) % buttons.length;
+                else if (event.key === 'Home') target = 0;
+                else if (event.key === 'End') target = buttons.length - 1;
+                else return;
+                event.preventDefault();
+                const view = buttons[target]?.dataset.buildViewButton;
+                if (view === 'setup' || view === 'strongest' || view === 'safest') {
+                    setBuildView(view, { updateUrl: true, replace: true, focus: true });
+                    queueFragmentScroll();
+                }
+            });
+        });
+
+        planLinks.forEach((link) => {
+            link.addEventListener('click', (event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                const view = link.dataset.buildPlanLink;
+                if (view !== 'strongest' && view !== 'safest') return;
+                event.preventDefault();
+                history.pushState(null, '', link.href);
+                setBuildView(view);
+                queueFragmentScroll(`#${view}-breakpoints`);
+            });
+        });
+
+        const restoreFromUrl = (hash = window.location.hash, scroll = true): void => {
+            const requested = new URL(window.location.href).searchParams.get('view');
+            const view =
+                viewFromHash(hash) ?? (requested === 'safest' || requested === 'strongest' ? requested : 'setup');
+            setBuildView(view);
+            if (scroll) queueFragmentScroll(hash);
+        };
+
+        document.querySelectorAll<HTMLAnchorElement>('.build-jump a').forEach((link) => {
+            link.addEventListener('click', (event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                if (link.hash !== window.location.hash) history.pushState(null, '', link.href);
+                restoreFromUrl(link.hash);
+            });
+        });
+
+        restoreFromUrl(initialFragment, false);
+        restoreInitialFragment(initialFragment);
+        window.addEventListener('popstate', () => restoreFromUrl());
+        window.addEventListener('hashchange', () => restoreFromUrl());
+    </script>
+</ContentLayout>

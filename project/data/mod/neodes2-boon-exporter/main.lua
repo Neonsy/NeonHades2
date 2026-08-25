@@ -1,7 +1,7 @@
 ---@meta _
 ---@diagnostic disable
 
-local EXPORTER_VERSION = "0.6.6"
+local EXPORTER_VERSION = "0.8.0"
 local MAX_COPY_DEPTH = 32
 local MAX_COPY_NODES = 250000
 
@@ -13,6 +13,7 @@ local sjson = rom.mods["SGG_Modding-SJSON"]
 local game = rom.game
 local config = import "config.lua"
 local create_arcana_exporter = import "arcana.lua"
+local create_evidence_exporter = import "evidence.lua"
 local create_guide_exporter = import "guide.lua"
 local create_loadout_exporter = import "loadouts.lua"
 local create_weapon_exporter = import "weapons.lua"
@@ -526,8 +527,13 @@ end
 local function collect_loot_sources(localization)
 	local loot_sources = {}
 	local ownership = {}
+	local supported_nonstandard_sources = {
+		HermesUpgrade = true,
+		TrialUpgrade = true,
+	}
 	for loot_id, loot_data in pairs(game.LootData) do
-		if type(loot_id) == "string" and type(loot_data) == "table" and loot_data.GodLoot == true then
+		if type(loot_id) == "string" and type(loot_data) == "table"
+			and (loot_data.GodLoot == true or supported_nonstandard_sources[loot_id] == true) then
 			local boon_set = {}
 			add_trait_list(boon_set, loot_data.WeaponUpgrades)
 			add_trait_list(boon_set, loot_data.Traits)
@@ -803,6 +809,10 @@ local function resolve_static_base_value(base_type, base_name, base_property, in
 		local hero_data = game.HeroData[base_name]
 		value = hero_data and hero_data[base_property]
 		runtime_path = "HeroData." .. base_name .. "." .. tostring(base_property)
+	elseif base_type == "ConsumableData" then
+		local consumable = game.ConsumableData[base_name]
+		value = consumable and consumable[base_property]
+		runtime_path = "ConsumableData." .. base_name .. "." .. tostring(base_property)
 	elseif base_type == "MetaUpgradeRequirement" then
 		local card = game.MetaUpgradeCardData[base_name]
 		local requirements = card and card.AutoEquipRequirements
@@ -940,11 +950,11 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	end
 
 	local format = instruction.Format
-	local terminal_string = format == "SlottedBoon"
+	local terminal_string = format == "SlottedBoon" or format == "FinalBoss"
 	if format ~= nil and not terminal_string then
 		resolved_value = require_numeric(resolved_value, "Sample value " .. extract_as)
 	end
-	if format == nil or format == "TotalTargets" then
+	if format == nil or format == "MaxHealth" or format == "MaxMana" or format == "TotalTargets" then
 		if format == "TotalTargets" and instruction.External == true
 			and instruction.BaseType == "ProjectileBase" and instruction.BaseProperty == "NumJumps" then
 			expression = "(" .. expression .. " + 1)"
@@ -987,6 +997,9 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 		expression = "((1 - " .. expression .. ") * 100)"
 		if not contextual then resolved_value = (1 - resolved_value) * 100 end
 	elseif format == "PercentReciprocalDelta" then
+		if not contextual and require_numeric(resolved_value, "Sample value " .. extract_as) <= 0 then
+			error("PercentReciprocalDelta source must remain positive")
+		end
 		expression = "((1 / " .. expression .. ") * 100 - 100)"
 		if not contextual then resolved_value = (1 / resolved_value) * 100 - 100 end
 	elseif format == "TimesOneHundredPercent" then
@@ -1001,9 +1014,17 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 	elseif format == "FlatHeal" then
 		add_context_input("HealingMultiplier")
 		expression = "(" .. expression .. " * HealingMultiplier)"
+	elseif format == "FlatHealBonusOnly" then
+		add_context_input("HealingMultiplier")
+		expression = "(" .. expression .. " * max(HealingMultiplier, 1))"
 	elseif format == "PercentHeal" then
 		add_context_input("HealingMultiplier")
 		expression = "(" .. expression .. " * HealingMultiplier * 100)"
+	elseif format == "MaxHealthIgnoreCap" then
+		add_context_input("ExpectedMaxHealth")
+		add_context_input("MaxHealthMultiplier")
+		expression = "(round((ExpectedMaxHealth + " .. expression
+			.. ") * MaxHealthMultiplier, 0) - round(ExpectedMaxHealth * MaxHealthMultiplier, 0))"
 	elseif format == "UniqueGodPercentDelta" then
 		add_context_input("UniqueGodCount")
 		expression = "((" .. expression .. " - 1) * UniqueGodCount * 100)"
@@ -1037,8 +1058,8 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 		end
 		expression = "((" .. expression .. " / " .. fuse_expression .. ") * " .. duration_expression .. ")"
 		if not contextual then resolved_value = resolved_value / fuse * duration end
-	elseif format == "SlottedBoon" then
-		-- The game formats this from the current slot after extraction.
+	elseif format == "SlottedBoon" or format == "FinalBoss" then
+		-- The game supplies this label from the current slot or route.
 	elseif format == "Rarity" then
 		resolved_value = "{$Keywords." .. game.GetRarityKey(resolved_value) .. "}"
 		expression = "rarityKeyword(value)"
@@ -1057,6 +1078,8 @@ local function build_sample_resolution(raw_value, instruction, extract_as, initi
 		expression = "TotalDamageTaken"
 	elseif format == "TotalHeroTraitValuePercent" then
 		expression = "(" .. expression .. " * 100)"
+	elseif format == "TotalHeroTraitValue" or format == "ResourceAmount" then
+		-- These values come directly from the current hero or resource state.
 	else
 		error("Unsupported sample format " .. tostring(format))
 	end
@@ -1117,6 +1140,30 @@ local function build_reported_source(reported, source_key)
 	local observations = reported[source_key]
 	if type(observations) ~= "table" or #observations == 0 then
 		error("Sample source key " .. tostring(source_key) .. " was not resolved")
+	end
+	local scoped_observations = {}
+	local unscoped_observations = {}
+	for _, observation in ipairs(observations) do
+		if type(observation.selectorValue) == "string" and observation.selectorValue ~= "" then
+			table.insert(scoped_observations, observation)
+		else
+			table.insert(unscoped_observations, observation)
+		end
+	end
+	local unscoped_value = unscoped_observations[1] and unscoped_observations[1].encoded or nil
+	local unscoped_values_match = unscoped_value ~= nil
+	for index = 2, #unscoped_observations do
+		if unscoped_observations[index].encoded ~= unscoped_value then
+			unscoped_values_match = false
+			break
+		end
+	end
+	if unscoped_values_match then
+		-- A top-level ReportValues entry is the authored tooltip value. Expanded
+		-- weapon timing properties may store the same effect reciprocally.
+		observations = unscoped_observations
+	elseif #scoped_observations > 0 then
+		observations = scoped_observations
 	end
 	table.sort(observations, function(left, right)
 		return bytewise_less(left.runtimePath, right.runtimePath)
@@ -1274,9 +1321,21 @@ local function extract_sample_values(processed, trait_id)
 			source = { kind = "context-value", inputId = "TotalDamageTaken" }
 			source_context_inputs.TotalDamageTaken = true
 			source_expression = "TotalDamageTaken"
-		elseif instruction.Format == "TotalHeroTraitValuePercent" then
+		elseif instruction.Format == "TotalHeroTraitValuePercent" or instruction.Format == "TotalHeroTraitValue" then
 			local input_id = "HeroTraitValue:" .. tostring(instruction.Key)
-			raw_value = 1
+			raw_value = 0
+			source = { kind = "context-value", inputId = input_id }
+			source_context_inputs[input_id] = true
+			source_expression = input_id
+		elseif instruction.Format == "ResourceAmount" then
+			local input_id = "ResourceAmount:" .. tostring(instruction.Key)
+			raw_value = 0
+			source = { kind = "context-value", inputId = input_id }
+			source_context_inputs[input_id] = true
+			source_expression = input_id
+		elseif instruction.Format == "FinalBoss" then
+			local input_id = "FinalBoss"
+			raw_value = "Blank"
 			source = { kind = "context-value", inputId = input_id }
 			source_context_inputs[input_id] = true
 			source_expression = input_id
@@ -1403,7 +1462,12 @@ local function collect_samples(trait_id, trait, options)
 		for _, endpoint in ipairs(rarity_endpoints(rarity_levels[rarity])) do
 			local maximum_level = options.maximum_level or (trait.BlockStacking == true and 1 or 5)
 			for level = 1, maximum_level do
-				table.insert(samples, sample_trait(trait_id, trait, rarity, endpoint.endpoint, endpoint.multiplier, level))
+				local sample = sample_trait(trait_id, trait, rarity, endpoint.endpoint, endpoint.multiplier, level)
+				if sample.result.status == "error"
+					and string.find(sample.result.message, "PercentReciprocalDelta source must remain positive", 1, true) ~= nil then
+					break
+				end
+				table.insert(samples, sample)
 			end
 		end
 		end
@@ -1509,6 +1573,19 @@ local guide_exporter = create_guide_exporter({
 	sorted_keys = sorted_keys,
 	sorted_set_values = sorted_set_values,
 	bytewise_less = bytewise_less,
+	collect_samples = collect_samples,
+})
+
+local evidence_exporter = create_evidence_exporter({
+	game = game,
+	config = config,
+	exporter_version = EXPORTER_VERSION,
+	json_array = json_array,
+	to_json = to_json,
+	sha256 = sha256,
+	write_new_file = write_new_file,
+	finalize_file = finalize_file,
+	log_info = function(message) rom.log.info(message) end,
 })
 
 local function create_report(package_version, localization)
@@ -1571,6 +1648,14 @@ local function write_finalized_report(directory, report, manifest_schema, comple
 	return report_path
 end
 
+local function run_stage(label, operation)
+	local started = os.clock()
+	rom.log.info("NeonHades2 export: " .. label .. " started")
+	local result = operation()
+	rom.log.info(string.format("NeonHades2 export: %s complete (%.1f s)", label, os.clock() - started))
+	return result
+end
+
 local function export_data()
 	validate_config()
 	local package_version = read_file(rom.path.combine(rom.paths.Content(), "packagever")):match("^%s*(.-)%s*$")
@@ -1589,48 +1674,65 @@ local function export_data()
 	rom.path.create_directory(guide_directory)
 	local weapon_directory = rom.path.combine(run_directory, "weapons")
 	rom.path.create_directory(weapon_directory)
-	local localization = load_localization()
-	local boon_report = create_report(package_version, localization)
-	local arcana_report = arcana_exporter.create_report(package_version, localization)
-	local loadout_report = loadout_exporter.create_report(package_version, localization)
-	local guide_report = guide_exporter.create_report(package_version, localization)
-	local weapon_report = weapon_exporter.create_report(package_version, localization)
-	local arcana_report_path = write_finalized_report(
-		arcana_directory,
-		arcana_report,
-		"neodes2-arcana-runtime-manifest-1",
-		"neodes2-arcana-runtime-completion-1"
-	)
-	local loadout_report_path = write_finalized_report(
-		loadout_directory,
-		loadout_report,
-		"neodes2-loadout-runtime-manifest-1",
-		"neodes2-loadout-runtime-completion-1"
-	)
-	local guide_report_path = write_finalized_report(
-		guide_directory,
-		guide_report,
-		"neodes2-guide-runtime-manifest-1",
-		"neodes2-guide-runtime-completion-1"
-	)
-	local weapon_report_path = write_finalized_report(
-		weapon_directory,
-		weapon_report,
-		"neodes2-weapon-runtime-manifest-1",
-		"neodes2-weapon-runtime-completion-1"
-	)
-	local boon_report_path = write_finalized_report(
-		run_directory,
-		boon_report,
-		"neodes2-boon-runtime-manifest-1",
-		"neodes2-boon-runtime-completion-1"
-	)
+	local evidence_directory = rom.path.combine(run_directory, "evidence")
+	rom.path.create_directory(evidence_directory)
+	rom.log.info("NeonHades2 export: run started (exporter " .. EXPORTER_VERSION .. ")")
+	local localization = run_stage("localization", load_localization)
+	local boon_report = run_stage("boon report", function() return create_report(package_version, localization) end)
+	local arcana_report = run_stage("Arcana report", function() return arcana_exporter.create_report(package_version, localization) end)
+	local loadout_report = run_stage("loadout report", function() return loadout_exporter.create_report(package_version, localization) end)
+	local guide_report = run_stage("guide report", function() return guide_exporter.create_report(package_version, localization) end)
+	local weapon_report = run_stage("weapon report", function() return weapon_exporter.create_report(package_version, localization) end)
+	local evidence_manifest_path = run_stage("private evidence archive", function()
+		return evidence_exporter.write_archive(evidence_directory, package_version)
+	end)
+	local arcana_report_path = run_stage("write Arcana report", function()
+		return write_finalized_report(
+			arcana_directory,
+			arcana_report,
+			"neodes2-arcana-runtime-manifest-1",
+			"neodes2-arcana-runtime-completion-1"
+		)
+	end)
+	local loadout_report_path = run_stage("write loadout report", function()
+		return write_finalized_report(
+			loadout_directory,
+			loadout_report,
+			"neodes2-loadout-runtime-manifest-1",
+			"neodes2-loadout-runtime-completion-1"
+		)
+	end)
+	local guide_report_path = run_stage("write guide report", function()
+		return write_finalized_report(
+			guide_directory,
+			guide_report,
+			"neodes2-guide-runtime-manifest-1",
+			"neodes2-guide-runtime-completion-1"
+		)
+	end)
+	local weapon_report_path = run_stage("write weapon report", function()
+		return write_finalized_report(
+			weapon_directory,
+			weapon_report,
+			"neodes2-weapon-runtime-manifest-1",
+			"neodes2-weapon-runtime-completion-1"
+		)
+	end)
+	local boon_report_path = run_stage("write boon report", function()
+		return write_finalized_report(
+			run_directory,
+			boon_report,
+			"neodes2-boon-runtime-manifest-1",
+			"neodes2-boon-runtime-completion-1"
+		)
+	end)
 	rom.log.info(
 		"NeonHades2 data export complete: boons=" .. boon_report_path
 			.. " weapons=" .. weapon_report_path
 			.. " arcana=" .. arcana_report_path
 			.. " loadouts=" .. loadout_report_path
 			.. " guide=" .. guide_report_path
+			.. " evidence=" .. evidence_manifest_path
 	)
 end
 

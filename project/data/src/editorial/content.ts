@@ -1,6 +1,20 @@
-import type { AspectProfile, EditorialReference, PageDefinition, ProgressionStageSource, TierProfile } from "./types.js";
+import type {
+  AspectBuildPlan,
+  AspectProfile,
+  EditorialReference,
+  PageDefinition,
+  ProgressionStageSource,
+  TierProfile,
+} from "./types.js";
+import {
+  safestAspectPlans,
+  type SafestAspectPlanSource,
+} from "./safest-aspect-plans.js";
 
-const reference = (recordType: string, id: string): EditorialReference => ({ recordType, id });
+const reference = (recordType: string, id: string): EditorialReference => ({
+  recordType,
+  id,
+});
 
 export const progressionStages = [
   {
@@ -14,8 +28,10 @@ export const progressionStages = [
       "Omega moves spend Magick, so keep a normal move available when regeneration is not established.",
       "A failed night still advances the save through resources, conversations, and unlocks.",
     ],
-    nextObjective: "Choose one route and reach its final encounter with a stable defensive loadout.",
-    reason: "One complete route proves the core combat loop and unlocks more reliable progression choices without splitting early resources.",
+    nextObjective:
+      "Choose one route and reach its final encounter with a stable defensive loadout.",
+    reason:
+      "One complete route proves the core combat loop and unlocks more reliable progression choices without splitting early resources.",
     actionSequence: [
       "Spend Ashes on Grasp and equip Persistence, The Sorceress, and Death as soon as their capacity and reveal requirements allow.",
       "Use the Witch's Staff with the Aspect of Melinoe while learning Cast control, normal Attack spacing, and safe Omega timing.",
@@ -45,14 +61,73 @@ export const progressionStages = [
       reference("mechanics/hex", "TimeSlow"),
     ],
     priorityReferences: [
-      { order: 1, timing: "now", required: true, reference: reference("mechanics/arcana-card", "BonusHealth"), reason: "Persistence gives immediate maximum Life for early route learning." },
-      { order: 2, timing: "now", required: true, reference: reference("mechanics/arcana-card", "ChanneledCast"), reason: "The Sorceress makes the basic Omega sequence safer while the player learns enemy timing." },
-      { order: 3, timing: "when-available", required: true, reference: reference("mechanics/arcana-card", "LastStand"), reason: "Death protects a strong attempt while the first route and guardian patterns are still unfamiliar." },
-      { order: 4, timing: "now", required: false, reference: reference("mechanics/weapon", "WeaponDagger"), reason: "The Sister Blades cost one Silver and are the first cheap expansion beyond the starting Staff." },
-      { order: 5, timing: "when-available", required: false, reference: reference("world-progression/relationship", "NPC_Skelly_01"), reason: "Give Schelemeus an early Nectar to acquire the survival keepsake used by this stage." },
-      { order: 6, timing: "when-available", required: true, reference: reference("mechanics/incantation", "WorldUpgradeQuestLog"), reason: "The Fated List exposes objectives that can overlap with ordinary progression runs." },
-      { order: 7, timing: "when-available", required: true, reference: reference("mechanics/incantation", "WorldUpgradeResourceFinder"), reason: "Reagent Sensing prevents missed materials needed by later system unlocks." },
-      { order: 8, timing: "when-available", required: false, reference: reference("world-progression/prophecy", "QuestGiftNectar"), reason: "The first Nectar prophecy overlaps with acquiring an early keepsake." },
+      {
+        order: 1,
+        timing: "now",
+        required: true,
+        reference: reference("mechanics/arcana-card", "BonusHealth"),
+        reason:
+          "Persistence gives immediate maximum Life for early route learning.",
+      },
+      {
+        order: 2,
+        timing: "now",
+        required: true,
+        reference: reference("mechanics/arcana-card", "ChanneledCast"),
+        reason:
+          "The Sorceress makes the basic Omega sequence safer while the player learns enemy timing.",
+      },
+      {
+        order: 3,
+        timing: "when-available",
+        required: true,
+        reference: reference("mechanics/arcana-card", "LastStand"),
+        reason:
+          "Death protects a strong attempt while the first route and guardian patterns are still unfamiliar.",
+      },
+      {
+        order: 4,
+        timing: "now",
+        required: false,
+        reference: reference("mechanics/weapon", "WeaponDagger"),
+        reason:
+          "The Sister Blades cost one Silver and are the first cheap expansion beyond the starting Staff.",
+      },
+      {
+        order: 5,
+        timing: "when-available",
+        required: false,
+        reference: reference("world-progression/relationship", "NPC_Skelly_01"),
+        reason:
+          "Give Schelemeus an early Nectar to acquire the survival keepsake used by this stage.",
+      },
+      {
+        order: 6,
+        timing: "when-available",
+        required: true,
+        reference: reference("mechanics/incantation", "WorldUpgradeQuestLog"),
+        reason:
+          "The Fated List exposes objectives that can overlap with ordinary progression runs.",
+      },
+      {
+        order: 7,
+        timing: "when-available",
+        required: true,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradeResourceFinder",
+        ),
+        reason:
+          "Reagent Sensing prevents missed materials needed by later system unlocks.",
+      },
+      {
+        order: 8,
+        timing: "when-available",
+        required: false,
+        reference: reference("world-progression/prophecy", "QuestGiftNectar"),
+        reason:
+          "The first Nectar prophecy overlaps with acquiring an early keepsake.",
+      },
     ],
     boonEncounterPriorities: [
       "Fill the main damage slot first, then secure Magick recovery if the build uses Omega moves.",
@@ -77,7 +152,8 @@ export const progressionStages = [
       reference("world-progression/achievement", "AchClearTartarus"),
       reference("world-progression/achievement", "AchClearSummit"),
     ],
-    fallback: "If repeated attempts stall, return to the safer route, add maximum Life and a recovery keepsake, and postpone optional objectives.",
+    fallback:
+      "If repeated attempts stall, return to the safer route, add maximum Life and a recovery keepsake, and postpone optional objectives.",
   },
   {
     id: "main-story",
@@ -90,13 +166,15 @@ export const progressionStages = [
       "Relationships and incantations can gate story progress even after a successful clear.",
       "A reliable build starts with compatible core boons rather than a late Duo or Legendary target.",
     ],
-    nextObjective: "Clear both routes as required while completing the conversations and incantations revealed between nights.",
-    reason: "Alternating only when the story or a resource target calls for it keeps both route chains moving without wasting strong attempts.",
+    nextObjective:
+      "Clear both routes as required while completing the conversations and incantations revealed between nights.",
+    reason:
+      "Alternating only when the story or a resource target calls for it keeps both route chains moving without wasting strong attempts.",
     actionSequence: [
       "Unlock the weapon-aspect, Familiar, and Boon-pinning systems before convenience or cosmetic incantations.",
       "Choose one reliable aspect, fund it to maximum rank, and finish its Arcana layout before upgrading side builds.",
       "Use the Sister Blades with the Aspect of Pan when a safe ranged Special plan is more reliable than the current build.",
-      "Start with the keepsake for the aspect's first required god, then switch to boss damage or survival after the core boon is secured.",
+      "Start with the keepsake for the aspect's first required god, then switch after its forced offer and Rarify charge are both spent. Abandon an unused charge only when immediate survival matters more.",
       "Follow the next explicit story, conversation, or route requirement instead of repeating clears without a named target.",
       "Raise Fear only for a current requirement or when both routes already clear consistently.",
     ],
@@ -121,19 +199,131 @@ export const progressionStages = [
       reference("mechanics/hex", "TimeSlow"),
     ],
     priorityReferences: [
-      { order: 1, timing: "now", required: true, reference: reference("mechanics/incantation", "WorldUpgradeWeaponUpgradeSystem"), reason: "This unlocks aspects, which define the guide's stable build paths." },
-      { order: 2, timing: "now", required: true, reference: reference("mechanics/incantation", "WorldUpgradeFamiliarSystem"), reason: "Familiars add permanent loadout value to every later route attempt." },
-      { order: 3, timing: "when-available", required: true, reference: reference("mechanics/incantation", "WorldUpgradeAltRunDoor"), reason: "The alternate route is required for the separate Surface progression chain." },
-      { order: 4, timing: "when-available", required: true, reference: reference("mechanics/incantation", "WorldUpgradePinningBoons"), reason: "Boon pinning exposes exact prerequisite paths for the chosen aspect build." },
-      { order: 5, timing: "after-core", required: false, reference: reference("mechanics/weapon-aspect", "DaggerHomingThrowAspect"), reason: "The Aspect of Pan provides a safe ranged Special plan after the aspect system opens." },
-      { order: 6, timing: "after-core", required: false, reference: reference("mechanics/weapon", "WeaponTorch"), reason: "Unlock the Umbral Flames before the Axe because its cost advances the prerequisite chain with less Silver." },
-      { order: 7, timing: "after-core", required: false, reference: reference("mechanics/weapon", "WeaponAxe"), reason: "Unlock the Moonstone Axe after the cheaper Sister Blades and Umbral Flames." },
-      { order: 8, timing: "after-core", required: false, reference: reference("mechanics/weapon", "WeaponLob"), reason: "The Argent Skull becomes available only after the Sister Blades, Umbral Flames, and Moonstone Axe are unlocked." },
-      { order: 9, timing: "after-core", required: false, reference: reference("mechanics/weapon", "WeaponSuit"), reason: "The Black Coat comes last because it requires all four earlier unlockable weapons." },
-      { order: 10, timing: "when-available", required: false, reference: reference("world-progression/relationship", "NPC_Moros_01"), reason: "Process Moros conversations and gifts between runs because his chain overlaps Fated List progression." },
-      { order: 11, timing: "when-available", required: false, reference: reference("world-progression/prophecy", "QuestUnlockAllWeapons"), reason: "Weapon unlock progress can overlap with route clears without replacing the main objective." },
-      { order: 12, timing: "when-available", required: true, reference: reference("world-progression/prophecy", "QuestFirstUnderworldClear"), reason: "This prophecy tracks the first complete Underworld route objective." },
-      { order: 13, timing: "when-available", required: true, reference: reference("world-progression/prophecy", "QuestFirstSurfaceClear"), reason: "This prophecy tracks the first complete Surface route objective." },
+      {
+        order: 1,
+        timing: "now",
+        required: true,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradeWeaponUpgradeSystem",
+        ),
+        reason:
+          "This unlocks aspects, which define the guide's stable build paths.",
+      },
+      {
+        order: 2,
+        timing: "now",
+        required: true,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradeFamiliarSystem",
+        ),
+        reason:
+          "Familiars add permanent loadout value to every later route attempt.",
+      },
+      {
+        order: 3,
+        timing: "when-available",
+        required: true,
+        reference: reference("mechanics/incantation", "WorldUpgradeAltRunDoor"),
+        reason:
+          "The alternate route is required for the separate Surface progression chain.",
+      },
+      {
+        order: 4,
+        timing: "when-available",
+        required: true,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradePinningBoons",
+        ),
+        reason:
+          "Boon pinning exposes exact prerequisite paths for the chosen aspect build.",
+      },
+      {
+        order: 5,
+        timing: "after-core",
+        required: false,
+        reference: reference(
+          "mechanics/weapon-aspect",
+          "DaggerHomingThrowAspect",
+        ),
+        reason:
+          "The Aspect of Pan provides a safe ranged Special plan after the aspect system opens.",
+      },
+      {
+        order: 6,
+        timing: "after-core",
+        required: false,
+        reference: reference("mechanics/weapon", "WeaponTorch"),
+        reason:
+          "Unlock the Umbral Flames before the Axe because its cost advances the prerequisite chain with less Silver.",
+      },
+      {
+        order: 7,
+        timing: "after-core",
+        required: false,
+        reference: reference("mechanics/weapon", "WeaponAxe"),
+        reason:
+          "Unlock the Moonstone Axe after the cheaper Sister Blades and Umbral Flames.",
+      },
+      {
+        order: 8,
+        timing: "after-core",
+        required: false,
+        reference: reference("mechanics/weapon", "WeaponLob"),
+        reason:
+          "The Argent Skull requires the Sister Blades, Umbral Flames, and Moonstone Axe, and none may have been unlocked during the current night.",
+      },
+      {
+        order: 9,
+        timing: "after-core",
+        required: false,
+        reference: reference("mechanics/weapon", "WeaponSuit"),
+        reason:
+          "The Black Coat requires all four earlier unlockable weapons, and none may have been unlocked during the current night.",
+      },
+      {
+        order: 10,
+        timing: "when-available",
+        required: false,
+        reference: reference("world-progression/relationship", "NPC_Moros_01"),
+        reason:
+          "Process Moros conversations and gifts between runs because his chain overlaps Fated List progression.",
+      },
+      {
+        order: 11,
+        timing: "when-available",
+        required: false,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestUnlockAllWeapons",
+        ),
+        reason:
+          "Weapon unlock progress can overlap with route clears without replacing the main objective.",
+      },
+      {
+        order: 12,
+        timing: "when-available",
+        required: true,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestFirstUnderworldClear",
+        ),
+        reason:
+          "This prophecy tracks the first complete Underworld route objective.",
+      },
+      {
+        order: 13,
+        timing: "when-available",
+        required: true,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestFirstSurfaceClear",
+        ),
+        reason:
+          "This prophecy tracks the first complete Surface route objective.",
+      },
     ],
     boonEncounterPriorities: [
       "Use a god keepsake in the opening region only when it completes the aspect's primary damage plan.",
@@ -159,7 +349,8 @@ export const progressionStages = [
       reference("world-progression/achievement", "AchClearTartarus"),
       reference("world-progression/achievement", "AchClearSummit"),
     ],
-    fallback: "If one route is materially harder, farm permanent upgrades on the reliable route and return with a completed aspect and Arcana layout.",
+    fallback:
+      "If one route is materially harder, farm permanent upgrades on the reliable route and return with a completed aspect and Arcana layout.",
   },
   {
     id: "true-ending",
@@ -172,8 +363,10 @@ export const progressionStages = [
       "The objective tracker is evidence, while a run count is only an estimate.",
       "Story-sensitive requirements should be checked after every completed night.",
     ],
-    nextObjective: "Satisfy the remaining route, conversation, and incantation requirements until the true-ending milestone triggers.",
-    reason: "Following explicit save-state requirements prevents unnecessary runs and keeps spoiler-sensitive guidance tied to observable progress.",
+    nextObjective:
+      "Satisfy the remaining route, conversation, and incantation requirements until the true-ending milestone triggers.",
+    reason:
+      "Following the exact story requirements prevents unnecessary runs and keeps spoiler-sensitive guidance tied to progress the player can confirm.",
     actionSequence: [
       "Read the current objective and choose the route named by its unmet requirement.",
       "Use the Black Coat with the Aspect of Melinoe for a mobile, defensive clear plan while story completion matters more than experimentation.",
@@ -203,10 +396,44 @@ export const progressionStages = [
       reference("mechanics/hex", "TimeSlow"),
     ],
     priorityReferences: [
-      { order: 1, timing: "now", required: true, reference: reference("world-progression/achievement", "AchTrueEnding"), reason: "This achievement is the observable endpoint for the central story objective." },
-      { order: 2, timing: "when-available", required: true, reference: reference("mechanics/incantation", "WorldUpgradeRelationshipBar"), reason: "Empath's Intuition exposes relationship locks that can otherwise hide story dependencies." },
-      { order: 3, timing: "when-available", required: false, reference: reference("mechanics/incantation", "WorldUpgradeGameStats"), reason: "Personal Insights helps verify run and encounter progress when a named requirement stalls." },
-      { order: 4, timing: "after-core", required: false, reference: reference("world-progression/prophecy", "QuestBeatChronosWithArcana"), reason: "This objective overlaps with a normal completed Arcana build and should not displace story requirements." },
+      {
+        order: 1,
+        timing: "now",
+        required: true,
+        reference: reference("world-progression/achievement", "AchTrueEnding"),
+        reason:
+          "This achievement confirms that the central story objective is complete.",
+      },
+      {
+        order: 2,
+        timing: "when-available",
+        required: true,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradeRelationshipBar",
+        ),
+        reason:
+          "Empath's Intuition exposes relationship locks that can otherwise hide story dependencies.",
+      },
+      {
+        order: 3,
+        timing: "when-available",
+        required: false,
+        reference: reference("mechanics/incantation", "WorldUpgradeGameStats"),
+        reason:
+          "Personal Insights helps verify run and encounter progress when a named requirement stalls.",
+      },
+      {
+        order: 4,
+        timing: "after-core",
+        required: false,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestBeatChronosWithArcana",
+        ),
+        reason:
+          "This objective overlaps with a normal completed Arcana build and should not displace story requirements.",
+      },
     ],
     boonEncounterPriorities: [
       "Prefer the aspect's proven primary package, then take defensive scaling that remains useful against bosses.",
@@ -226,8 +453,11 @@ export const progressionStages = [
       "Return to the Crossroads and process all new conversations before changing goals.",
       "Separate the new postgame objectives from already completed story requirements.",
     ],
-    completionReferences: [reference("world-progression/achievement", "AchTrueEnding")],
-    fallback: "If no requirement advances, check every available conversation and revealed incantation before starting another clear.",
+    completionReferences: [
+      reference("world-progression/achievement", "AchTrueEnding"),
+    ],
+    fallback:
+      "If no requirement advances, check every available conversation and revealed incantation before starting another clear.",
   },
   {
     id: "practical-postgame",
@@ -240,8 +470,10 @@ export const progressionStages = [
       "Fear and Testaments reward controlled difficulty increases more reliably than jumping to the highest available setting.",
       "A practical save does not require every cosmetic, relationship rank, or challenge condition.",
     ],
-    nextObjective: "Unlock the major combat systems, complete representative Fear rewards, and finish the epilogue without pursuing exhaustive collection.",
-    reason: "This endpoint captures all guide-relevant systems while avoiding long completion tasks that do not change normal play.",
+    nextObjective:
+      "Unlock the major combat systems, complete representative Fear rewards, and finish the epilogue without pursuing exhaustive collection.",
+    reason:
+      "This endpoint captures all guide-relevant systems while avoiding long completion tasks that do not change normal play.",
     actionSequence: [
       "Build one reliable aspect for each weapon and use Testaments to choose the next weapon that earns Nightmare.",
       "Use the Umbral Flames with the Aspect of Melinoe as the default ranged completion build when no weapon requirement applies.",
@@ -271,12 +503,69 @@ export const progressionStages = [
       reference("mechanics/hex", "Leap"),
     ],
     priorityReferences: [
-      { order: 1, timing: "now", required: true, reference: reference("mechanics/incantation", "WorldUpgradeBountyBoard"), reason: "The Pitch-Black Stone opens Chaos Trials and their separate completion path." },
-      { order: 2, timing: "when-available", required: true, reference: reference("world-progression/oath-condition", "EnemyDamageShrineUpgrade"), reason: "Vow of Pain is the first ordered Oath condition and provides a controlled first Fear increase." },
-      { order: 3, timing: "when-available", required: true, reference: reference("world-progression/testament-bounty", "BountyShrineAxeFBoss"), reason: "This Testament binds an exact weapon, Fear threshold, guardian target, and Nightmare reward." },
-      { order: 4, timing: "after-core", required: false, reference: reference("world-progression/prophecy", "QuestClearedWithAllAspects"), reason: "Aspect-clear progress can overlap with Testaments after one reliable aspect per weapon exists." },
-      { order: 5, timing: "after-core", required: false, reference: reference("world-progression/prophecy", "QuestClearedWithAllFamiliars"), reason: "Familiar-clear progress belongs after the six practical weapon builds are stable." },
-      { order: 6, timing: "when-available", required: true, reference: reference("world-progression/achievement", "AchEpilogue"), reason: "The epilogue achievement marks the story portion of the practical endpoint." },
+      {
+        order: 1,
+        timing: "now",
+        required: true,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradeBountyBoard",
+        ),
+        reason:
+          "The Pitch-Black Stone opens Chaos Trials and their separate completion path.",
+      },
+      {
+        order: 2,
+        timing: "when-available",
+        required: true,
+        reference: reference(
+          "world-progression/oath-condition",
+          "EnemyDamageShrineUpgrade",
+        ),
+        reason:
+          "Vow of Pain is the first ordered Oath condition and provides a controlled first Fear increase.",
+      },
+      {
+        order: 3,
+        timing: "when-available",
+        required: true,
+        reference: reference(
+          "world-progression/testament-bounty",
+          "BountyShrineAxeFBoss",
+        ),
+        reason:
+          "This Testament binds an exact weapon, Fear threshold, guardian target, and Nightmare reward.",
+      },
+      {
+        order: 4,
+        timing: "after-core",
+        required: false,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestClearedWithAllAspects",
+        ),
+        reason:
+          "Aspect-clear progress can overlap with Testaments after one reliable aspect per weapon exists.",
+      },
+      {
+        order: 5,
+        timing: "after-core",
+        required: false,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestClearedWithAllFamiliars",
+        ),
+        reason:
+          "Familiar-clear progress belongs after the six practical weapon builds are stable.",
+      },
+      {
+        order: 6,
+        timing: "when-available",
+        required: true,
+        reference: reference("world-progression/achievement", "AchEpilogue"),
+        reason:
+          "The epilogue achievement marks the story portion of the practical endpoint.",
+      },
     ],
     boonEncounterPriorities: [
       "Match the opening god keepsake to the selected aspect profile.",
@@ -303,7 +592,8 @@ export const progressionStages = [
       reference("world-progression/achievement", "AchAllWeapons"),
       reference("world-progression/achievement", "AchMaxMem"),
     ],
-    fallback: "If broad upgrades run short, complete the easiest outstanding Testament or overlapping prophecy before farming a single resource in isolation.",
+    fallback:
+      "If broad upgrades run short, complete the easiest outstanding Testament or overlapping prophecy before farming a single resource in isolation.",
   },
   {
     id: "exhaustive-completion",
@@ -316,8 +606,10 @@ export const progressionStages = [
       "Tracking one bounded checklist is faster than switching among unrelated rare conditions.",
       "The final achievement is the authoritative endpoint for this stage.",
     ],
-    nextObjective: "Complete the remaining achievements, prophecies, relationships, ranks, and cosmetic requirements in the smallest overlapping batches.",
-    reason: "Grouping requirements by route, weapon, and character reduces duplicate runs after all primary progression is complete.",
+    nextObjective:
+      "Complete the remaining achievements, prophecies, relationships, ranks, and cosmetic requirements in the smallest overlapping batches.",
+    reason:
+      "Grouping requirements by route, weapon, and character reduces duplicate runs after all primary progression is complete.",
     actionSequence: [
       "List every unmet achievement and attach each one to its required route, weapon, character, resource, or random event.",
       "Group targets that can progress during the same night and choose the lowest Fear that satisfies all grouped requirements.",
@@ -346,12 +638,69 @@ export const progressionStages = [
       reference("mechanics/hex", "Leap"),
     ],
     priorityReferences: [
-      { order: 1, timing: "now", required: true, reference: reference("world-progression/achievement", "AchAllOtherAch"), reason: "This achievement is the authoritative final endpoint after every other achievement." },
-      { order: 2, timing: "now", required: false, reference: reference("world-progression/prophecy", "QuestUnlockAllWeaponAspects"), reason: "All aspect unlocks satisfy both a prophecy and an achievement dependency." },
-      { order: 3, timing: "now", required: false, reference: reference("world-progression/prophecy", "QuestRecruitFamiliars"), reason: "Recruitment progress should share runs with remaining Familiar-specific objectives." },
-      { order: 4, timing: "now", required: false, reference: reference("world-progression/prophecy", "QuestUnlockAllCards"), reason: "Card completion belongs in the final checklist after the practical Arcana layouts are funded." },
-      { order: 5, timing: "optional", required: false, reference: reference("mechanics/incantation", "WorldUpgradeFamiliarCostumeSystem"), reason: "Familiar forms are cosmetic completion and should follow combat and story requirements." },
-      { order: 6, timing: "optional", required: false, reference: reference("mechanics/incantation", "WorldUpgradeMusicPlayer"), reason: "The Music Maker is an optional completion purchase rather than a power upgrade." },
+      {
+        order: 1,
+        timing: "now",
+        required: true,
+        reference: reference("world-progression/achievement", "AchAllOtherAch"),
+        reason:
+          "This achievement is the authoritative final endpoint after every other achievement.",
+      },
+      {
+        order: 2,
+        timing: "now",
+        required: false,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestUnlockAllWeaponAspects",
+        ),
+        reason:
+          "All aspect unlocks satisfy both a prophecy and an achievement dependency.",
+      },
+      {
+        order: 3,
+        timing: "now",
+        required: false,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestRecruitFamiliars",
+        ),
+        reason:
+          "Recruitment progress should share runs with remaining Familiar-specific objectives.",
+      },
+      {
+        order: 4,
+        timing: "now",
+        required: false,
+        reference: reference(
+          "world-progression/prophecy",
+          "QuestUnlockAllCards",
+        ),
+        reason:
+          "Card completion belongs in the final checklist after the practical Arcana layouts are funded.",
+      },
+      {
+        order: 5,
+        timing: "optional",
+        required: false,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradeFamiliarCostumeSystem",
+        ),
+        reason:
+          "Familiar forms are cosmetic completion and should follow combat and story requirements.",
+      },
+      {
+        order: 6,
+        timing: "optional",
+        required: false,
+        reference: reference(
+          "mechanics/incantation",
+          "WorldUpgradeMusicPlayer",
+        ),
+        reason:
+          "The Music Maker is an optional completion purchase rather than a power upgrade.",
+      },
     ],
     boonEncounterPriorities: [
       "Build around the tracked condition first and use the normal aspect fallback for everything else.",
@@ -373,19 +722,85 @@ export const progressionStages = [
       "Confirm no tracked prophecy, relationship, rank, or cosmetic requirement remains.",
       "Confirm the final achievement has been awarded.",
     ],
-    completionReferences: [reference("world-progression/achievement", "AchAllOtherAch")],
-    fallback: "If the final achievement does not trigger, compare the authoritative achievement records with the save checklist and isolate the one unmet condition.",
+    completionReferences: [
+      reference("world-progression/achievement", "AchAllOtherAch"),
+    ],
+    fallback:
+      "If the final achievement does not trigger, compare the authoritative achievement records with the save checklist and isolate the one unmet condition.",
   },
 ] as const satisfies readonly ProgressionStageSource[];
 
-const defaultArcana = ["BonusHealth", "ChanneledCast", "LastStand", "ManaOverTime"] as const;
+const defaultArcana = [
+  "BonusHealth",
+  "ChanneledCast",
+  "LastStand",
+  "ManaOverTime",
+] as const;
 
-function aspect(input: Omit<AspectProfile, "arcanaIds" | "familiarId" | "hexId"> & Partial<Pick<AspectProfile, "arcanaIds" | "familiarId" | "hexId">>): AspectProfile {
+const aspectSupport = {
+  AxeArmCastAspect: { familiarId: "HoundFamiliar", hexId: "Meteor" },
+  AxePerfectCriticalAspect: { familiarId: "RavenFamiliar", hexId: "TimeSlow" },
+  AxeRallyAspect: { familiarId: "RavenFamiliar", hexId: "TimeSlow" },
+  AxeRecoveryAspect: { familiarId: "FrogFamiliar", hexId: "TimeSlow" },
+  BaseStaffAspect: { familiarId: "FrogFamiliar", hexId: "TimeSlow" },
+  StaffClearCastAspect: { familiarId: "HoundFamiliar", hexId: "TimeSlow" },
+  StaffRaiseDeadAspect: { familiarId: "RavenFamiliar", hexId: "Summon" },
+  StaffSelfHitAspect: { familiarId: "HoundFamiliar", hexId: "MoonBeam" },
+  DaggerBackstabAspect: { familiarId: "PolecatFamiliar", hexId: "Leap" },
+  DaggerBlockAspect: { familiarId: "FrogFamiliar", hexId: "TimeSlow" },
+  DaggerHomingThrowAspect: { familiarId: "HoundFamiliar", hexId: "Meteor" },
+  DaggerTripleAspect: { familiarId: "FrogFamiliar", hexId: "TimeSlow" },
+  LobAmmoBoostAspect: { familiarId: "RavenFamiliar", hexId: "MoonBeam" },
+  LobCloseAttackAspect: { familiarId: "FrogFamiliar", hexId: "Leap" },
+  LobGunAspect: { familiarId: "HoundFamiliar", hexId: "TimeSlow" },
+  LobImpulseAspect: { familiarId: "PolecatFamiliar", hexId: "MoonBeam" },
+  BaseSuitAspect: { familiarId: "PolecatFamiliar", hexId: "Leap" },
+  SuitComboAspect: { familiarId: "FrogFamiliar", hexId: "TimeSlow" },
+  SuitHexAspect: { familiarId: "FrogFamiliar", hexId: "MoonBeam" },
+  SuitMarkCritAspect: { familiarId: "PolecatFamiliar", hexId: "Leap" },
+  TorchAutofireAspect: { familiarId: "PolecatFamiliar", hexId: "MoonBeam" },
+  TorchDetonateAspect: { familiarId: "HoundFamiliar", hexId: "Meteor" },
+  TorchSpecialDurationAspect: {
+    familiarId: "RavenFamiliar",
+    hexId: "MoonBeam",
+  },
+  TorchSprintRecallAspect: { familiarId: "PolecatFamiliar", hexId: "MoonBeam" },
+} as const;
+
+function aspect(
+  input: Omit<
+    AspectProfile,
+    "arcanaIds" | "boonReasons" | "familiarId" | "hexId" | "safest"
+  > &
+    Partial<
+      Pick<
+        AspectBuildPlan,
+        "arcanaIds" | "boonReasons" | "familiarId" | "hexId"
+      >
+    >,
+): AspectProfile {
+  const support = aspectSupport[input.aspectId as keyof typeof aspectSupport];
+  if (support === undefined)
+    throw new Error(
+      `Aspect ${input.aspectId} has no authored Familiar and Hex plan.`,
+    );
+  const safest: SafestAspectPlanSource | undefined =
+    safestAspectPlans[input.aspectId as keyof typeof safestAspectPlans];
+  if (safest === undefined)
+    throw new Error(`Aspect ${input.aspectId} has no authored safest plan.`);
   return {
     ...input,
     arcanaIds: input.arcanaIds ?? defaultArcana,
-    familiarId: input.familiarId ?? "FrogFamiliar",
-    hexId: input.hexId ?? "TimeSlow",
+    boonReasons: input.boonReasons ?? {},
+    familiarId: input.familiarId ?? support.familiarId,
+    hexId: input.hexId ?? support.hexId,
+    safest: {
+      ...safest,
+      arcanaIds: safest.arcanaIds ?? defaultArcana,
+      boonReasons: safest.boonReasons ?? {},
+      familiarId: safest.familiarId ?? support.familiarId,
+      hexId: safest.hexId ?? support.hexId,
+    },
   };
 }
 
@@ -393,554 +808,1675 @@ export const aspectProfiles = [
   aspect({
     aspectId: "AxeArmCastAspect",
     focuses: ["cast", "special", "omega"],
+    boonPriorityOrder: ["omega", "cast", "special", "sprint", "attack"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "Functional as soon as the Cast and Omega Special sequence is consistent.",
-    maximumRankEvaluation: "The stronger detonation scaling rewards full commitment to the same repeatable sequence.",
-    strengths: ["Large controlled burst around a pinned target", "Strong alignment between Cast control and the Axe's defensive Special"],
-    weaknesses: ["Needs Magick and setup time", "Loses value when the Omega Special misses the active Cast"],
-    combatSequence: ["Place Cast under the priority target", "Charge Omega Special from safe range", "Release through the Cast and reposition before repeating"],
-    arcanaIds: ["CastBuff", "ChanneledCast", "ManaOverTime", "BonusHealth", "LastStand"],
-    primaryBoonIds: ["ApolloCastBoon", "DemeterCastBoon", "HephaestusSpecialBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["HestiaCastBoon", "AphroditeSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "A", speed: "A", safety: "B", "high-fear": "B" },
-    bossConsideration: "Wait for a stable boss window before committing the Omega Special so the detonation is not lost to movement.",
-    routeConsideration: "The same ranged setup works on both routes, but cramped encounters make Cast placement more important.",
+    rankOneEvaluation:
+      "Functional as soon as the Cast and Omega Special sequence is consistent.",
+    maximumRankEvaluation:
+      "The stronger detonation scaling rewards full commitment to the same repeatable sequence.",
+    strengths: [
+      "Large controlled burst around a pinned target",
+      "Strong alignment between Cast control and the Axe's defensive Special",
+    ],
+    weaknesses: [
+      "Needs Magick and setup time",
+      "Loses value when the Omega Special misses the active Cast",
+    ],
+    combatSequence: [
+      "Place Cast under the priority target",
+      "Charge Omega Special from safe range",
+      "Release through the Cast and reposition before repeating",
+    ],
+    arcanaIds: [
+      "CastBuff",
+      "ChanneledCast",
+      "ManaOverTime",
+      "BonusHealth",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "ApolloManaBoon",
+      "ApolloCastBoon",
+      "HeraSpecialBoon",
+      "ApolloSprintBoon",
+      "HeraWeaponBoon",
+      "PoseidonCastBoon",
+      "ApolloSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "PoseidonManaBoon",
+      "DemeterCastBoon",
+      "AresSpecialBoon",
+      "DemeterSprintBoon",
+      "AphroditeWeaponBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "A",
+      safety: "B",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Wait for a stable boss window before committing the Omega Special so the detonation is not lost to movement.",
+    routeConsideration:
+      "The same ranged setup works on both routes, but cramped encounters make Cast placement more important.",
   }),
   aspect({
     aspectId: "AxePerfectCriticalAspect",
     focuses: ["attack"],
+    boonPriorityOrder: ["attack", "omega", "cast", "sprint", "special"],
     beginnerDifficulty: 4,
-    rankOneEvaluation: "Fast enough to establish the critical loop, but punishes careless trades.",
-    maximumRankEvaluation: "Higher scaling makes clean attack strings a strong speed option for practiced players.",
-    strengths: ["High attack ceiling while avoiding damage", "Faster attacks reduce the Axe's normal commitment"],
-    weaknesses: ["Taking damage interrupts its momentum", "Close-range attack strings demand encounter knowledge"],
-    combatSequence: ["Cast the group", "Use short attack strings from the edge", "Dash out before the enemy counterattack and rebuild the buff"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "ApolloWeaponBoon", "PerfectDamageBonusBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "HeraWeaponBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "B", speed: "S", safety: "C", "high-fear": "B" },
-    bossConsideration: "Prioritize clean single hits over finishing a risky combo because preserving the aspect buff is the main damage multiplier.",
-    routeConsideration: "Open rooms favor spacing, while dense rooms favor control before attacking.",
+    rankOneEvaluation:
+      "Fast enough to establish the critical loop, but punishes careless trades.",
+    maximumRankEvaluation:
+      "Higher scaling makes clean attack strings a strong speed option for practiced players.",
+    strengths: [
+      "High attack ceiling while avoiding damage",
+      "Faster attacks reduce the Axe's normal commitment",
+    ],
+    weaknesses: [
+      "Taking damage interrupts its momentum",
+      "Close-range attack strings demand encounter knowledge",
+    ],
+    combatSequence: [
+      "Cast the group",
+      "Use short attack strings from the edge",
+      "Dash out before the enemy counterattack and rebuild the buff",
+    ],
+    primaryBoonIds: [
+      "AphroditeWeaponBoon",
+      "AphroditeManaBoon",
+      "DemeterCastBoon",
+      "DemeterSprintBoon",
+      "AresSpecialBoon",
+      "ApolloWeaponBoon",
+      "HeraWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "DemeterWeaponBoon",
+      "HeraManaBoon",
+      "ApolloCastBoon",
+      "ApolloSprintBoon",
+      "ZeusSpecialBoon",
+    ],
+    contextRatings: {
+      consistency: "B",
+      speed: "S",
+      safety: "C",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Prioritize clean single hits over finishing a risky combo because preserving the aspect buff is the main damage multiplier.",
+    routeConsideration:
+      "Open rooms favor spacing, while dense rooms favor control before attacking.",
   }),
   aspect({
     aspectId: "AxeRallyAspect",
     focuses: ["attack", "omega"],
+    boonPriorityOrder: ["attack", "omega", "cast", "special", "sprint"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "Reliable when encounters contain enough targets to establish Frenzy without overextending.",
-    maximumRankEvaluation: "Improved Frenzy uptime turns the aspect into a durable sustained-damage choice.",
-    strengths: ["Rewards hitting groups", "Rally and Frenzy support recovery during sustained combat"],
-    weaknesses: ["Slower to start against isolated targets", "Can tempt unsafe attacks merely to maintain Frenzy"],
-    combatSequence: ["Gather foes with Cast", "Use broad attacks to establish Frenzy", "Spend the active window on priority targets and disengage when it ends"],
-    primaryBoonIds: ["ApolloWeaponBoon", "DemeterWeaponBoon", "AresWeaponBoon", "DemeterManaBoon"],
-    fallbackBoonIds: ["HeraWeaponBoon", "AphroditeWeaponBoon", "HestiaManaBoon"],
-    contextRatings: { consistency: "A", speed: "A", safety: "A", "high-fear": "A" },
-    bossConsideration: "On a lone boss, activate Frenzy from safe openings rather than assuming normal encounter hit density.",
-    routeConsideration: "Dense Underworld rooms activate the loop quickly, while open Surface rooms reward deliberate grouping.",
+    rankOneEvaluation:
+      "Reliable when encounters contain enough targets to establish Frenzy without overextending.",
+    maximumRankEvaluation:
+      "Improved Frenzy uptime turns the aspect into a durable sustained-damage choice.",
+    strengths: [
+      "Rewards hitting groups",
+      "Rally and Frenzy support recovery during sustained combat",
+    ],
+    weaknesses: [
+      "Slower to start against isolated targets",
+      "Can tempt unsafe attacks merely to maintain Frenzy",
+    ],
+    combatSequence: [
+      "Gather foes with Cast",
+      "Use broad attacks to establish Frenzy",
+      "Spend the active window on priority targets and disengage when it ends",
+    ],
+    primaryBoonIds: [
+      "HeraWeaponBoon",
+      "HeraManaBoon",
+      "DemeterCastBoon",
+      "ZeusSpecialBoon",
+      "ApolloSprintBoon",
+      "ApolloWeaponBoon",
+      "DemeterWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "AphroditeWeaponBoon",
+      "HestiaManaBoon",
+      "HestiaCastBoon",
+      "AresSpecialBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "A",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "On a lone boss, activate Frenzy from safe openings rather than assuming normal encounter hit density.",
+    routeConsideration:
+      "Dense Underworld rooms activate the loop quickly, while open Surface rooms reward deliberate grouping.",
   }),
   aspect({
     aspectId: "AxeRecoveryAspect",
     focuses: ["attack"],
+    boonPriorityOrder: ["attack", "cast", "special", "sprint", "omega"],
     beginnerDifficulty: 2,
-    rankOneEvaluation: "A direct, forgiving improvement to the Axe's normal attack plan.",
-    maximumRankEvaluation: "The added base damage and Life remain broadly useful without a narrow synergy requirement.",
-    strengths: ["Immediate value with no setup", "Extra Life supports learning slow attack commitments"],
-    weaknesses: ["Lower specialized ceiling than combo aspects", "Still inherits the Axe's slow recovery windows"],
-    combatSequence: ["Cast approaching foes", "Use one or two attacks", "Dash out before committing to the final swing unless the target is controlled"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "ApolloWeaponBoon", "DemeterWeaponBoon", "DemeterManaBoon"],
-    fallbackBoonIds: ["HeraWeaponBoon", "AresWeaponBoon", "ApolloManaBoon"],
-    contextRatings: { consistency: "S", speed: "B", safety: "A", "high-fear": "B" },
-    bossConsideration: "Use short strings and reserve the slow final swing for clear recovery windows.",
-    routeConsideration: "Its uncomplicated plan is equally reliable on either route.",
+    rankOneEvaluation:
+      "A direct, forgiving improvement to the Axe's normal attack plan.",
+    maximumRankEvaluation:
+      "The added base damage and Life remain broadly useful without a narrow synergy requirement.",
+    strengths: [
+      "Immediate value with no setup",
+      "Extra Life supports learning slow attack commitments",
+    ],
+    weaknesses: [
+      "Lower specialized ceiling than combo aspects",
+      "Still inherits the Axe's slow recovery windows",
+    ],
+    combatSequence: [
+      "Cast approaching foes",
+      "Use one or two attacks",
+      "Dash out before committing to the final swing unless the target is controlled",
+    ],
+    primaryBoonIds: [
+      "AphroditeWeaponBoon",
+      "DemeterCastBoon",
+      "ZeusSpecialBoon",
+      "ApolloSprintBoon",
+      "AphroditeManaBoon",
+      "HeraWeaponBoon",
+      "ApolloWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "DemeterWeaponBoon",
+      "HeraCastBoon",
+      "HestiaSpecialBoon",
+      "DemeterSprintBoon",
+      "HeraManaBoon",
+    ],
+    contextRatings: {
+      consistency: "S",
+      speed: "B",
+      safety: "A",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Use short strings and reserve the slow final swing for clear recovery windows.",
+    routeConsideration:
+      "Its uncomplicated plan is equally reliable on either route.",
   }),
   aspect({
     aspectId: "BaseStaffAspect",
     focuses: ["special", "omega"],
+    boonPriorityOrder: ["special", "attack", "omega", "cast", "sprint"],
     beginnerDifficulty: 1,
-    rankOneEvaluation: "The safest starting aspect because its ranged Special works without a narrow condition.",
-    maximumRankEvaluation: "More Magick and Special damage preserve the simple plan while improving its ceiling.",
-    strengths: ["Safe ranged pressure", "Extra Magick supports frequent Omega use"],
-    weaknesses: ["Normal Special can be slow without upgrades", "Lower burst if both attack modes are spread across unrelated boons"],
-    combatSequence: ["Cast to control the approach", "Use Special from range", "Charge Omega Special only with a clear line and reposition"],
-    primaryBoonIds: ["ApolloSpecialBoon", "PoseidonSpecialBoon", "HephaestusSpecialBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["DemeterSpecialBoon", "HeraSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "S", speed: "B", safety: "S", "high-fear": "A" },
-    bossConsideration: "Keep enough distance to preserve reaction time and use Omega Special during predictable attacks.",
-    routeConsideration: "The range is valuable on both routes and especially forgiving in open Surface encounters.",
+    rankOneEvaluation:
+      "The safest starting aspect because its ranged Special works without a narrow condition.",
+    maximumRankEvaluation:
+      "More Magick and Special damage preserve the simple plan while improving its ceiling.",
+    strengths: [
+      "Safe ranged pressure",
+      "Extra Magick supports frequent Omega use",
+    ],
+    weaknesses: [
+      "Normal Special can be slow without upgrades",
+      "Lower burst if both attack modes are spread across unrelated boons",
+    ],
+    combatSequence: [
+      "Cast to control the approach",
+      "Use Special from range",
+      "Charge Omega Special only with a clear line and reposition",
+    ],
+    primaryBoonIds: [
+      "HeraSpecialBoon",
+      "ZeusWeaponBoon",
+      "ApolloManaBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "ApolloSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "PoseidonSpecialBoon",
+      "HestiaWeaponBoon",
+      "HeraManaBoon",
+      "HestiaCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "S",
+      speed: "B",
+      safety: "S",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Keep enough distance to preserve reaction time and use Omega Special during predictable attacks.",
+    routeConsideration:
+      "The range is valuable on both routes and especially forgiving in open Surface encounters.",
   }),
   aspect({
     aspectId: "StaffClearCastAspect",
     focuses: ["cast", "special"],
+    boonPriorityOrder: ["cast", "omega", "special", "attack", "sprint"],
     beginnerDifficulty: 2,
-    rankOneEvaluation: "Adds dependable familiar support to an action the player should already use often.",
-    maximumRankEvaluation: "Stronger familiar payoff improves room control without changing the safe core loop.",
-    strengths: ["Cast and familiar actions overlap naturally", "Good control without requiring close-range commitment"],
-    weaknesses: ["Depends on familiar positioning and upgrade state", "Less direct boss scaling when added targets are absent"],
-    combatSequence: ["Place Cast to trigger the familiar", "Use ranged Special while the target is controlled", "Refresh Cast before the control expires"],
-    arcanaIds: ["CastBuff", "ChanneledCast", "BonusHealth", "ManaOverTime", "LastStand"],
-    primaryBoonIds: ["ApolloCastBoon", "DemeterCastBoon", "ApolloSpecialBoon", "DemeterManaBoon"],
-    fallbackBoonIds: ["HestiaCastBoon", "PoseidonSpecialBoon", "ApolloManaBoon"],
-    contextRatings: { consistency: "A", speed: "B", safety: "S", "high-fear": "A" },
-    bossConsideration: "Keep Cast uptime for control and accept that the familiar contribution may be less concentrated on a mobile boss.",
-    routeConsideration: "Dense rooms make the shared Cast action especially efficient.",
+    rankOneEvaluation:
+      "Adds dependable familiar support to an action the player should already use often.",
+    maximumRankEvaluation:
+      "Stronger familiar payoff improves room control without changing the safe core loop.",
+    strengths: [
+      "Cast and familiar actions overlap naturally",
+      "Good control without requiring close-range commitment",
+    ],
+    weaknesses: [
+      "Depends on familiar positioning and upgrade state",
+      "Less direct boss scaling when added targets are absent",
+    ],
+    combatSequence: [
+      "Place Cast to trigger the familiar",
+      "Use ranged Special while the target is controlled",
+      "Refresh Cast before the control expires",
+    ],
+    arcanaIds: [
+      "CastBuff",
+      "ChanneledCast",
+      "BonusHealth",
+      "ManaOverTime",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "ZeusCastBoon",
+      "ApolloManaBoon",
+      "HeraSpecialBoon",
+      "ZeusWeaponBoon",
+      "ApolloSprintBoon",
+      "DemeterCastBoon",
+      "HestiaCastBoon",
+    ],
+    fallbackBoonIds: [
+      "PoseidonCastBoon",
+      "HeraManaBoon",
+      "AresSpecialBoon",
+      "HeraWeaponBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "B",
+      safety: "S",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Keep Cast uptime for control and accept that the familiar contribution may be less concentrated on a mobile boss.",
+    routeConsideration:
+      "Dense rooms make the shared Cast action especially efficient.",
   }),
   aspect({
     aspectId: "StaffRaiseDeadAspect",
     focuses: ["attack", "special"],
+    boonPriorityOrder: ["attack", "special", "omega", "cast", "sprint"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "Strong in normal encounters once the first kill starts the Shade loop.",
-    maximumRankEvaluation: "Improved Shade support raises clearing speed but remains less reliable in isolated boss phases.",
-    strengths: ["Kills create additional pressure", "Snowballs through rooms with several vulnerable foes"],
-    weaknesses: ["Needs a kill before its signature value begins", "Boss-only phases reduce the available summon loop"],
-    combatSequence: ["Focus the weakest controlled foe", "Create the first Shade", "Fight beside the Shade and direct Special toward its target"],
-    primaryBoonIds: ["ApolloWeaponBoon", "AphroditeWeaponBoon", "ApolloSpecialBoon", "RaiseDeadBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "HeraSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "B", speed: "A", safety: "B", "high-fear": "C" },
-    bossConsideration: "Use the normal Staff plan when a phase offers no susceptible foe to start the summon loop.",
-    routeConsideration: "Routes with dense rooms favor the aspect more than sparse elite sequences.",
+    rankOneEvaluation:
+      "Strong in normal encounters once the first kill starts the Shade loop.",
+    maximumRankEvaluation:
+      "Improved Shade support raises clearing speed but remains less reliable in isolated boss phases.",
+    strengths: [
+      "Kills create additional pressure",
+      "Snowballs through rooms with several vulnerable foes",
+    ],
+    weaknesses: [
+      "Needs a kill before its signature value begins",
+      "Boss-only phases reduce the available summon loop",
+    ],
+    combatSequence: [
+      "Focus the weakest controlled foe",
+      "Create the first Shade",
+      "Fight beside the Shade and direct Special toward its target",
+    ],
+    primaryBoonIds: [
+      "ZeusWeaponBoon",
+      "HeraSpecialBoon",
+      "HeraManaBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "HeraWeaponBoon",
+      "HestiaWeaponBoon",
+      "ApolloSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "PoseidonWeaponBoon",
+      "PoseidonSpecialBoon",
+      "HestiaManaBoon",
+      "HestiaCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "B",
+      speed: "A",
+      safety: "B",
+      "high-fear": "C",
+    },
+    bossConsideration:
+      "Use the normal Staff plan when a phase offers no susceptible foe to start the summon loop.",
+    routeConsideration:
+      "Routes with dense rooms favor the aspect more than sparse elite sequences.",
   }),
   aspect({
     aspectId: "StaffSelfHitAspect",
     focuses: ["omega", "attack", "special"],
+    boonPriorityOrder: ["omega", "cast", "attack", "special", "sprint"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "Powerful once stationary repeat points are placed deliberately rather than overwritten at random.",
-    maximumRankEvaluation: "Additional repeated strikes reward planned placement and sustained Magick.",
-    strengths: ["Omega moves create persistent repeat pressure", "Can cover space while Melinoe repositions"],
-    weaknesses: ["Poor placement wastes repeated strikes", "Magick failure collapses the main loop"],
-    combatSequence: ["Control the target with Cast", "Place the chosen Omega on the expected path", "Move away and attack while the stored strikes repeat"],
-    arcanaIds: ["ChanneledCast", "ManaOverTime", "CastCount", "BonusHealth", "LastStand"],
-    primaryBoonIds: ["ApolloWeaponBoon", "ApolloSpecialBoon", "ApolloManaBoon", "OmegaDelayedDamageBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "PoseidonSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "A", speed: "A", safety: "A", "high-fear": "A" },
-    bossConsideration: "Place repeats where the boss will remain through the next animation, not where it is currently moving from.",
-    routeConsideration: "Tight rooms simplify placement, while open rooms require stronger prediction.",
+    rankOneEvaluation:
+      "Powerful once stationary repeat points are placed deliberately rather than overwritten at random.",
+    maximumRankEvaluation:
+      "Additional repeated strikes reward planned placement and sustained Magick.",
+    strengths: [
+      "Omega moves create persistent repeat pressure",
+      "Can cover space while Melinoe repositions",
+    ],
+    weaknesses: [
+      "Poor placement wastes repeated strikes",
+      "Magick failure collapses the main loop",
+    ],
+    combatSequence: [
+      "Control the target with Cast",
+      "Place the chosen Omega on the expected path",
+      "Move away and attack while the stored strikes repeat",
+    ],
+    arcanaIds: [
+      "ChanneledCast",
+      "ManaOverTime",
+      "CastCount",
+      "BonusHealth",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "ApolloManaBoon",
+      "ZeusCastBoon",
+      "HeraWeaponBoon",
+      "HeraSpecialBoon",
+      "ApolloSprintBoon",
+      "OmegaDelayedDamageBoon",
+      "DemeterCastBoon",
+      "PoseidonCastBoon",
+    ],
+    fallbackBoonIds: [
+      "HeraManaBoon",
+      "HestiaCastBoon",
+      "ApolloWeaponBoon",
+      "ApolloSpecialBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "A",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Place repeats where the boss will remain through the next animation, not where it is currently moving from.",
+    routeConsideration:
+      "Tight rooms simplify placement, while open rooms require stronger prediction.",
   }),
   aspect({
     aspectId: "DaggerBackstabAspect",
     focuses: ["attack", "special"],
+    boonPriorityOrder: ["attack", "special", "cast", "sprint", "omega"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "Immediate damage when positioning is correct, with no resource engine required.",
-    maximumRankEvaluation: "Higher backstab scaling rewards confident movement and short punish windows.",
-    strengths: ["Strong payoff for flanking", "Both main move sets can use the same positioning plan"],
-    weaknesses: ["Loses value against targets that turn quickly", "Close-range greed is heavily punished"],
-    combatSequence: ["Cast the group", "Dash behind the priority target", "Use a short attack string or Special volley and leave before it turns"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "AresWeaponBoon", "AphroditeSpecialBoon", "HestiaManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "HestiaSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "A", speed: "A", safety: "B", "high-fear": "B" },
-    bossConsideration: "Take only the backstab windows created by committed boss animations.",
-    routeConsideration: "Open Surface arenas make flanking easier, while crowded rooms require Cast control first.",
+    rankOneEvaluation:
+      "Immediate damage when positioning is correct, with no resource engine required.",
+    maximumRankEvaluation:
+      "Higher backstab scaling rewards confident movement and short punish windows.",
+    strengths: [
+      "Strong payoff for flanking",
+      "Both main move sets can use the same positioning plan",
+    ],
+    weaknesses: [
+      "Loses value against targets that turn quickly",
+      "Close-range greed is heavily punished",
+    ],
+    combatSequence: [
+      "Cast the group",
+      "Dash behind the priority target",
+      "Complete the normal Attack string when the finisher window is secure",
+      "Otherwise take the safe opening hits and leave before the target turns",
+    ],
+    primaryBoonIds: [
+      "PoseidonWeaponBoon",
+      "ZeusSpecialBoon",
+      "HeraCastBoon",
+      "ApolloSprintBoon",
+      "HeraManaBoon",
+      "HeraWeaponBoon",
+      "AresSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "AphroditeWeaponBoon",
+      "HestiaSpecialBoon",
+      "DemeterCastBoon",
+      "DemeterSprintBoon",
+      "HestiaManaBoon",
+    ],
+    boonReasons: {
+      PoseidonWeaponBoon:
+        "Wave Strike is the strongest upgraded Attack plan for the Blades' eight-hit normal string: 20 + 20 + five times 15 + 90 = 205 raw damage. At Common level 1, eight 20-damage splashes add 160, narrowly below Flutter Strike's 164; at level 4, eight 35-damage splashes add 280, above Flutter Strike's 266.5. It also wins on the 15- and 20-damage opening hits and can damage grouped foes. Prioritize Poms on it. This comparison assumes each unique hit clears the 0.033-second cooldown and its splash lands.",
+      AphroditeWeaponBoon:
+        "Flutter Strike is the stronger low-investment, full-string fallback. At Common level 1, its 80% adds 164 to the 205-damage string, four more than eight Wave Strike splashes, and it remains ahead through level 3 against one nearby target. Wave Strike overtakes at level 4, on cancelled strings, and whenever splashes hit extra foes. Backstab and Hammer damage modifiers are additive, so they raise the direct result without changing this comparison.",
+    },
+    contextRatings: {
+      consistency: "A",
+      speed: "A",
+      safety: "B",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Pom Wave Strike toward level 4 and take only the backstab strings allowed by committed boss animations.",
+    routeConsideration:
+      "Open Surface arenas make flanking easier, while crowded rooms require Cast control first.",
   }),
   aspect({
     aspectId: "DaggerBlockAspect",
     focuses: ["attack", "omega"],
+    boonPriorityOrder: ["attack", "omega", "special", "cast", "sprint"],
     beginnerDifficulty: 4,
-    rankOneEvaluation: "The block can rescue a charged attack, but relying on its timing is unsafe for a new player.",
-    maximumRankEvaluation: "A practiced block and counter window produces strong burst with defensive utility.",
-    strengths: ["Combines a defensive block with a damage window", "Omega Attack already fits the Blades' burst plan"],
-    weaknesses: ["Timing-sensitive", "The block is not a substitute for learning enemy patterns"],
-    combatSequence: ["Cast the threat", "Charge Omega Attack only into a known response", "Use the post-block window, then disengage"],
-    arcanaIds: ["ChanneledCast", "ManaOverTime", "BonusHealth", "ChanneledBlock", "LastStand"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "ApolloWeaponBoon", "AresWeaponBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "HeraWeaponBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "B", speed: "A", safety: "A", "high-fear": "B" },
-    bossConsideration: "Use the block only against attacks whose timing is already understood.",
-    routeConsideration: "Fast mixed enemy groups make deliberate block timing harder than isolated elites.",
+    rankOneEvaluation:
+      "The block can rescue a charged attack, but relying on its timing is unsafe for a new player.",
+    maximumRankEvaluation:
+      "A practiced block and counter window produces strong burst with defensive utility.",
+    strengths: [
+      "Combines a defensive block with a damage window",
+      "Omega Attack already fits the Blades' burst plan",
+    ],
+    weaknesses: [
+      "Timing-sensitive",
+      "The block is not a substitute for learning enemy patterns",
+    ],
+    combatSequence: [
+      "Cast the threat",
+      "Charge Omega Attack only into a known response",
+      "Use the post-block window, then disengage",
+    ],
+    arcanaIds: [
+      "ChanneledCast",
+      "ManaOverTime",
+      "BonusHealth",
+      "ChanneledBlock",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "AphroditeWeaponBoon",
+      "HeraManaBoon",
+      "AresSpecialBoon",
+      "DemeterCastBoon",
+      "DemeterSprintBoon",
+      "ApolloWeaponBoon",
+      "HeraWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "DemeterWeaponBoon",
+      "ZeusManaBoon",
+      "ApolloSpecialBoon",
+      "HeraCastBoon",
+      "ApolloSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "B",
+      speed: "A",
+      safety: "A",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Use the block only against attacks whose timing is already understood.",
+    routeConsideration:
+      "Fast mixed enemy groups make deliberate block timing harder than isolated elites.",
   }),
   aspect({
     aspectId: "DaggerHomingThrowAspect",
     focuses: ["cast", "special", "omega"],
+    boonPriorityOrder: ["special", "omega", "cast", "attack", "sprint"],
     beginnerDifficulty: 2,
-    rankOneEvaluation: "The Cast gives the Special a clear target rule and makes the ranged plan easy to repeat.",
-    maximumRankEvaluation: "More charged shots turn the controlled Cast area into a high-damage focus zone.",
-    strengths: ["Safe ranged tracking", "Cast control and Special damage share one setup"],
-    weaknesses: ["Needs Cast placement before its best volley", "Mobile bosses can leave the targeting area"],
-    combatSequence: ["Place Cast on the target", "Charge Omega Special from range", "Release into the Cast and relocate before repeating"],
-    arcanaIds: ["CastBuff", "ChanneledCast", "ManaOverTime", "BonusHealth", "LastStand"],
-    primaryBoonIds: ["ApolloSpecialBoon", "PoseidonSpecialBoon", "DemeterCastBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["HestiaSpecialBoon", "ApolloCastBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "S", speed: "A", safety: "S", "high-fear": "A" },
-    bossConsideration: "Refresh Cast after movement phases before charging the next volley.",
-    routeConsideration: "The tracking plan remains reliable in both open and crowded rooms.",
+    rankOneEvaluation:
+      "The Cast gives the Special a clear target rule and makes the ranged plan easy to repeat.",
+    maximumRankEvaluation:
+      "More charged shots turn the controlled Cast area into a high-damage focus zone.",
+    strengths: [
+      "Safe ranged tracking",
+      "Cast control and Special damage share one setup",
+    ],
+    weaknesses: [
+      "Needs Cast placement before its best volley",
+      "Mobile bosses can leave the targeting area",
+    ],
+    combatSequence: [
+      "Place Cast on the target",
+      "Charge Omega Special from range",
+      "Release into the Cast and relocate before repeating",
+    ],
+    arcanaIds: [
+      "CastBuff",
+      "ChanneledCast",
+      "ManaOverTime",
+      "BonusHealth",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "PoseidonSpecialBoon",
+      "HeraManaBoon",
+      "HeraCastBoon",
+      "ZeusWeaponBoon",
+      "ApolloSprintBoon",
+      "HestiaSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "ZeusSpecialBoon",
+      "ApolloManaBoon",
+      "DemeterCastBoon",
+      "AresWeaponBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "S",
+      speed: "A",
+      safety: "S",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Refresh Cast after movement phases before charging the next volley.",
+    routeConsideration:
+      "The tracking plan remains reliable in both open and crowded rooms.",
   }),
   aspect({
     aspectId: "DaggerTripleAspect",
     focuses: ["attack", "special", "omega"],
+    boonPriorityOrder: ["attack", "special", "omega", "cast", "sprint"],
     beginnerDifficulty: 5,
-    rankOneEvaluation: "The ritual works, but the input sequence and positioning cost make early mistakes expensive.",
-    maximumRankEvaluation: "Mastery produces exceptional burst while retaining the Blades' mobility.",
-    strengths: ["High combo ceiling", "Rewards using the whole weapon kit rather than one repeated move"],
-    weaknesses: ["Complex sequence", "Interrupted setup loses more value than a simple core-slot build"],
-    combatSequence: ["Control the target", "Perform the required setup moves without overcommitting", "Trigger the ritual strike in a safe damage window"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "ApolloSpecialBoon", "AresWeaponBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "PoseidonSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "C", speed: "S", safety: "C", "high-fear": "B" },
-    bossConsideration: "Build the ritual only during predictable windows and accept a normal attack cycle when the window closes.",
-    routeConsideration: "The aspect is easier to manage in spacious rooms with clear enemy tells.",
+    rankOneEvaluation:
+      "The ritual works, but the input sequence and positioning cost make early mistakes expensive.",
+    maximumRankEvaluation:
+      "Mastery produces exceptional burst while retaining the Blades' mobility.",
+    strengths: [
+      "High combo ceiling",
+      "Rewards using the whole weapon kit rather than one repeated move",
+    ],
+    weaknesses: [
+      "Complex sequence",
+      "Interrupted setup loses more value than a simple core-slot build",
+    ],
+    combatSequence: [
+      "Control the target",
+      "Perform the required setup moves without overcommitting",
+      "Trigger the ritual strike in a safe damage window",
+    ],
+    primaryBoonIds: [
+      "HeraWeaponBoon",
+      "ZeusSpecialBoon",
+      "HeraManaBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "DemeterWeaponBoon",
+      "AresWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "ApolloWeaponBoon",
+      "AresSpecialBoon",
+      "ZeusManaBoon",
+      "HestiaCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "C",
+      speed: "S",
+      safety: "C",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Build the ritual only during predictable windows and accept a normal attack cycle when the window closes.",
+    routeConsideration:
+      "The aspect is easier to manage in spacious rooms with clear enemy tells.",
   }),
   aspect({
     aspectId: "LobAmmoBoostAspect",
     focuses: ["attack", "special"],
+    boonPriorityOrder: ["attack", "special", "cast", "omega", "sprint"],
     beginnerDifficulty: 2,
-    rankOneEvaluation: "The normal fire-and-retrieve loop gains damage without adding a new condition.",
-    maximumRankEvaluation: "Holding more spent Shells increases the payoff but also raises retrieval risk.",
-    strengths: ["Direct Attack scaling", "Simple relationship between fired Shells and damage"],
-    weaknesses: ["Damage falls when Shell routing is poor", "Retrieval can pull the player into danger"],
-    combatSequence: ["Fire Shells from range", "Use Special through a safe retrieval line", "Repeat only after restoring a safe position"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "ApolloWeaponBoon", "PoseidonSpecialBoon", "DemeterManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "HephaestusSpecialBoon", "ApolloManaBoon"],
-    contextRatings: { consistency: "S", speed: "A", safety: "A", "high-fear": "A" },
-    bossConsideration: "Plan retrieval across the edge of the arena instead of through the boss.",
-    routeConsideration: "Open rooms make Shell paths safer, while tight rooms favor faster retrieval.",
+    rankOneEvaluation:
+      "The normal fire-and-retrieve loop gains damage without adding a new condition.",
+    maximumRankEvaluation:
+      "Holding more spent Shells increases the payoff but also raises retrieval risk.",
+    strengths: [
+      "Direct Attack scaling",
+      "Simple relationship between fired Shells and damage",
+    ],
+    weaknesses: [
+      "Damage falls when Shell routing is poor",
+      "Retrieval can pull the player into danger",
+    ],
+    combatSequence: [
+      "Fire Shells from range",
+      "Use Special through a safe retrieval line",
+      "Repeat only after restoring a safe position",
+    ],
+    primaryBoonIds: [
+      "HeraWeaponBoon",
+      "ZeusSpecialBoon",
+      "DemeterCastBoon",
+      "HeraManaBoon",
+      "ApolloSprintBoon",
+      "ApolloWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "AresWeaponBoon",
+      "HephaestusSpecialBoon",
+      "PoseidonCastBoon",
+      "PoseidonManaBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "S",
+      speed: "A",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Plan retrieval across the edge of the arena instead of through the boss.",
+    routeConsideration:
+      "Open rooms make Shell paths safer, while tight rooms favor faster retrieval.",
   }),
   aspect({
     aspectId: "LobCloseAttackAspect",
     focuses: ["attack", "special"],
+    boonPriorityOrder: ["attack", "special", "sprint", "cast", "omega"],
     beginnerDifficulty: 4,
-    rankOneEvaluation: "Strong burst is available immediately, but only inside a risky close-range sequence.",
-    maximumRankEvaluation: "Higher scaling rewards clean delivery without removing the positional danger.",
-    strengths: ["Large close-range burst", "Attack and Special form one compact detonation sequence"],
-    weaknesses: ["Requires entering melee range", "A missed Special delays the explosion and exposes the player"],
-    combatSequence: ["Cast the target", "Place the close Attack", "Drive through with Special and exit the blast area"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "AphroditeSpecialBoon", "AresWeaponBoon", "HestiaManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "HephaestusSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "B", speed: "S", safety: "C", "high-fear": "C" },
-    bossConsideration: "Use the combo only after a boss commits to an animation that cannot intercept the Special exit.",
-    routeConsideration: "Crowded rooms demand Cast control before entering the blast sequence.",
+    rankOneEvaluation:
+      "Strong burst is available immediately, but only inside a risky close-range sequence.",
+    maximumRankEvaluation:
+      "Higher scaling rewards clean delivery without removing the positional danger.",
+    strengths: [
+      "Large close-range burst",
+      "Attack and Special form one compact detonation sequence",
+    ],
+    weaknesses: [
+      "Requires entering melee range",
+      "A missed Special delays the explosion and exposes the player",
+    ],
+    combatSequence: [
+      "Cast the target",
+      "Place the close Attack",
+      "Drive through with Special and exit the blast area",
+    ],
+    primaryBoonIds: [
+      "HeraWeaponBoon",
+      "ZeusSpecialBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "HeraManaBoon",
+      "AresWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "HephaestusWeaponBoon",
+      "AresSpecialBoon",
+      "HestiaCastBoon",
+      "HestiaSprintBoon",
+      "HestiaManaBoon",
+    ],
+    contextRatings: {
+      consistency: "B",
+      speed: "S",
+      safety: "C",
+      "high-fear": "C",
+    },
+    bossConsideration:
+      "Use the combo only after a boss commits to an animation that cannot intercept the Special exit.",
+    routeConsideration:
+      "Crowded rooms demand Cast control before entering the blast sequence.",
   }),
   aspect({
     aspectId: "LobGunAspect",
     focuses: ["attack", "special", "omega"],
+    boonPriorityOrder: ["attack", "special", "omega", "cast", "sprint"],
     beginnerDifficulty: 4,
-    rankOneEvaluation: "The Overheat cycle is powerful but introduces a state change that must be planned around the Omega Special.",
-    maximumRankEvaluation: "Longer and stronger Overheat windows support excellent sustained boss damage.",
-    strengths: ["Strong sustained ranged pressure", "Distinct Overheat window rewards deliberate setup"],
-    weaknesses: ["State management is easy to mistime", "Magick and Omega Special access are required for the main loop"],
-    combatSequence: ["Create space with Cast", "Use Omega Special to enter the damage state", "Fire while the window is active and reset safely"],
-    primaryBoonIds: ["ApolloWeaponBoon", "HestiaWeaponBoon", "PoseidonSpecialBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "HephaestusSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "B", speed: "S", safety: "B", "high-fear": "B" },
-    bossConsideration: "Enter Overheat immediately before a long boss opening so the state is not spent on movement.",
-    routeConsideration: "Open Surface rooms favor the ranged state, while tight rooms make setup more vulnerable.",
+    rankOneEvaluation:
+      "Omega Special opens a 3-second Overheat window. During it, Attack fires continuously and 5% faster, but Cast and every Omega move are disabled.",
+    maximumRankEvaluation:
+      "Rank V raises the Overheat Attack speed bonus to 25%; the 3-second window still demands deliberate timing.",
+    strengths: [
+      "Continuous ranged Attack fire during Overheat",
+      "Attack speed bonus grows from 5% to 25% with rank",
+    ],
+    weaknesses: [
+      "Cast and all Omega moves are disabled during Overheat",
+      "The 50-Magick Omega Special must be spent before every Overheat window",
+    ],
+    combatSequence: [
+      "Place Cast before activating Overheat",
+      "Use Omega Special when the target is committed",
+      "Hold Attack for the full 3-second window, then reposition",
+    ],
+    primaryBoonIds: [
+      "PoseidonWeaponBoon",
+      "HeraSpecialBoon",
+      "HeraManaBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "ZeusWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "HestiaWeaponBoon",
+      "ZeusSpecialBoon",
+      "PoseidonManaBoon",
+      "HeraCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "B",
+      speed: "S",
+      safety: "B",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Enter Overheat immediately before a long boss opening so the state is not spent on movement.",
+    routeConsideration:
+      "Open Surface rooms favor the ranged state, while tight rooms make setup more vulnerable.",
   }),
   aspect({
     aspectId: "LobImpulseAspect",
     focuses: ["special", "omega"],
+    boonPriorityOrder: ["attack", "special", "cast", "omega", "sprint"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "The steerable Omega Special is useful immediately and the Pom bonus improves any coherent boon plan.",
-    maximumRankEvaluation: "More effective scaling strengthens both route control and the chosen boon package.",
-    strengths: ["Steerable movement during Omega Special", "Pom levels reward a focused build"],
-    weaknesses: ["Omega steering can carry the player into hazards", "Spreading boons wastes the level advantage"],
-    combatSequence: ["Choose a clear travel line", "Charge Omega Special", "Steer through targets and end in open space before firing again"],
-    primaryBoonIds: ["PoseidonSpecialBoon", "ApolloSpecialBoon", "ApolloManaBoon", "PerfectDamageBonusBoon"],
-    fallbackBoonIds: ["HephaestusSpecialBoon", "DemeterSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "A", speed: "A", safety: "A", "high-fear": "A" },
-    bossConsideration: "Choose a route that passes beside the boss and ends safely rather than steering through repeated contact.",
-    routeConsideration: "The steering is especially valuable in open rooms but needs restraint near pits and hazards.",
+    rankOneEvaluation:
+      "The steerable Omega Special is useful immediately and the Pom bonus improves any coherent boon plan.",
+    maximumRankEvaluation:
+      "More effective scaling strengthens both route control and the chosen boon package.",
+    strengths: [
+      "Steerable movement during Omega Special",
+      "Pom levels reward a focused build",
+    ],
+    weaknesses: [
+      "Omega steering can carry the player into hazards",
+      "Spreading boons wastes the level advantage",
+    ],
+    combatSequence: [
+      "Choose a clear travel line",
+      "Charge Omega Special",
+      "Steer through targets and end in open space before firing again",
+    ],
+    primaryBoonIds: [
+      "HephaestusWeaponBoon",
+      "HeraSpecialBoon",
+      "PoseidonCastBoon",
+      "PoseidonManaBoon",
+      "ApolloSprintBoon",
+      "HestiaWeaponBoon",
+      "ZeusWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "AresWeaponBoon",
+      "AphroditeSpecialBoon",
+      "DemeterCastBoon",
+      "HeraManaBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "A",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Choose a route that passes beside the boss and ends safely rather than steering through repeated contact.",
+    routeConsideration:
+      "The steering is especially valuable in open rooms but needs restraint near pits and hazards.",
   }),
   aspect({
     aspectId: "BaseSuitAspect",
     focuses: ["attack", "sprint", "special"],
+    boonPriorityOrder: ["attack", "special", "sprint", "cast", "omega"],
     beginnerDifficulty: 1,
-    rankOneEvaluation: "A fast, forgiving version of the Coat that supports simple movement and attack habits.",
-    maximumRankEvaluation: "Higher speed keeps its broad consistency but does not create a specialized burst engine.",
-    strengths: ["Fast attacks and movement", "Easy access to both melee and seeking ranged pressure"],
-    weaknesses: ["Lower specialized ceiling", "Can split damage across Attack and Special without finishing either plan"],
-    combatSequence: ["Sprint into a safe angle", "Use a short Attack string", "Send Special while backing away and repeat"],
-    arcanaIds: ["SprintShield", "BonusHealth", "ChanneledCast", "ManaOverTime", "LastStand"],
-    primaryBoonIds: ["AphroditeWeaponBoon", "ApolloWeaponBoon", "ApolloSprintBoon", "HestiaManaBoon"],
-    fallbackBoonIds: ["DemeterWeaponBoon", "PoseidonSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "S", speed: "A", safety: "S", "high-fear": "A" },
-    bossConsideration: "Use mobility to stay beside the boss and avoid holding Attack longer than the current opening.",
-    routeConsideration: "Its movement speed is useful on both routes and reduces the cost of unfamiliar rooms.",
+    rankOneEvaluation:
+      "A fast, forgiving version of the Coat that supports simple movement and attack habits.",
+    maximumRankEvaluation:
+      "Higher speed keeps its broad consistency but does not create a specialized burst engine.",
+    strengths: [
+      "Fast attacks and movement",
+      "Easy access to both melee and seeking ranged pressure",
+    ],
+    weaknesses: [
+      "Lower specialized ceiling",
+      "Can split damage across Attack and Special without finishing either plan",
+    ],
+    combatSequence: [
+      "Sprint into a safe angle",
+      "Use a short Attack string",
+      "Send Special while backing away and repeat",
+    ],
+    arcanaIds: [
+      "SprintShield",
+      "BonusHealth",
+      "ChanneledCast",
+      "ManaOverTime",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "PoseidonWeaponBoon",
+      "ZeusSpecialBoon",
+      "PoseidonSprintBoon",
+      "HeraCastBoon",
+      "HestiaManaBoon",
+      "HeraSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "ZeusWeaponBoon",
+      "AresSpecialBoon",
+      "HeraSprintBoon",
+      "DemeterCastBoon",
+      "HeraManaBoon",
+    ],
+    contextRatings: {
+      consistency: "S",
+      speed: "A",
+      safety: "S",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Use mobility to stay beside the boss and avoid holding Attack longer than the current opening.",
+    routeConsideration:
+      "Its movement speed is useful on both routes and reduces the cost of unfamiliar rooms.",
   }),
   aspect({
     aspectId: "SuitComboAspect",
     focuses: ["special", "attack", "omega"],
+    boonPriorityOrder: ["attack", "omega", "special", "cast", "sprint"],
     beginnerDifficulty: 4,
-    rankOneEvaluation: "The absorption combo works early but requires deliberate projectile placement and timing.",
-    maximumRankEvaluation: "A completed combo produces high burst and rewards full-kit execution.",
-    strengths: ["Converts Special setup into a powerful Attack state", "Uses both ranged setup and guarded retaliation"],
-    weaknesses: ["Setup is easy to interrupt", "Poor Special placement delays the main payoff"],
-    combatSequence: ["Fire the required Special pattern", "Charge Omega Attack to absorb the blasts", "Spend the empowered sequence and disengage"],
-    primaryBoonIds: ["ApolloSpecialBoon", "HephaestusSpecialBoon", "AphroditeWeaponBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["PoseidonSpecialBoon", "DemeterWeaponBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "B", speed: "S", safety: "B", "high-fear": "B" },
-    bossConsideration: "Prepare the Special pattern before the boss opening instead of trying to assemble it during incoming pressure.",
-    routeConsideration: "Large rooms give the setup more space, while dense rooms may require control first.",
+    rankOneEvaluation:
+      "The absorption combo works early but requires deliberate projectile placement and timing.",
+    maximumRankEvaluation:
+      "A completed combo produces high burst and rewards full-kit execution.",
+    strengths: [
+      "Converts Special setup into a powerful Attack state",
+      "Uses both ranged setup and guarded retaliation",
+    ],
+    weaknesses: [
+      "Setup is easy to interrupt",
+      "Poor Special placement delays the main payoff",
+    ],
+    combatSequence: [
+      "Fire the required Special pattern",
+      "Charge Omega Attack to absorb the blasts",
+      "Spend the empowered sequence and disengage",
+    ],
+    primaryBoonIds: [
+      "ApolloWeaponBoon",
+      "HeraManaBoon",
+      "HeraSpecialBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "AphroditeWeaponBoon",
+      "HeraWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "DemeterWeaponBoon",
+      "PoseidonManaBoon",
+      "AresSpecialBoon",
+      "AresCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "B",
+      speed: "S",
+      safety: "B",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Prepare the Special pattern before the boss opening instead of trying to assemble it during incoming pressure.",
+    routeConsideration:
+      "Large rooms give the setup more space, while dense rooms may require control first.",
   }),
   aspect({
     aspectId: "SuitHexAspect",
     focuses: ["hex", "omega", "special"],
+    boonPriorityOrder: ["omega", "special", "attack", "cast", "sprint"],
     beginnerDifficulty: 2,
-    rankOneEvaluation: "The built-in Hex adds dependable automatic pressure without requiring a Selene reward.",
-    maximumRankEvaluation: "More Hex support improves long encounters and pairs naturally with Magick spending.",
-    strengths: ["Guaranteed Hex access", "Multi-target pressure while using the normal Coat kit"],
-    weaknesses: ["Needs regular Magick spending to cycle the Hex", "Automatic targeting offers less control than direct burst"],
-    combatSequence: ["Spend Magick through safe Omega moves", "Let the Hex fire while maintaining Special pressure", "Use the vulnerability window for the next damage cycle"],
-    arcanaIds: ["SorceryRegenUpgrade", "ManaOverTime", "ChanneledCast", "BonusHealth", "LastStand"],
-    primaryBoonIds: ["ApolloManaBoon", "ApolloSpecialBoon", "OmegaDelayedDamageBoon", "PerfectDamageBonusBoon"],
-    fallbackBoonIds: ["DemeterManaBoon", "PoseidonSpecialBoon", "HeraManaBoon"],
+    rankOneEvaluation:
+      "The built-in Hex adds dependable automatic pressure without requiring a Selene reward.",
+    maximumRankEvaluation:
+      "More Hex support improves long encounters and pairs naturally with Magick spending.",
+    strengths: [
+      "Guaranteed Hex access",
+      "Multi-target pressure while using the normal Coat kit",
+    ],
+    weaknesses: [
+      "Needs regular Magick spending to cycle the Hex",
+      "Automatic targeting offers less control than direct burst",
+    ],
+    combatSequence: [
+      "Spend Magick through safe Omega moves",
+      "Let the Hex fire while maintaining Special pressure",
+      "Use the vulnerability window for the next damage cycle",
+    ],
+    arcanaIds: [
+      "SorceryRegenUpgrade",
+      "ManaOverTime",
+      "ChanneledCast",
+      "BonusHealth",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "AresManaBoon",
+      "ZeusSpecialBoon",
+      "HeraWeaponBoon",
+      "HeraCastBoon",
+      "ApolloSprintBoon",
+      "OmegaDelayedDamageBoon",
+      "PerfectDamageBonusBoon",
+    ],
+    fallbackBoonIds: [
+      "HeraManaBoon",
+      "AresSpecialBoon",
+      "ApolloWeaponBoon",
+      "DemeterCastBoon",
+      "HeraSprintBoon",
+    ],
     familiarId: "FrogFamiliar",
     hexId: "MoonBeam",
-    contextRatings: { consistency: "S", speed: "A", safety: "A", "high-fear": "A" },
-    bossConsideration: "Keep spending Magick through safe actions so the built-in Hex does not stall during long phases.",
-    routeConsideration: "Automatic target selection is strongest in dense rooms and still adds free boss pressure.",
+    contextRatings: {
+      consistency: "S",
+      speed: "A",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Keep spending Magick through safe actions so the built-in Hex does not stall during long phases.",
+    routeConsideration:
+      "Automatic target selection is strongest in dense rooms and still adds free boss pressure.",
   }),
   aspect({
     aspectId: "SuitMarkCritAspect",
     focuses: ["sprint", "attack", "special"],
+    boonPriorityOrder: ["attack", "special", "omega", "sprint", "cast"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "The Sprint mark is usable immediately but must be activated deliberately before the damage window.",
-    maximumRankEvaluation: "Improved marked-window value turns good routing into high clear speed.",
-    strengths: ["Sprint naturally creates attack angles", "Critical window can support either main damage move"],
-    weaknesses: ["Damage falls when the mark is not prepared", "Over-sprinting can waste attack windows"],
-    combatSequence: ["Sprint through a safe line to activate the mark", "Turn onto the priority target", "Spend the critical window with the chosen core move"],
-    arcanaIds: ["SprintShield", "BonusHealth", "ChanneledCast", "ManaOverTime", "LastStand"],
-    primaryBoonIds: ["ApolloSprintBoon", "AphroditeWeaponBoon", "ApolloWeaponBoon", "PerfectDamageBonusBoon"],
-    fallbackBoonIds: ["DemeterSprintBoon", "PoseidonSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "A", speed: "S", safety: "A", "high-fear": "A" },
-    bossConsideration: "Activate the mark during boss movement and spend it only after the target commits.",
-    routeConsideration: "Open rooms provide clean Sprint lines, while small rooms require shorter activations.",
+    rankOneEvaluation:
+      "The Sprint mark is usable immediately but must be activated deliberately before the damage window.",
+    maximumRankEvaluation:
+      "Improved marked-window value turns good routing into high clear speed.",
+    strengths: [
+      "Sprint naturally creates attack angles",
+      "Critical window can support either main damage move",
+    ],
+    weaknesses: [
+      "Damage falls when the mark is not prepared",
+      "Over-sprinting can waste attack windows",
+    ],
+    combatSequence: [
+      "Sprint through a safe line to activate the mark",
+      "Turn onto the priority target",
+      "Spend the critical window with the chosen core move",
+    ],
+    arcanaIds: [
+      "SprintShield",
+      "BonusHealth",
+      "ChanneledCast",
+      "ManaOverTime",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "HestiaWeaponBoon",
+      "ZeusSpecialBoon",
+      "HestiaManaBoon",
+      "DemeterSprintBoon",
+      "HeraCastBoon",
+      "PoseidonWeaponBoon",
+      "HeraSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "ZeusWeaponBoon",
+      "AresSpecialBoon",
+      "ZeusManaBoon",
+      "ApolloSprintBoon",
+      "DemeterCastBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "S",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Activate the mark during boss movement and spend it only after the target commits.",
+    routeConsideration:
+      "Open rooms provide clean Sprint lines, while small rooms require shorter activations.",
   }),
   aspect({
     aspectId: "TorchAutofireAspect",
     focuses: ["attack", "sprint", "special"],
+    boonPriorityOrder: ["attack", "sprint", "special", "omega", "cast"],
     beginnerDifficulty: 2,
-    rankOneEvaluation: "Autofire and Sprint synergy make the moving ranged plan easy to sustain.",
-    maximumRankEvaluation: "Higher sustained damage rewards continuous safe movement rather than stationary charging.",
-    strengths: ["Maintains pressure while moving", "Sprint is part of the damage plan instead of only an escape"],
-    weaknesses: ["Long firing periods can drain Magick or attention", "Tight rooms reduce safe kiting space"],
-    combatSequence: ["Start firing from range", "Sprint around the edge while maintaining pressure", "Add Special rings when the path is clear"],
-    arcanaIds: ["SprintShield", "ManaOverTime", "BonusHealth", "ChanneledCast", "LastStand"],
-    primaryBoonIds: ["ZeusWeaponBoon", "ApolloSpecialBoon", "ApolloSprintBoon", "HestiaManaBoon"],
-    fallbackBoonIds: ["PoseidonWeaponBoon", "DemeterSpecialBoon", "DemeterSprintBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "S", speed: "A", safety: "A", "high-fear": "A" },
-    bossConsideration: "Circle at a range that preserves projectile uptime without crossing the boss's center line.",
-    routeConsideration: "Open Surface arenas favor the mobile loop more than cramped encounters.",
+    rankOneEvaluation:
+      "Autofire and Sprint synergy make the moving ranged plan easy to sustain.",
+    maximumRankEvaluation:
+      "Higher sustained damage rewards continuous safe movement rather than stationary charging.",
+    strengths: [
+      "Maintains pressure while moving",
+      "Sprint is part of the damage plan instead of only an escape",
+    ],
+    weaknesses: [
+      "Long firing periods can drain Magick or attention",
+      "Tight rooms reduce safe kiting space",
+    ],
+    combatSequence: [
+      "Start firing from range",
+      "Sprint around the edge while maintaining pressure",
+      "Add Special rings when the path is clear",
+    ],
+    arcanaIds: [
+      "SprintShield",
+      "ManaOverTime",
+      "BonusHealth",
+      "ChanneledCast",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "ZeusWeaponBoon",
+      "PoseidonSpecialBoon",
+      "PoseidonSprintBoon",
+      "HestiaManaBoon",
+      "HeraCastBoon",
+      "PoseidonWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "HestiaWeaponBoon",
+      "HestiaSpecialBoon",
+      "HeraSprintBoon",
+      "HeraManaBoon",
+      "DemeterCastBoon",
+    ],
+    contextRatings: {
+      consistency: "S",
+      speed: "A",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Circle at a range that preserves projectile uptime without crossing the boss's center line.",
+    routeConsideration:
+      "Open Surface arenas favor the mobile loop more than cramped encounters.",
   }),
   aspect({
     aspectId: "TorchDetonateAspect",
     focuses: ["attack", "special"],
+    boonPriorityOrder: ["attack", "special", "omega", "cast", "sprint"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "The detonation loop is clear once lingering Attacks and Special contact are coordinated.",
-    maximumRankEvaluation: "Longer-lived flames and stronger detonations improve both room clear and boss burst.",
-    strengths: ["Attack setup becomes delayed area burst", "Normal Special activates the main payoff"],
-    weaknesses: ["Firing Special too early produces weak coverage", "Setup can miss fast-moving targets"],
-    combatSequence: ["Lay lingering Attacks across the target path", "Wait until several are in position", "Send Special through them to detonate and move"],
-    primaryBoonIds: ["HestiaWeaponBoon", "ZeusWeaponBoon", "ApolloSpecialBoon", "HestiaManaBoon"],
-    fallbackBoonIds: ["PoseidonWeaponBoon", "DemeterSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "A", speed: "S", safety: "A", "high-fear": "A" },
-    bossConsideration: "Lay flames during movement and detonate only when the boss returns to their path.",
-    routeConsideration: "Narrow rooms cluster the setup, while open rooms need deliberate placement.",
+    rankOneEvaluation:
+      "The detonation loop is clear once lingering Attacks and Special contact are coordinated.",
+    maximumRankEvaluation:
+      "Longer-lived flames and stronger detonations improve both room clear and boss burst.",
+    strengths: [
+      "Attack setup becomes delayed area burst",
+      "Normal Special activates the main payoff",
+    ],
+    weaknesses: [
+      "Firing Special too early produces weak coverage",
+      "Setup can miss fast-moving targets",
+    ],
+    combatSequence: [
+      "Lay lingering Attacks across the target path",
+      "Wait until several are in position",
+      "Send Special through them to detonate and move",
+    ],
+    primaryBoonIds: [
+      "HeraWeaponBoon",
+      "ZeusSpecialBoon",
+      "HeraManaBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "ApolloWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "HestiaWeaponBoon",
+      "AresSpecialBoon",
+      "HestiaManaBoon",
+      "HestiaCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "S",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Lay flames during movement and detonate only when the boss returns to their path.",
+    routeConsideration:
+      "Narrow rooms cluster the setup, while open rooms need deliberate placement.",
   }),
   aspect({
     aspectId: "TorchSpecialDurationAspect",
     focuses: ["attack", "special"],
+    boonPriorityOrder: ["omega", "special", "attack", "cast", "sprint"],
     beginnerDifficulty: 1,
-    rankOneEvaluation: "A straightforward critical chance bonus that preserves the normal Torch loop.",
-    maximumRankEvaluation: "Improved critical consistency scales both main move sets without narrowing boon choice.",
-    strengths: ["Immediate value on Attack and Special", "No setup beyond maintaining normal projectile uptime"],
-    weaknesses: ["Random critical timing is less controllable than a fixed combo", "Does not solve Magick or positioning by itself"],
-    combatSequence: ["Maintain Attack pressure while moving", "Add Special rings around controlled targets", "Reposition before refreshing both patterns"],
-    primaryBoonIds: ["ZeusWeaponBoon", "HestiaWeaponBoon", "ApolloSpecialBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["PoseidonWeaponBoon", "DemeterSpecialBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "S", speed: "A", safety: "A", "high-fear": "A" },
-    bossConsideration: "Favor sustained uptime because the critical bonus pays over many safe hits.",
-    routeConsideration: "The general plan works on both routes without a special room requirement.",
+    rankOneEvaluation:
+      "A straightforward critical chance bonus that preserves the normal Torch loop.",
+    maximumRankEvaluation:
+      "Improved critical consistency scales both main move sets without narrowing boon choice.",
+    strengths: [
+      "Immediate value on Attack and Special",
+      "No setup beyond maintaining normal projectile uptime",
+    ],
+    weaknesses: [
+      "Random critical timing is less controllable than a fixed combo",
+      "Does not solve Magick or positioning by itself",
+    ],
+    combatSequence: [
+      "Maintain Attack pressure while moving",
+      "Add Special rings around controlled targets",
+      "Reposition before refreshing both patterns",
+    ],
+    primaryBoonIds: [
+      "HeraManaBoon",
+      "HeraSpecialBoon",
+      "DemeterWeaponBoon",
+      "ZeusCastBoon",
+      "ApolloSprintBoon",
+      "AphroditeSpecialBoon",
+      "HeraWeaponBoon",
+    ],
+    fallbackBoonIds: [
+      "HestiaManaBoon",
+      "ZeusSpecialBoon",
+      "HestiaWeaponBoon",
+      "DemeterCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "S",
+      speed: "A",
+      safety: "A",
+      "high-fear": "A",
+    },
+    bossConsideration:
+      "Favor sustained uptime because the critical bonus pays over many safe hits.",
+    routeConsideration:
+      "The general plan works on both routes without a special room requirement.",
   }),
   aspect({
     aspectId: "TorchSprintRecallAspect",
     focuses: ["attack", "omega", "sprint"],
+    boonPriorityOrder: ["special", "attack", "omega", "cast", "sprint"],
     beginnerDifficulty: 3,
-    rankOneEvaluation: "The pulsing Omega projectile is strong when its route is controlled and recalled deliberately.",
-    maximumRankEvaluation: "More pulse value rewards accurate pathing through bosses and groups.",
-    strengths: ["Persistent area damage", "Sprint movement can reposition the main projectile"],
-    weaknesses: ["Poor routing leaves the projectile away from targets", "Requires attention to both Melinoe and the active shot"],
-    combatSequence: ["Fire Omega Attack through the target line", "Move so the projectile continues pulsing near foes", "Sprint to recall or redirect it before the next setup"],
-    arcanaIds: ["SprintShield", "ChanneledCast", "ManaOverTime", "BonusHealth", "LastStand"],
-    primaryBoonIds: ["ZeusWeaponBoon", "ApolloWeaponBoon", "ApolloSprintBoon", "ApolloManaBoon"],
-    fallbackBoonIds: ["HestiaWeaponBoon", "DemeterSprintBoon", "DemeterManaBoon"],
-    contextRatings: { consistency: "A", speed: "S", safety: "B", "high-fear": "B" },
-    bossConsideration: "Keep the projectile crossing the boss's current attack lane instead of chasing every movement.",
-    routeConsideration: "Open rooms improve routing but also increase the distance of a bad recall.",
+    rankOneEvaluation:
+      "The pulsing Omega projectile is strong when its route is controlled and recalled deliberately.",
+    maximumRankEvaluation:
+      "More pulse value rewards accurate pathing through bosses and groups.",
+    strengths: [
+      "Persistent area damage",
+      "Sprint movement can reposition the main projectile",
+    ],
+    weaknesses: [
+      "Poor routing leaves the projectile away from targets",
+      "Requires attention to both Melinoe and the active shot",
+    ],
+    combatSequence: [
+      "Fire Omega Attack through the target line",
+      "Move so the projectile continues pulsing near foes",
+      "Sprint to recall or redirect it before the next setup",
+    ],
+    arcanaIds: [
+      "SprintShield",
+      "ChanneledCast",
+      "ManaOverTime",
+      "BonusHealth",
+      "LastStand",
+    ],
+    primaryBoonIds: [
+      "HeraSpecialBoon",
+      "ApolloWeaponBoon",
+      "PoseidonManaBoon",
+      "DemeterCastBoon",
+      "ApolloSprintBoon",
+      "ZeusSpecialBoon",
+    ],
+    fallbackBoonIds: [
+      "DemeterSpecialBoon",
+      "HeraWeaponBoon",
+      "HestiaManaBoon",
+      "HestiaCastBoon",
+      "DemeterSprintBoon",
+    ],
+    contextRatings: {
+      consistency: "A",
+      speed: "S",
+      safety: "B",
+      "high-fear": "B",
+    },
+    bossConsideration:
+      "Keep the projectile crossing the boss's current attack lane instead of chasing every movement.",
+    routeConsideration:
+      "Open rooms improve routing but also increase the distance of a bad recall.",
   }),
 ] as const satisfies readonly AspectProfile[];
 
 export const preferredHammersByAspect = {
-  AxeArmCastAspect: ["AxeChargedSpecialTrait", "AxeBlockEmpowerTrait", "AxeSturdyTrait"],
-  AxePerfectCriticalAspect: ["AxeAttackRecoveryTrait", "AxeThirdStrikeTrait", "AxeSturdyTrait"],
-  AxeRallyAspect: ["AxeRallyFrenzyTrait", "AxeRallyFirstStrikeTrait", "AxeAttackRecoveryTrait"],
-  AxeRecoveryAspect: ["AxeAttackRecoveryTrait", "AxeThirdStrikeTrait", "AxeSturdyTrait"],
-  BaseStaffAspect: ["StaffFastSpecialTrait", "StaffJumpSpecialTrait", "StaffTripleShotTrait"],
-  StaffClearCastAspect: ["StaffFastSpecialTrait", "StaffJumpSpecialTrait", "StaffTripleShotTrait"],
-  StaffRaiseDeadAspect: ["StaffRaiseDeadBigTrait", "StaffRaiseDeadDoubleTrait", "StaffLoneShadeRespawnTrait"],
-  StaffSelfHitAspect: ["StaffExAoETrait", "StaffPowershotTrait", "StaffSecondStageTrait"],
-  DaggerBackstabAspect: ["DaggerBackstabTrait", "DaggerRapidAttackTrait", "DaggerAttackFinisherTrait"],
-  DaggerBlockAspect: ["DaggerChargeStageSkipTrait", "DaggerBlinkAoETrait", "DaggerFinalHitTrait"],
-  DaggerHomingThrowAspect: ["DaggerSpecialFanTrait", "DaggerSpecialJumpTrait", "DaggerSpecialReturnTrait"],
-  DaggerTripleAspect: ["DaggerTripleBuffTrait", "DaggerTripleHomingSpecialTrait", "DaggerTripleRepeatWomboTrait"],
-  LobAmmoBoostAspect: ["LobAmmoTrait", "LobAmmoMagnetismTrait", "LobPulseAmmoTrait"],
-  LobCloseAttackAspect: ["LobOneSideTrait", "LobSturdySpecialTrait", "LobRushArmorTrait"],
-  LobGunAspect: ["LobGunAttackDoublerTrait", "LobGunAttackRangeTrait", "LobGunOverheatTrait"],
-  LobImpulseAspect: ["LobInOutSpecialExTrait", "LobSpecialSpeedTrait", "LobSturdySpecialTrait"],
-  BaseSuitAspect: ["SuitAttackSpeedTrait", "SuitSpecialAutoTrait", "SuitSpecialDiscountTrait"],
-  SuitComboAspect: ["SuitComboBlockBuffTrait", "SuitComboDashAttackTrait", "SuitComboDoubleSpecialTrait"],
-  SuitHexAspect: ["SuitSpecialAutoTrait", "SuitSpecialDiscountTrait", "SuitAttackSpeedTrait"],
-  SuitMarkCritAspect: ["SuitAttackSpeedTrait", "SuitAttackRangeTrait", "SuitAttackSizeTrait"],
-  TorchAutofireAspect: ["TorchEnhancedAttackTrait", "TorchMoveSpeedTrait", "TorchSpinAttackTrait"],
-  TorchDetonateAspect: ["TorchAttackSpeedTrait", "TorchDiscountExAttackTrait", "TorchEnhancedAttackTrait"],
-  TorchSpecialDurationAspect: ["TorchLongevityTrait", "TorchSpecialImpactTrait", "TorchExSpecialCountTrait"],
-  TorchSprintRecallAspect: ["TorchOrbitPointTrait", "TorchEnhancedAttackTrait", "TorchSpecialImpactTrait"],
+  AxeArmCastAspect: [
+    "AxeChargedSpecialTrait",
+    "AxeBlockEmpowerTrait",
+    "AxeSturdyTrait",
+  ],
+  AxePerfectCriticalAspect: [
+    "AxeAttackRecoveryTrait",
+    "AxeThirdStrikeTrait",
+    "AxeSturdyTrait",
+  ],
+  AxeRallyAspect: [
+    "AxeRallyFrenzyTrait",
+    "AxeRallyFirstStrikeTrait",
+    "AxeAttackRecoveryTrait",
+  ],
+  AxeRecoveryAspect: [
+    "AxeAttackRecoveryTrait",
+    "AxeThirdStrikeTrait",
+    "AxeSturdyTrait",
+  ],
+  BaseStaffAspect: [
+    "StaffFastSpecialTrait",
+    "StaffJumpSpecialTrait",
+    "StaffTripleShotTrait",
+  ],
+  StaffClearCastAspect: [
+    "StaffFastSpecialTrait",
+    "StaffJumpSpecialTrait",
+    "StaffTripleShotTrait",
+  ],
+  StaffRaiseDeadAspect: [
+    "StaffRaiseDeadBigTrait",
+    "StaffRaiseDeadDoubleTrait",
+    "StaffLoneShadeRespawnTrait",
+  ],
+  StaffSelfHitAspect: [
+    "StaffExAoETrait",
+    "StaffPowershotTrait",
+    "StaffSecondStageTrait",
+  ],
+  DaggerBackstabAspect: [
+    "DaggerBackstabTrait",
+    "DaggerRapidAttackTrait",
+    "DaggerAttackFinisherTrait",
+  ],
+  DaggerBlockAspect: [
+    "DaggerChargeStageSkipTrait",
+    "DaggerBlinkAoETrait",
+    "DaggerFinalHitTrait",
+  ],
+  DaggerHomingThrowAspect: [
+    "DaggerSpecialFanTrait",
+    "DaggerSpecialJumpTrait",
+    "DaggerSpecialReturnTrait",
+  ],
+  DaggerTripleAspect: [
+    "DaggerTripleBuffTrait",
+    "DaggerTripleHomingSpecialTrait",
+    "DaggerTripleRepeatWomboTrait",
+  ],
+  LobAmmoBoostAspect: [
+    "LobAmmoTrait",
+    "LobAmmoMagnetismTrait",
+    "LobPulseAmmoTrait",
+  ],
+  LobCloseAttackAspect: [
+    "LobOneSideTrait",
+    "LobSturdySpecialTrait",
+    "LobRushArmorTrait",
+  ],
+  LobGunAspect: [
+    "LobGunAttackDoublerTrait",
+    "LobGunAttackRangeTrait",
+    "LobGunOverheatTrait",
+  ],
+  LobImpulseAspect: [
+    "LobInOutSpecialExTrait",
+    "LobSpecialSpeedTrait",
+    "LobSturdySpecialTrait",
+  ],
+  BaseSuitAspect: [
+    "SuitAttackSpeedTrait",
+    "SuitSpecialAutoTrait",
+    "SuitSpecialDiscountTrait",
+  ],
+  SuitComboAspect: [
+    "SuitComboBlockBuffTrait",
+    "SuitComboDashAttackTrait",
+    "SuitComboDoubleSpecialTrait",
+  ],
+  SuitHexAspect: [
+    "SuitSpecialAutoTrait",
+    "SuitSpecialDiscountTrait",
+    "SuitAttackSpeedTrait",
+  ],
+  SuitMarkCritAspect: [
+    "SuitAttackSpeedTrait",
+    "SuitAttackRangeTrait",
+    "SuitAttackSizeTrait",
+  ],
+  TorchAutofireAspect: [
+    "TorchEnhancedAttackTrait",
+    "TorchMoveSpeedTrait",
+    "TorchSpinAttackTrait",
+  ],
+  TorchDetonateAspect: [
+    "TorchAttackSpeedTrait",
+    "TorchDiscountExAttackTrait",
+    "TorchEnhancedAttackTrait",
+  ],
+  TorchSpecialDurationAspect: [
+    "TorchLongevityTrait",
+    "TorchSpecialImpactTrait",
+    "TorchExSpecialCountTrait",
+  ],
+  TorchSprintRecallAspect: [
+    "TorchOrbitPointTrait",
+    "TorchEnhancedAttackTrait",
+    "TorchSpecialImpactTrait",
+  ],
 } as const satisfies Readonly<Record<string, readonly string[]>>;
 
 export const arcanaProfiles = [
   {
-    id: "ChanneledCast", rating: "S", recommendation: "Equip The Sorceress while learning Omega moves or using an Omega-heavy aspect.",
-    reason: "Its one-Grasp charge-speed bonus shortens the exposed part of every Omega action.",
-    limitation: "A build that rarely channels Omega moves gains little from the slot.",
-    fallback: "Use The Swift Runner when movement safety matters more than Omega speed.",
+    id: "ChanneledCast",
+    rating: "S",
+    recommendation:
+      "Equip The Sorceress while learning Omega moves or using an Omega-heavy aspect.",
+    reason:
+      "Its one-Grasp charge-speed bonus shortens the exposed part of every Omega action.",
+    limitation:
+      "A build that rarely channels Omega moves gains little from the slot.",
+    fallback:
+      "If Sprint positioning causes more damage than Omega channels, equip The Swift Runner instead.",
   },
   {
-    id: "HealthRegen", rating: "A", recommendation: "Equip The Wayward Son when room damage is the main source of failed routes.",
-    reason: "Room-to-room healing repairs repeated small mistakes for only one Grasp.",
-    limitation: "It cannot prevent burst damage or restore enough Life during one guardian encounter.",
-    fallback: "Use Persistence for a larger starting Life buffer.",
+    id: "HealthRegen",
+    rating: "A",
+    recommendation:
+      "Equip The Wayward Son when room damage is the main source of failed routes.",
+    reason:
+      "Room-to-room healing repairs repeated small mistakes for only one Grasp.",
+    limitation:
+      "It cannot prevent burst damage or restore enough Life during one guardian encounter.",
+    fallback:
+      "If burst damage ends the night before room healing can help, equip Persistence for a larger starting Life buffer.",
   },
   {
-    id: "LowManaDamageBonus", rating: "B", recommendation: "Equip The Huntress only when the normal Attack or Special remains useful at low Magick.",
+    id: "LowManaDamageBonus",
+    rating: "B",
+    recommendation:
+      "Equip The Huntress only when the normal Attack or Special remains useful at low Magick.",
     reason: "It turns an expected low-Magick state into direct weapon damage.",
-    limitation: "Fast Magick recovery or an Omega-only loop reduces its active time.",
-    fallback: "Use Origination for damage when the build can maintain two curses.",
+    limitation:
+      "Fast Magick recovery or an Omega-only loop reduces its active time.",
+    fallback:
+      "If the build reliably maintains two curses, equip Origination for damage that does not depend on staying low on Magick.",
   },
   {
-    id: "CastCount", rating: "B", recommendation: "Equip Eternity when long Omega channels need a larger reaction window.",
-    reason: "The slowdown protects deliberate charging and aiming during active encounters.",
-    limitation: "Its three-Grasp cost is hard to justify for quick taps or normal-move builds.",
-    fallback: "Use The Sorceress for a cheaper reduction in channel exposure.",
+    id: "CastCount",
+    rating: "B",
+    recommendation:
+      "Equip Eternity when long Omega channels need a larger reaction window.",
+    reason:
+      "The slowdown protects deliberate charging and aiming during active encounters.",
+    limitation:
+      "Its three-Grasp cost is hard to justify for quick taps or normal-move builds.",
+    fallback:
+      "If three Grasp does not fit or the longer slowdown is unnecessary, equip The Sorceress for a cheaper channel-speed bonus.",
   },
   {
-    id: "SorceryRegenUpgrade", rating: "B", recommendation: "Activate The Moon when Hex use is part of the planned combat loop.",
-    reason: "Automatic Hex charge adds uses without forcing more Magick spending into the weapon sequence.",
-    limitation: "The card needs its activation condition and adds little when the chosen Hex is not useful.",
-    fallback: "Use The Unseen when the weapon needs Magick more than additional Hex charge.",
+    id: "SorceryRegenUpgrade",
+    rating: "B",
+    recommendation:
+      "Activate The Moon when Hex use is part of the planned combat loop.",
+    reason:
+      "Automatic Hex charge adds uses without forcing more Magick spending into the weapon sequence.",
+    limitation:
+      "The card needs its activation condition and adds little when the chosen Hex is not useful.",
+    fallback:
+      "If Magick runs out before the Hex can charge, equip The Unseen for regeneration instead.",
   },
   {
-    id: "CastBuff", rating: "A", recommendation: "Equip The Furies when the build keeps priority targets inside Cast.",
-    reason: "Its damage bonus rewards the same Cast placement used for control and Origination setup.",
-    limitation: "Mobile targets or a sequence that leaves Cast behind reduce its uptime.",
-    fallback: "Use a card tied to the aspect's primary Attack, Special, or Omega loop.",
+    id: "CastBuff",
+    rating: "A",
+    recommendation:
+      "Equip The Furies when the build keeps priority targets inside Cast.",
+    reason:
+      "Its damage bonus rewards the same Cast placement used for control and Origination setup.",
+    limitation:
+      "Mobile targets or a sequence that leaves Cast behind reduce its uptime.",
+    fallback:
+      "If targets will not remain inside Cast, spend the Grasp on a card that directly supports the aspect's primary move.",
   },
   {
-    id: "BonusHealth", rating: "S", recommendation: "Equip Persistence in early progression and in any loadout that needs a larger starting buffer.",
-    reason: "Maximum Life and Magick help every weapon before the run offers any rewards.",
-    limitation: "It provides no scaling after the starting resources stop being the route constraint.",
-    fallback: "Use The Wayward Son for recovery between rooms when the starting buffer is already sufficient.",
+    id: "BonusHealth",
+    rating: "S",
+    recommendation:
+      "Equip Persistence in early progression and in any loadout that needs a larger starting buffer.",
+    reason:
+      "Maximum Life and Magick help every weapon before the run offers any rewards.",
+    limitation:
+      "It provides no scaling after the starting resources stop being the route constraint.",
+    fallback:
+      "If maximum Life is already sufficient but repeated chip damage accumulates, equip The Wayward Son for room-to-room recovery.",
   },
   {
-    id: "BonusDodge", rating: "A", recommendation: "Equip The Messenger when Cast placement also serves as an escape or repositioning tool.",
-    reason: "Brief invulnerability and movement speed make an action already used in combat safer.",
-    limitation: "The protection is short and depends on deliberate Cast timing.",
-    fallback: "Use The Swift Runner for movement value that does not depend on Cast.",
+    id: "BonusDodge",
+    rating: "A",
+    recommendation:
+      "Equip The Messenger when Cast placement also serves as an escape or repositioning tool.",
+    reason:
+      "Brief invulnerability and movement speed make an action already used in combat safer.",
+    limitation:
+      "The protection is short and depends on deliberate Cast timing.",
+    fallback:
+      "If Cast is not part of the escape sequence, equip The Swift Runner for movement value that does not depend on Cast timing.",
   },
   {
-    id: "ManaOverTime", rating: "A", recommendation: "Equip The Unseen for aspects that repeatedly spend Magick and lack reliable recovery.",
-    reason: "Passive regeneration keeps Omega and Hex actions available across long rooms and guardians.",
-    limitation: "Five Grasp is expensive when the build spends little Magick or already has strong recovery.",
-    fallback: "Use Persistence for a cheaper Magick buffer or take recovery from a Boon.",
+    id: "ManaOverTime",
+    rating: "A",
+    recommendation:
+      "Equip The Unseen for aspects that repeatedly spend Magick and lack reliable recovery.",
+    reason:
+      "Passive regeneration keeps Omega and Hex actions available across long rooms and guardians.",
+    limitation:
+      "Five Grasp is expensive when the build spends little Magick or already has strong recovery.",
+    fallback:
+      "If five Grasp does not fit, use Persistence for a cheaper starting Magick buffer and secure regeneration from a Boon.",
   },
   {
-    id: "MagicCrit", rating: "B", recommendation: "Activate Night when the loadout already creates the required Death effect and attacks often enough to use critical chance.",
-    reason: "Critical chance can scale every eligible hit without reserving a core Boon slot.",
-    limitation: "Its activation and random payoff make it less reliable than direct survival or resource cards.",
-    fallback: "Use Origination for predictable damage when two curses are maintained.",
+    id: "MagicCrit",
+    rating: "B",
+    recommendation:
+      "Activate Night when the loadout already creates the required Death effect and attacks often enough to use critical chance.",
+    reason:
+      "Critical chance can scale every eligible hit without reserving a core Boon slot.",
+    limitation:
+      "Its activation and random payoff make it less reliable than direct survival or resource cards.",
+    fallback:
+      "If the Death activation is unavailable but two curses stay active, equip Origination for predictable damage instead.",
   },
   {
-    id: "SprintShield", rating: "A", recommendation: "Equip The Swift Runner for mobile aspects or routes where repositioning causes damage taken.",
-    reason: "One Grasp improves Sprint speed and lets Melinoe pass through most foes.",
-    limitation: "It does not protect a stationary channel or repair poor Sprint timing.",
-    fallback: "Use The Sorceress for Omega safety or The Messenger for Cast-based movement.",
+    id: "SprintShield",
+    rating: "A",
+    recommendation:
+      "Equip The Swift Runner for mobile aspects or routes where repositioning causes damage taken.",
+    reason:
+      "One Grasp improves Sprint speed and lets Melinoe pass through most foes.",
+    limitation:
+      "It does not protect a stationary channel or repair poor Sprint timing.",
+    fallback:
+      "If stationary Omega channels cause the damage taken, equip The Sorceress. If Cast is the main escape tool, equip The Messenger.",
   },
   {
-    id: "LastStand", rating: "S", recommendation: "Equip Death until routes and guardians clear without using its Death Defiance.",
-    reason: "A guaranteed extra recovery protects an otherwise successful progression attempt.",
-    limitation: "Four Grasp is inefficient when the run already finishes without consuming the effect.",
-    fallback: "Use Strength after intentionally giving up Death Defiance for its always-on low-life package.",
+    id: "LastStand",
+    rating: "S",
+    recommendation:
+      "Equip Death until routes and guardians clear without using its Death Defiance.",
+    reason:
+      "A guaranteed extra recovery protects an otherwise successful progression attempt.",
+    limitation:
+      "Four Grasp is inefficient when the run already finishes without consuming the effect.",
+    fallback:
+      "Only after intentionally removing every Death Defiance should Strength replace Death for its low-Life damage and defense.",
   },
   {
-    id: "MaxHealthPerRoom", rating: "S", recommendation: "Activate The Centaur when the board can meet its condition without sacrificing the core loadout.",
-    reason: "Free maximum Life and Magick accumulate during the same rooms needed to finish a route.",
-    limitation: "Late activation or short routes provide fewer growth intervals.",
-    fallback: "Use Persistence when the board cannot activate The Centaur.",
+    id: "MaxHealthPerRoom",
+    rating: "S",
+    recommendation:
+      "Activate The Centaur when the board can meet its condition without sacrificing the core loadout.",
+    reason:
+      "Free maximum Life and Magick accumulate during the same rooms needed to finish a route.",
+    limitation:
+      "Late activation or short routes provide fewer growth intervals.",
+    fallback:
+      "If the board cannot meet The Centaur's activation pattern, equip Persistence for immediate Life and Magick instead.",
   },
   {
-    id: "StatusVulnerability", rating: "A", recommendation: "Equip Origination when the build can maintain curses from two Olympians on priority targets.",
-    reason: "The damage bonus rewards a repeatable two-curse package across weapon, Cast, Sprint, and support Boons.",
-    limitation: "Five Grasp produces no value until both curses remain active on the same target.",
-    fallback: "Use unconditional survival or Magick cards when the Boon plan cannot guarantee two curses.",
+    id: "StatusVulnerability",
+    rating: "A",
+    recommendation:
+      "Equip Origination when the build can maintain curses from two Olympians on priority targets.",
+    reason:
+      "The damage bonus rewards a repeatable two-curse package across weapon, Cast, Sprint, and support Boons.",
+    limitation:
+      "Five Grasp produces no value until both curses remain active on the same target.",
+    fallback:
+      "If the Boon plan cannot keep two curses on the same target, spend the five Grasp on unconditional survival or Magick support.",
   },
   {
-    id: "ChanneledBlock", rating: "A", recommendation: "Equip The Lovers when guardian hits are the main reason otherwise stable runs fail.",
-    reason: "Its encounter shields prevent the first mistakes in each guardian fight.",
-    limitation: "Three Grasp adds no room-clear speed and the protected hits are limited.",
-    fallback: "Use Death for recovery after a fatal mistake or Persistence for a universal Life buffer.",
+    id: "ChanneledBlock",
+    rating: "A",
+    recommendation:
+      "Equip The Lovers when guardian hits are the main reason otherwise stable runs fail.",
+    reason:
+      "Its encounter shields prevent the first mistakes in each guardian fight.",
+    limitation:
+      "Three Grasp adds no room-clear speed and the protected hits are limited.",
+    fallback:
+      "If fatal mistakes end the run, equip Death. If ordinary damage is the larger problem, equip Persistence.",
   },
   {
-    id: "DoorReroll", rating: "A", recommendation: "Equip The Enchantress when route rewards and permanent resources matter more than fishing for one Boon.",
-    reason: "Location rerolls can replace an unwanted door before the next encounter is chosen.",
-    limitation: "It cannot reroll the choices inside an offered Boon and costs three Grasp.",
-    fallback: "Use The Champions when the build needs specific Boon choices instead.",
+    id: "DoorReroll",
+    rating: "A",
+    recommendation:
+      "Equip The Enchantress when route rewards and permanent resources matter more than fishing for one Boon.",
+    reason:
+      "Location rerolls can replace an unwanted door before the next encounter is chosen.",
+    limitation:
+      "It cannot reroll the choices inside an offered Boon and costs three Grasp.",
+    fallback:
+      "If the correct god already appears but the needed Boon does not, equip The Champions to reroll that god's choices.",
   },
   {
-    id: "StartingGold", rating: "B", recommendation: "Equip The Boatman when the route has early shops worth funding.",
-    reason: "Starting Gold converts five Grasp into immediate shop flexibility.",
-    limitation: "The value is lost when early shops or useful purchases do not appear.",
-    fallback: "Use a combat card when the run cannot rely on shop routing.",
+    id: "StartingGold",
+    rating: "B",
+    recommendation:
+      "Equip The Boatman when the route has early shops worth funding.",
+    reason:
+      "Starting Gold converts five Grasp into immediate shop flexibility.",
+    limitation:
+      "The value is lost when early shops or useful purchases do not appear.",
+    fallback:
+      "If no early shop purchase is planned, spend the five Grasp on a combat card that works in every room.",
   },
   {
-    id: "MetaToRunUpgrade", rating: "B", recommendation: "Equip The Artificer when permanent-resource doors are less valuable than immediate run power.",
-    reason: "Its conversions can rescue a route whose ordinary rewards do not support the current build.",
-    limitation: "The result is random and spending the conversion sacrifices permanent progression value.",
-    fallback: "Keep the permanent resource or use The Enchantress to reroll its door.",
+    id: "MetaToRunUpgrade",
+    rating: "B",
+    recommendation:
+      "Equip The Artificer when permanent-resource doors are less valuable than immediate run power.",
+    reason:
+      "Its conversions can rescue a route whose ordinary rewards do not support the current build.",
+    limitation:
+      "The result is random and spending the conversion sacrifices permanent progression value.",
+    fallback:
+      "If permanent progression is still the priority, keep the resource reward or use The Enchantress to reroll its door before entering.",
   },
   {
-    id: "RarityBoost", rating: "B", recommendation: "Equip Excellence only after the board can afford five Grasp beyond the functional combat core.",
-    reason: "Higher rarity and Legendary access can raise the ceiling of every offered god package.",
-    limitation: "It improves offer quality rather than fixing missing core slots or survival.",
-    fallback: "Use The Champions to search for a required functional Boon.",
+    id: "RarityBoost",
+    rating: "B",
+    recommendation:
+      "Equip Excellence only after the board can afford five Grasp beyond the functional combat core.",
+    reason:
+      "Higher rarity and Legendary access can raise the ceiling of every offered god package.",
+    limitation:
+      "It improves offer quality rather than fixing missing core slots or survival.",
+    fallback:
+      "If a required functional Boon is still missing, equip The Champions instead of spending five Grasp on offer quality.",
   },
   {
-    id: "BonusRarity", rating: "B", recommendation: "Activate The Queen when the planned build already contains reachable Duo prerequisites.",
-    reason: "Additional Duo chance matters after both gods and prerequisite sets are represented.",
-    limitation: "The card's activation condition and offer dependence make it useless to an unfinished core build.",
-    fallback: "Use Excellence for broader rarity or The Champions for direct choice control.",
+    id: "BonusRarity",
+    rating: "B",
+    recommendation:
+      "Activate The Queen when the planned build already contains reachable Duo prerequisites.",
+    reason:
+      "Additional Duo chance matters after both gods and prerequisite sets are represented.",
+    limitation:
+      "The card's activation condition and offer dependence make it useless to an unfinished core build.",
+    fallback:
+      "If no reachable Duo path is already present, use Excellence for broad rarity or The Champions to find a required Boon.",
   },
   {
-    id: "TradeOff", rating: "A", recommendation: "Activate The Fates when flexible rerolls help both doors and choice screens.",
-    reason: "General rerolls can repair either route rewards or an offered set of choices.",
-    limitation: "Its board activation condition competes with other zero-Grasp cards.",
-    fallback: "Use The Enchantress or The Champions when only one reroll type matters.",
+    id: "TradeOff",
+    rating: "A",
+    recommendation:
+      "Activate The Fates when flexible rerolls help both doors and choice screens.",
+    reason:
+      "General rerolls can repair either route rewards or an offered set of choices.",
+    limitation:
+      "Its board activation condition competes with other zero-Grasp cards.",
+    fallback:
+      "If only doors need rerolls, equip The Enchantress. If only Boon choices need rerolls, equip The Champions.",
   },
   {
-    id: "ScreenReroll", rating: "A", recommendation: "Equip The Champions when an aspect needs a particular core Boon or prerequisite.",
-    reason: "Choice rerolls directly improve the chance of completing the planned package after the correct reward appears.",
-    limitation: "Four Grasp is excessive for builds that accept many gods and core-slot options.",
-    fallback: "Use The Enchantress when choosing the right reward door is the larger constraint.",
+    id: "ScreenReroll",
+    rating: "A",
+    recommendation:
+      "Equip The Champions when an aspect needs a particular core Boon or prerequisite.",
+    reason:
+      "Choice rerolls directly improve the chance of completing the planned package after the correct reward appears.",
+    limitation:
+      "Four Grasp is excessive for builds that accept many gods and core-slot options.",
+    fallback:
+      "If finding the correct reward door is harder than choosing within an offer, equip The Enchantress instead.",
   },
   {
-    id: "LowHealthBonus", rating: "B", recommendation: "Equip Strength only for a deliberate no-Death-Defiance loadout.",
-    reason: "Its damage reduction and damage bonus remain active together when the condition is intentionally met.",
-    limitation: "Removing Death Defiance makes mistakes harder to recover from and is poor beginner progression advice.",
-    fallback: "Use Death for consistency while learning routes and Fear conditions.",
+    id: "LowHealthBonus",
+    rating: "B",
+    recommendation:
+      "Equip Strength only for a deliberate no-Death-Defiance loadout.",
+    reason:
+      "Its damage reduction and damage bonus remain active together when the condition is intentionally met.",
+    limitation:
+      "Removing Death Defiance makes mistakes harder to recover from and is poor beginner progression advice.",
+    fallback:
+      "While learning routes or Fear conditions, equip Death instead so one fatal mistake does not end the night.",
   },
   {
-    id: "EpicRarityBoost", rating: "A", recommendation: "Activate Divinity when the board condition fits a completed combat loadout.",
-    reason: "Epic Boon access improves ordinary offers without requiring a specific god pair.",
-    limitation: "The activation layout can cost more useful cards than the rarity increase returns.",
-    fallback: "Use Excellence when its five-Grasp cost fits more cleanly or keep the combat core.",
+    id: "EpicRarityBoost",
+    rating: "A",
+    recommendation:
+      "Activate Divinity when the board condition fits a completed combat loadout.",
+    reason:
+      "Epic Boon access improves ordinary offers without requiring a specific god pair.",
+    limitation:
+      "The activation layout can cost more useful cards than the rarity increase returns.",
+    fallback:
+      "If Divinity's activation pattern breaks the combat core, use Excellence when five Grasp fits or keep the core unchanged.",
   },
   {
-    id: "CardDraw", rating: "B", recommendation: "Activate Judgment for long routes when the starting board can survive until multiple guardians fall.",
-    reason: "Each guardian can add random inactive cards and raise the late-run ceiling.",
-    limitation: "The early route begins weaker and random cards may not support the selected aspect.",
-    fallback: "Equip the reliable core cards directly for progression and high-Fear consistency.",
+    id: "CardDraw",
+    rating: "B",
+    recommendation:
+      "Activate Judgment for long routes when the starting board can survive until multiple guardians fall.",
+    reason:
+      "Each guardian can add random inactive cards and raise the late-run ceiling.",
+    limitation:
+      "The early route begins weaker and random cards may not support the selected aspect.",
+    fallback:
+      "If the weakened starting board cannot reach the first Guardian reliably, equip the required combat cards directly.",
   },
 ] as const satisfies readonly TierProfile[];
 
@@ -948,42 +2484,62 @@ export const familiarProfiles = [
   {
     id: "FrogFamiliar",
     rating: "S",
-    recommendation: "Use Frinos while learning routes or whenever maximum Life is the main constraint.",
-    reason: "The Life bonus improves every encounter and asks for no build-specific setup.",
-    limitation: "Frinos adds less clear speed than Familiars with offensive passive bonuses.",
-    fallback: "Use Hecuba for an Omega build or Raki after survival is stable.",
+    recommendation:
+      "Use Frinos while learning routes or whenever maximum Life is the main constraint.",
+    reason:
+      "The Life bonus improves every encounter and asks for no build-specific setup.",
+    limitation:
+      "Frinos adds less clear speed than Familiars with offensive passive bonuses.",
+    fallback:
+      "If Magick limits an Omega build, use Hecuba. If survival is already stable and clear speed matters more, use Raki.",
   },
   {
     id: "HoundFamiliar",
     rating: "A",
-    recommendation: "Use Hecuba when an Omega-heavy build needs more maximum Magick and room control.",
-    reason: "The Magick bonus supports repeated Omega actions while the stun creates safer openings.",
-    limitation: "A build that rarely spends Magick gains less than it would from Life, critical chance, or mobility.",
-    fallback: "Use Frinos when survival is uncertain or Raki when the build already sustains its Magick.",
+    recommendation:
+      "Use Hecuba when an Omega-heavy build needs more maximum Magick and room control.",
+    reason:
+      "The Magick bonus supports repeated Omega actions while the stun creates safer openings.",
+    limitation:
+      "A build that rarely spends Magick gains less than it would from Life, critical chance, or mobility.",
+    fallback:
+      "If survival is uncertain, use Frinos. If the build already sustains its Magick and wants more damage, use Raki.",
   },
   {
     id: "RavenFamiliar",
     rating: "A",
-    recommendation: "Use Raki when the build already survives reliably and benefits from universal critical chance.",
-    reason: "Critical chance can improve every damage source without changing the combat sequence.",
-    limitation: "The random damage increase does not repair low Life, poor Magick recovery, or unsafe positioning.",
-    fallback: "Use Frinos for survival or Hecuba for an Omega build with limited Magick.",
+    recommendation:
+      "Use Raki when the build already survives reliably and benefits from universal critical chance.",
+    reason:
+      "Critical chance can improve every damage source without changing the combat sequence.",
+    limitation:
+      "The random damage increase does not repair low Life, poor Magick recovery, or unsafe positioning.",
+    fallback:
+      "If survival is uncertain, use Frinos. If Magick limits an Omega build, use Hecuba.",
   },
   {
     id: "PolecatFamiliar",
     rating: "A",
-    recommendation: "Use Gale when movement speed and dodge chance solve the current route or Fear condition.",
-    reason: "The passive defensive mobility remains active without requiring a particular attack pattern.",
-    limitation: "Dodge is less predictable than a larger Life pool and adds no direct build resource.",
-    fallback: "Use Frinos for predictable survival or Raki for clear speed.",
+    recommendation:
+      "Use Gale when movement speed and dodge chance solve the current route or Fear condition.",
+    reason:
+      "The passive defensive mobility remains active without requiring a particular attack pattern.",
+    limitation:
+      "Dodge is less predictable than a larger Life pool and adds no direct build resource.",
+    fallback:
+      "If predictable maximum Life matters more than dodge chance, use Frinos. If damage matters more than mobility, use Raki.",
   },
   {
     id: "CatFamiliar",
     rating: "B",
-    recommendation: "Use Toula when an extra recovery effect or Fishing Point access advances the current objective.",
-    reason: "The Heart Bond can protect a run while the Sense Bond supports a specific gathering target.",
-    limitation: "Its general combat value is less consistent than Life, Magick, critical chance, or mobility.",
-    fallback: "Use Frinos for a general defensive run.",
+    recommendation:
+      "Use Toula when an extra recovery effect or Fishing Point access advances the current objective.",
+    reason:
+      "The Heart Bond can protect a run while the Sense Bond supports a specific gathering target.",
+    limitation:
+      "Its general combat value is less consistent than Life, Magick, critical chance, or mobility.",
+    fallback:
+      "If neither a fatal-hit recovery nor Fishing Point access serves the current objective, use Frinos for unconditional maximum Life.",
   },
 ] as const satisfies readonly TierProfile[];
 
@@ -991,100 +2547,345 @@ export const hexProfiles = [
   {
     id: "TimeSlow",
     rating: "S",
-    recommendation: "Choose Phase Shift for a broadly safe Hex that preserves the current weapon sequence.",
-    reason: "Slowing the encounter creates room to attack, reposition, or recover without replacing the build's normal actions.",
+    recommendation:
+      "Choose Phase Shift for a broadly safe Hex that preserves the current weapon sequence.",
+    reason:
+      "Slowing the encounter creates room to attack, reposition, or recover without replacing the build's normal actions.",
     limitation: "It adds less immediate burst than a direct-damage Hex.",
-    fallback: "Choose Moon Water when healing is the clearer route constraint.",
+    fallback:
+      "If lost Life, rather than unsafe attack windows, ends the run, choose Moon Water for direct healing.",
   },
   {
     id: "Potion",
     rating: "S",
-    recommendation: "Choose Moon Water when health loss is the main reason runs end.",
-    reason: "Direct healing repairs mistakes and its uses replenish at fountains.",
-    limitation: "It does not speed up rooms when the build already finishes with a large Life buffer.",
-    fallback: "Choose Phase Shift for prevention or a damage Hex for clear speed.",
+    recommendation:
+      "Choose Moon Water when health loss is the main reason runs end.",
+    reason:
+      "Direct healing repairs mistakes and its uses replenish at fountains.",
+    limitation:
+      "It does not speed up rooms when the build already finishes with a large Life buffer.",
+    fallback:
+      "If the run already finishes with Life to spare, choose Phase Shift for prevention or a direct-damage Hex for faster clears.",
   },
   {
     id: "Transform",
     rating: "A",
-    recommendation: "Choose Dark Side when invulnerability is more valuable than continuing the normal weapon loop.",
-    reason: "The transformation creates a protected damage window during dangerous encounters.",
-    limitation: "Its separate abilities interrupt aspect-specific boon and weapon sequences.",
-    fallback: "Choose Phase Shift when the build should keep using its normal actions.",
+    recommendation:
+      "Choose Dark Side when invulnerability is more valuable than continuing the normal weapon loop.",
+    reason:
+      "The transformation creates a protected damage window during dangerous encounters.",
+    limitation:
+      "Its separate abilities interrupt aspect-specific boon and weapon sequences.",
+    fallback:
+      "If interrupting the weapon sequence costs more than the transformation gains, choose Phase Shift instead.",
   },
   {
     id: "Leap",
     rating: "A",
-    recommendation: "Choose Wolf Howl for immediate area damage and repositioning.",
-    reason: "The effect resolves quickly and works without a slain enemy, long channel, or delayed target.",
-    limitation: "Its close target area can be unsafe when the landing window is poorly timed.",
-    fallback: "Choose Total Eclipse for delayed range or Phase Shift for safety.",
+    recommendation:
+      "Choose Wolf Howl for immediate area damage and repositioning.",
+    reason:
+      "The effect resolves quickly and works without a slain enemy, long channel, or delayed target.",
+    limitation:
+      "Its close target area can be unsafe when the landing window is poorly timed.",
+    fallback:
+      "If close-range landing is unsafe, choose Total Eclipse for a ranged delayed blast or Phase Shift for control.",
   },
   {
     id: "MoonBeam",
     rating: "A",
-    recommendation: "Choose Sky Fall when automatic pressure fits a mobile build.",
-    reason: "Repeated strikes add damage while Melinoe continues moving and using the weapon.",
+    recommendation:
+      "Choose Sky Fall when automatic pressure fits a mobile build.",
+    reason:
+      "Repeated strikes add damage while Melinoe continues moving and using the weapon.",
     limitation: "Random target selection can spread damage in crowded rooms.",
-    fallback: "Choose Wolf Howl when immediate aimed damage matters more.",
+    fallback:
+      "If damage must land immediately on one chosen area, choose Wolf Howl instead.",
   },
   {
     id: "Meteor",
     rating: "B",
-    recommendation: "Choose Total Eclipse when a large delayed blast can be placed on a predictable target.",
-    reason: "The large area rewards bosses and groups that remain inside the marked zone.",
+    recommendation:
+      "Choose Total Eclipse when a large delayed blast can be placed on a predictable target.",
+    reason:
+      "The large area rewards bosses and groups that remain inside the marked zone.",
     limitation: "Mobile targets can leave before the fuse ends.",
-    fallback: "Choose Wolf Howl for immediate damage.",
+    fallback:
+      "If targets leave the marked area before the blast, choose Wolf Howl for immediate damage.",
   },
   {
     id: "Polymorph",
     rating: "B",
-    recommendation: "Choose Twilight Curse for control in dense normal encounters.",
-    reason: "The seeking projectile can disable several susceptible foes and reduce incoming pressure.",
+    recommendation:
+      "Choose Twilight Curse for control in dense normal encounters.",
+    reason:
+      "The seeking projectile can disable several susceptible foes and reduce incoming pressure.",
     limitation: "Bosses and other resistant targets remove much of its value.",
-    fallback: "Choose Phase Shift when the route needs control that also works during bosses.",
+    fallback:
+      "If the route's main obstacle is immune to transformation, choose Phase Shift for control that also works during bosses.",
   },
   {
     id: "Summon",
     rating: "B",
-    recommendation: "Choose Night Bloom when encounters reliably provide a strong susceptible enemy to raise.",
-    reason: "A raised enemy adds damage and draws attention without replacing Melinoe's actions.",
-    limitation: "The Hex needs an eligible slain enemy and is unreliable at the start of a room or in some boss fights.",
-    fallback: "Choose Sky Fall for automatic pressure without a kill requirement.",
+    recommendation:
+      "Choose Night Bloom when encounters reliably provide a strong susceptible enemy to raise.",
+    reason:
+      "A raised enemy adds damage and draws attention without replacing Melinoe's actions.",
+    limitation:
+      "The Hex needs an eligible slain enemy and is unreliable at the start of a room or in some boss fights.",
+    fallback:
+      "If rooms do not provide a useful enemy to raise, choose Sky Fall for automatic pressure without a kill requirement.",
   },
   {
     id: "Laser",
     rating: "B",
-    recommendation: "Choose Lunar Ray when the build can create a safe channeling window.",
-    reason: "The beam can concentrate damage on a stationary or controlled target.",
-    limitation: "Channeling restricts movement and competes with the weapon's normal damage sequence.",
-    fallback: "Choose Wolf Howl or Sky Fall when the encounter does not allow long stationary windows.",
+    recommendation:
+      "Choose Lunar Ray when the build can create a safe channeling window.",
+    reason:
+      "The beam can concentrate damage on a stationary or controlled target.",
+    limitation:
+      "Channeling restricts movement and competes with the weapon's normal damage sequence.",
+    fallback:
+      "If the encounter does not allow a long stationary channel, choose Wolf Howl for an aimed burst or Sky Fall for automatic pressure.",
   },
 ] as const satisfies readonly TierProfile[];
 
 export const pageDefinitions = [
-  { id: "guide/progression", pageKind: "progression", title: "A-to-Z progression guide", sourceRecordTypes: ["editorial/progression-stage"], aliases: ["a to z guide", "a-z guide", "beginner guide", "progression route"], spoilerLevel: "progression" },
-  { id: "tier/boons", pageKind: "tier-list", title: "Boon tier list", sourceRecordTypes: ["editorial/boon-rating"], aliases: ["boon rankings", "best boons"], spoilerLevel: "none" },
-  { id: "tier/weapons", pageKind: "tier-list", title: "Weapon tier list", sourceRecordTypes: ["editorial/weapon-guide"], aliases: ["weapon rankings", "best weapons"], spoilerLevel: "none" },
-  { id: "tier/aspects", pageKind: "tier-list", title: "Aspect tier list", sourceRecordTypes: ["editorial/aspect-guide"], aliases: ["aspect rankings", "best aspects"], spoilerLevel: "progression" },
-  { id: "tier/arcana", pageKind: "tier-list", title: "Arcana tier list", sourceRecordTypes: ["editorial/arcana-rating"], aliases: ["arcana rankings", "best tarot cards"], spoilerLevel: "progression" },
-  { id: "tier/keepsakes", pageKind: "tier-list", title: "Keepsake tier list", sourceRecordTypes: ["mechanics/keepsake"], aliases: ["keepsake rankings", "best keepsakes"], spoilerLevel: "progression" },
-  { id: "tier/familiars", pageKind: "tier-list", title: "Familiar tier list", sourceRecordTypes: ["editorial/familiar-rating"], aliases: ["familiar rankings", "best familiars"], spoilerLevel: "progression" },
-  { id: "tier/hexes", pageKind: "tier-list", title: "Hex tier list", sourceRecordTypes: ["editorial/hex-rating"], aliases: ["hex rankings", "best hexes"], spoilerLevel: "progression" },
-  { id: "reference/weapons", pageKind: "reference", title: "Weapons and aspects", sourceRecordTypes: ["mechanics/weapon", "mechanics/weapon-aspect"], aliases: ["arms", "nocturnal arms"], spoilerLevel: "progression" },
-  { id: "reference/boons", pageKind: "reference", title: "Gods and Boons", sourceRecordTypes: ["mechanics/god", "mechanics/boon"], aliases: ["olympians", "god powers"], spoilerLevel: "progression" },
-  { id: "reference/hammers", pageKind: "reference", title: "Daedalus Hammers", sourceRecordTypes: ["mechanics/hammer-upgrade"], aliases: ["hammer upgrades", "daedalus upgrades"], spoilerLevel: "progression" },
-  { id: "reference/arcana", pageKind: "reference", title: "Arcana Cards", sourceRecordTypes: ["mechanics/arcana-card"], aliases: ["tarot cards", "tarot", "cards"], spoilerLevel: "progression" },
-  { id: "reference/keepsakes", pageKind: "reference", title: "Keepsakes", sourceRecordTypes: ["mechanics/keepsake"], aliases: ["gifts", "keepsake effects"], spoilerLevel: "progression" },
-  { id: "reference/familiars", pageKind: "reference", title: "Animal Familiars", sourceRecordTypes: ["mechanics/familiar"], aliases: ["pets", "animal companions"], spoilerLevel: "progression" },
-  { id: "reference/hexes", pageKind: "reference", title: "Hexes and the Path of Stars", sourceRecordTypes: ["mechanics/hex"], aliases: ["selene spells", "path of stars"], spoilerLevel: "progression" },
-  { id: "reference/incantations", pageKind: "reference", title: "Incantations", sourceRecordTypes: ["mechanics/incantation"], aliases: ["cauldron upgrades", "crossroads upgrades"], spoilerLevel: "progression" },
-  { id: "reference/resources", pageKind: "reference", title: "Resources", sourceRecordTypes: ["mechanics/resource"], aliases: ["materials", "currencies"], spoilerLevel: "progression" },
-  { id: "reference/relationships", pageKind: "reference", title: "Relationships and gifts", sourceRecordTypes: ["world-progression/relationship"], aliases: ["romance", "gift guide"], spoilerLevel: "story" },
-  { id: "reference/prophecies", pageKind: "reference", title: "Fated List prophecies", sourceRecordTypes: ["world-progression/prophecy"], aliases: ["fated list", "prophecy list"], spoilerLevel: "progression" },
-  { id: "reference/regions", pageKind: "reference", title: "Regions and encounters", sourceRecordTypes: ["world-progression/region", "world-progression/encounter"], aliases: ["routes", "areas"], spoilerLevel: "story" },
-  { id: "reference/enemies", pageKind: "reference", title: "Enemies and Guardians", sourceRecordTypes: ["world-progression/enemy"], aliases: ["bosses", "minibosses"], spoilerLevel: "story" },
-  { id: "reference/oath", pageKind: "reference", title: "Oath, Fear, and Testaments", sourceRecordTypes: ["world-progression/oath-condition", "world-progression/testament-bounty"], aliases: ["fear guide", "testaments", "nightmare"], spoilerLevel: "progression" },
-  { id: "reference/story", pageKind: "reference", title: "Story and ending requirements", sourceRecordTypes: ["world-progression/narrative-milestone"], aliases: ["true ending", "epilogue requirements"], spoilerLevel: "ending" },
-  { id: "reference/achievements", pageKind: "reference", title: "Achievements and completion", sourceRecordTypes: ["world-progression/achievement"], aliases: ["completion checklist", "achievements"], spoilerLevel: "ending" },
+  {
+    id: "guide/progression",
+    pageKind: "progression",
+    title: "A-to-Z progression guide",
+    sourceRecordTypes: ["editorial/progression-stage"],
+    aliases: [
+      "a to z guide",
+      "a-z guide",
+      "beginner guide",
+      "progression route",
+    ],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "tier/boons",
+    pageKind: "tier-list",
+    title: "Boon tier list",
+    sourceRecordTypes: ["editorial/boon-rating"],
+    aliases: ["boon rankings", "best boons"],
+    spoilerLevel: "none",
+  },
+  {
+    id: "tier/weapons",
+    pageKind: "tier-list",
+    title: "Weapon tier list",
+    sourceRecordTypes: ["editorial/weapon-guide"],
+    aliases: ["weapon rankings", "best weapons"],
+    spoilerLevel: "none",
+  },
+  {
+    id: "tier/aspects",
+    pageKind: "tier-list",
+    title: "Aspect tier list",
+    sourceRecordTypes: ["editorial/aspect-guide"],
+    aliases: ["aspect rankings", "best aspects"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "tier/arcana",
+    pageKind: "tier-list",
+    title: "Arcana tier list",
+    sourceRecordTypes: ["editorial/arcana-rating"],
+    aliases: ["arcana rankings", "best tarot cards"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "tier/keepsakes",
+    pageKind: "tier-list",
+    title: "Keepsake tier list",
+    sourceRecordTypes: ["mechanics/keepsake"],
+    aliases: ["keepsake rankings", "best keepsakes"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "tier/familiars",
+    pageKind: "tier-list",
+    title: "Familiar tier list",
+    sourceRecordTypes: ["editorial/familiar-rating"],
+    aliases: ["familiar rankings", "best familiars"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "tier/hexes",
+    pageKind: "tier-list",
+    title: "Hex tier list",
+    sourceRecordTypes: ["editorial/hex-rating"],
+    aliases: ["hex rankings", "best hexes"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/weapons",
+    pageKind: "reference",
+    title: "Weapons and aspects",
+    sourceRecordTypes: ["mechanics/weapon", "mechanics/weapon-aspect"],
+    aliases: ["arms", "nocturnal arms"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/boons",
+    pageKind: "reference",
+    title: "Gods and Boons",
+    sourceRecordTypes: [
+      "mechanics/god",
+      "mechanics/boon",
+      "mechanics/status-element",
+    ],
+    aliases: ["olympians", "god powers"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/hammers",
+    pageKind: "reference",
+    title: "Daedalus Hammers",
+    sourceRecordTypes: ["mechanics/hammer-upgrade"],
+    aliases: ["hammer upgrades", "daedalus upgrades"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/arcana",
+    pageKind: "reference",
+    title: "Arcana Cards",
+    sourceRecordTypes: ["mechanics/arcana-card", "mechanics/grasp-progression"],
+    aliases: ["tarot cards", "tarot", "cards"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/keepsakes",
+    pageKind: "reference",
+    title: "Keepsakes",
+    sourceRecordTypes: ["mechanics/keepsake"],
+    aliases: ["gifts", "keepsake effects"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/familiars",
+    pageKind: "reference",
+    title: "Animal Familiars",
+    sourceRecordTypes: ["mechanics/familiar"],
+    aliases: ["pets", "animal companions"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/hexes",
+    pageKind: "reference",
+    title: "Hexes and the Path of Stars",
+    sourceRecordTypes: ["mechanics/hex"],
+    aliases: ["selene spells", "path of stars"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/incantations",
+    pageKind: "reference",
+    title: "Incantations",
+    sourceRecordTypes: ["mechanics/incantation"],
+    aliases: ["cauldron upgrades", "crossroads upgrades"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/resources",
+    pageKind: "reference",
+    title: "Resources",
+    sourceRecordTypes: [
+      "mechanics/resource",
+      "mechanics/gathering-tool",
+      "mechanics/fish",
+      "mechanics/cultivation",
+      "mechanics/market-offer",
+    ],
+    aliases: [
+      "materials",
+      "currencies",
+      "fish prices",
+      "garden",
+      "wretched broker",
+    ],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/relationships",
+    pageKind: "reference",
+    title: "Relationships and gifts",
+    sourceRecordTypes: ["world-progression/relationship"],
+    aliases: ["romance", "gift guide"],
+    spoilerLevel: "story",
+  },
+  {
+    id: "reference/prophecies",
+    pageKind: "reference",
+    title: "Fated List prophecies",
+    sourceRecordTypes: ["world-progression/prophecy"],
+    aliases: ["fated list", "prophecy list"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/regions",
+    pageKind: "reference",
+    title: "Regions and encounters",
+    sourceRecordTypes: [
+      "world-progression/opening-state",
+      "world-progression/region",
+      "world-progression/encounter",
+      "world-progression/encounter-friend",
+      "world-progression/strife-curse",
+      "world-progression/surface-penalty",
+      "mechanics/encounter-aid",
+      "mechanics/run-reward",
+    ],
+    aliases: [
+      "routes",
+      "areas",
+      "story rooms",
+      "friendly encounters",
+      "Blessing of Strife",
+      "Surface curse",
+    ],
+    spoilerLevel: "story",
+  },
+  {
+    id: "reference/enemies",
+    pageKind: "reference",
+    title: "Enemies and Guardians",
+    sourceRecordTypes: ["world-progression/enemy"],
+    aliases: [
+      "enemy guide",
+      "boss guide",
+      "guardian health",
+      "enemy attack patterns",
+    ],
+    spoilerLevel: "story",
+  },
+  {
+    id: "reference/oath",
+    pageKind: "reference",
+    title: "Oath, Fear, and Testaments",
+    sourceRecordTypes: [
+      "world-progression/oath-condition",
+      "world-progression/testament-bounty",
+    ],
+    aliases: ["fear guide", "testaments", "nightmare"],
+    spoilerLevel: "progression",
+  },
+  {
+    id: "reference/story",
+    pageKind: "reference",
+    title: "Story and ending requirements",
+    sourceRecordTypes: ["world-progression/narrative-milestone"],
+    aliases: ["true ending", "epilogue requirements"],
+    spoilerLevel: "ending",
+  },
+  {
+    id: "reference/achievements",
+    pageKind: "reference",
+    title: "Achievements and completion",
+    sourceRecordTypes: ["world-progression/achievement"],
+    aliases: ["completion checklist", "achievements"],
+    spoilerLevel: "ending",
+  },
 ] as const satisfies readonly PageDefinition[];

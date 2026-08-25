@@ -1,0 +1,202 @@
+.build-unlock-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(13rem, 0.6fr) minmax(0, 1.4fr) auto;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+    margin-top: clamp(3rem, 7vw, 6rem);
+    padding-block: clamp(1.5rem, 4vw, 3.5rem);
+    border-block: 2px solid var(--build-rule);
+}
+.build-unlock-card > div > span {
+    color: var(--ember);
+    font-size: var(--type-label);
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.build-unlock-card h2 {
+    margin-top: 0.55rem;
+    color: var(--build-bone);
+    font-size: var(--type-section);
+}
+.build-unlock-card > p,
+.build-unlock-card > ol {
+    margin: 0;
+    color: var(--build-muted);
+}
+.build-unlock-card > ol {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.35rem;
+}
+.build-unlock-card nav {
+    display: grid;
+    gap: var(--space-3);
+}
+.build-unlock-cost {
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--build-rule-quiet);
+}
+.build-unlock-cost > strong {
+    color: var(--ember);
+    font-size: var(--type-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.build-unlock-cost ul {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: 0.65rem;
+    padding: 0;
+    list-style: none;
+}
+.build-unlock-cost li {
+    display: flex;
+    gap: 0.4rem;
+}
+.build-unlock-card a {
+    min-height: 2.75rem;
+    color: var(--build-witchfire);
+    text-underline-offset: var(--link-underline-offset);
+}
+
+@media (max-width: 101rem) {
+    .build-plan-sequence ol[data-sequence-size='4'] {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .build-plan-sequence ol[data-sequence-size='4'] > li:nth-child(odd) {
+        border-left: 0;
+    }
+    .build-plan-sequence ol[data-sequence-size='4'] > li:nth-child(n + 3) {
+        border-top: 1px solid var(--build-rule-quiet);
+    }
+}
+@media (max-width: 1200px) {
+    .context-ribbon {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .context-ribbon > div:nth-child(2n) {
+        border-right: 0;
+    }
+    .build-breakpoints {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .useful-tier-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .interaction-ledger {
+        column-count: 2;
+    }
+    .interaction-ledger > li[data-interaction-break-wide] {
+        break-before: auto;
+    }
+    .interaction-ledger > li[data-interaction-break-two] {
+        break-before: column;
+    }
+    .rare-target-group .rare-targets {
+        --rare-target-columns: 3;
+    }
+}
+@media (max-width: 1100px) {
+    .boon-lanes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: repeat(4, auto);
+    }
+    .boon-lanes > article[data-boon-priority='1'] {
+        grid-column: 1;
+        grid-row: 1 / span 4;
+    }
+    .boon-lanes > article[data-boon-priority='2'] {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .boon-lanes > article[data-boon-priority='3'] {
+        grid-column: 2;
+        grid-row: 2;
+    }
+    .boon-lanes > article[data-boon-priority='4'] {
+        grid-column: 2;
+        grid-row: 3;
+    }
+    .boon-lanes > article[data-boon-priority='5'] {
+        grid-column: 2;
+        grid-row: 4;
+    }
+}
+@media (max-width: 900px) {
+    .build-unlock-card,
+    .build-setup-loadouts > div,
+    .useful-tier-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .interaction-ledger {
+        column-count: 1;
+    }
+    .interaction-ledger > li[data-interaction-break-two] {
+        break-before: auto;
+    }
+    .build-plan-sequence ol,
+    .build-plan-notes {
+        grid-template-columns: 1fr;
+    }
+    .build-plan-sequence ol[data-sequence-size] {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .build-plan-sequence ol > li {
+        border-top: 1px solid var(--build-rule-quiet);
+        border-left: 0;
+    }
+    .build-plan-sequence ol > li:first-child {
+        border-top: 0;
+    }
+    .rare-target-group .rare-targets {
+        --rare-target-columns: 2;
+    }
+}
+@media (max-width: 760px) {
+    .boon-lanes {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+    }
+    .boon-lanes > article[data-boon-priority] {
+        grid-column: auto;
+        grid-row: auto;
+    }
+}
+@media (max-width: 620px) {
+    .build-detail-hero {
+        padding-block: 2rem 4rem;
+    }
+    .build-title-line {
+        min-height: auto;
+    }
+    .build-title-line h1 {
+        font-size: clamp(2.5rem, 10vw, 3.7rem);
+        overflow-wrap: anywhere;
+    }
+    .context-ribbon {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .context-ribbon > div {
+        border-right: 0;
+        border-bottom: 1px solid var(--build-rule-quiet);
+    }
+    .rare-target-group .rare-targets {
+        --rare-target-columns: 1;
+    }
+    .build-breakpoints > ol > li {
+        grid-template-columns: 2.25rem minmax(0, 1fr);
+    }
+    .rare-target-group > header {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .useful-tier > summary {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+    .useful-tier > summary small {
+        grid-column: 2;
+    }
+}

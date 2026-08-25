@@ -1,0 +1,15 @@
+---
+type Props = { title: string; resource?: boolean };
+const { title, resource = false } = Astro.props;
+const label = resource ? 'Filter reward and material details' : `Filter ${title}`;
+const placeholder = resource ? 'Try Daedalus Hammer, Silver, or Nightmare' : `Find something in ${title.toLowerCase()}`;
+---
+
+<div class:list={['collection-toolbar', 'collection-toolbar-v2', resource && 'resource-filter']}>
+    <label for='collection-filter'>{label}</label>
+    <div class='collection-filter-control'>
+        <i class='ph ph-funnel' aria-hidden='true'></i>
+        <input id='collection-filter' type='search' {placeholder} />
+    </div>
+    <p id='collection-status' class='visually-hidden' aria-live='polite'></p>
+</div>
